@@ -37,7 +37,7 @@ services:
       context: ./api
       dockerfile: Dockerfile.dev # on move to prod, update this
     volumes:
-      - ./api/node_modules
+      - ./api/node_modules:/api/node_modules
       - ./api:/api
     ports:
       - "3000:3000"
@@ -47,6 +47,7 @@ services:
       - db
       - app
     restart: unless-stopped
+    command: tail -f /dev/null
   app:
     container_name: app
     build:
