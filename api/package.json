@@ -1,7 +1,7 @@
 {
-  "name": "api",
+  "name": "pizza-system-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "API for pizza system",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
