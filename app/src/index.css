@@ -1,8 +1,7 @@
-/* index.css */
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #f8f9fa;
+    background-color: #f4f4f4; /* Updated background color */
     color: #333;
     display: flex;
     flex-direction: column;
@@ -10,7 +9,7 @@ body {
 }
 
 header {
-    background-color: #343a40;
+    background-color: #001f72; /* Updated background color */
     color: #fff;
     padding: 1rem;
     text-align: center;
@@ -51,7 +50,7 @@ main {
 }
 
 footer {
-    background-color: #343a40;
+    background-color: #001f72; /* Updated background color */
     color: #fff;
     text-align: center;
     padding: 1rem;
@@ -69,4 +68,82 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Additional styles based on the provided image */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.container > div {
+    flex: 1;
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+section h3 {
+    color: #001f72;
+    border-bottom: 2px solid #001f72;
+    padding-bottom: 5px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+ul li a {
+    color: #001f72;
+    text-decoration: none;
+}
+
+ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h3 {
+    color: #001f72;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+/* FSI Schedule */
+.fsi-schedule {
+    background-color: #001f72;
+    color: #ffffff;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.fsi-schedule h4 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.fsi-schedule p {
+    margin: 0;
 }
