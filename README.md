@@ -1,12 +1,11 @@
-# Docker PERN Template
-`based on https://github.com/dan-frank/docker-pern-template`
-The purpose of this repo is to provide a template so you can quickly get up and running with a PERN stack application.
+# Pizza Order App
 
 ## How To Use
 
-Once you have started the Docker container using the provided tools and commands below you will need to navigate to [http://localhost:8000](http://localhost:8000).
+Once you have started the Docker container using the provided tools and commands below you will need to navigate
+to <http://localhost:8000>.
 
-### Dependancies
+### Dependencies
 
 You will need to install:
 
