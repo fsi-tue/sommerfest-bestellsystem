@@ -78,6 +78,7 @@ main {
 main > .content {
     /* Layout */
     margin: 1rem auto;
+    padding: 1rem 0;
     width: 100%;
     max-width: 800px;
 }
@@ -129,43 +130,4 @@ ul li a {
 
 ul li a:hover {
     text-decoration: underline;
-}
-
-/* Sidebar */
-.sidebar {
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: var(--box-shadow);
-}
-
-.sidebar h3 {
-    color: var(--primary-color);
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    margin-bottom: 10px;
-}
-
-/* FSI Schedule */
-.fsi-schedule {
-    background-color: #001f72;
-    color: #ffffff;
-    padding: 10px;
-    margin-bottom: 10px;
-    text-align: center;
-    border-radius: 5px;
-}
-
-.fsi-schedule h4 {
-    margin: 0;
-    font-size: 1.2em;
-}
-
-.fsi-schedule p {
-    margin: 0;
 }

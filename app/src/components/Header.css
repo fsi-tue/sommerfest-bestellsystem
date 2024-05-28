@@ -1,7 +1,7 @@
 /* Header.css */
 header {
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
+    border: 3px solid var(--primary-color);
+    color: var(--text-color);
     padding: 1rem;
 }
 
@@ -10,7 +10,7 @@ header h1 {
 }
 
 h1 a {
-    color: var(--text-color-light);
+    color: inherit;
     text-decoration: none;
 }
 
@@ -32,7 +32,7 @@ header nav ul li {
 }
 
 header nav ul li a {
-    color: var(--text-color-light);
+    color: inherit;
     text-decoration: none;
 }
 
