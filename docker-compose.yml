@@ -52,7 +52,7 @@ services:
     container_name: app
     build:
       context: ./app
-      dockerfile: Dockerfile.dev # on move to prod, update this
+      dockerfile: Dockerfile.dev
     ports:
       - "8000:8080"
     networks:
