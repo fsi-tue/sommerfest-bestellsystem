@@ -1,35 +1,28 @@
 // App.js
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import Footer from './components/Footer.jsx';
 import PizzaMenu from './components/PizzaMenu.jsx';
 import OrderQueue from './components/OrderQueue.jsx';
-import ManufacturedOrders from './components/ManufacturedOrders.jsx';
-import Header from "./components/Header.jsx";
-import OrderStatus from "./components/OrderStatus.jsx";
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider,} from "react-router-dom";
+import Layout from "./components/Layout.jsx";
+import OrderStatus from "./components/user/OrderStatus.jsx";
+
+const router = createBrowserRouter(
+	createRoutesFromElements(
+		<Route path="/" element={<Layout/>}>
+			<Route index element={<PizzaMenu/>}/>
+			<Route path="order-queue" element={<OrderQueue/>}/>
+			<Route path="order">
+				<Route path="queue" element={<OrderQueue/>} />
+				<Route path=":orderNumber" element={<OrderStatus/>} />
+			</Route>
+			<Route path="*" element={<h1>Not Found</h1>}/>
+		</Route>
+	)
+);
 
 const App = () => {
 	return (
 		<>
-			<Router>
-				<main>
-					<Header/>
-					<Switch>
-						<Route path="/" exact>
-							<PizzaMenu/>
-						</Route>
-						<Route path="/order/:orderNumber">
-							<OrderStatus/>
-						</Route>
-						<Route path="/order-queue">
-							<OrderQueue/>
-						</Route>
-						<Route path="/manufactured-orders">
-							<ManufacturedOrders/>
-						</Route>
-					</Switch>
-					<Footer/>
-				</main>
-			</Router>
+			<RouterProvider router={router}/>
 		</>
 	);
 };
