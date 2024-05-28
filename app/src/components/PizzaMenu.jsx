@@ -40,7 +40,7 @@ const OrderPizza = ({order}) => {
 	}
 
 	return (
-		<button className="order-button" onClick={() => orderPizza()}>
+		<button onClick={() => orderPizza()}>
 			Order now
 		</button>
 	);
