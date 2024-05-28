@@ -1,19 +1,4 @@
 /* Header.css */
-header {
-    border: 3px solid var(--primary-color);
-    color: var(--text-color);
-    padding: 1rem;
-}
-
-header h1 {
-    margin: 0;
-}
-
-h1 a {
-    color: inherit;
-    text-decoration: none;
-}
-
 header nav {
     display: flex;
     justify-content: space-between;

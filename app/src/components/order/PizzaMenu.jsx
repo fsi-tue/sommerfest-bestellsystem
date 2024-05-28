@@ -1,8 +1,7 @@
 // PizzaMenu.jsx
 import './PizzaMenu.css';
 import {useEffect, useState} from "react";
-import PropTypes from "prop-types";
-import {redirect, useNavigate} from "react-router-dom";
+import OrderPizza from "./OrderPizza.jsx";
 
 // Toy data
 const toyPizzas = [
@@ -13,63 +12,6 @@ const toyPizzas = [
 ];
 
 const API_ENDPOINT = "http://localhost:3000";
-
-// Estimate the wait time for the order
-const WaitTime = ({waitTime}) => {
-    if (!waitTime) {
-        return;
-    }
-
-    return (
-        <p>
-            Estimated wait time: {waitTime} minutes
-        </p>
-    );
-}
-
-// Button to order the pizzas
-const OrderPizza = ({order}) => {
-    if (!order || order.length === 0) {
-        return;
-    }
-
-    const navigate = useNavigate();
-
-    // Function to order the pizzas
-    const orderPizza = () => {
-        fetch(API_ENDPOINT + '/order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(order),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.orderNumber) {
-                    console.log(`Order number: ${data.orderNumber}`)
-                    navigate(`/order/thank-you/${data.orderNumber}`)
-                }
-            })
-    }
-
-    return (
-        <>
-            <WaitTime waitTime={order.length * 10}/>
-            <button onClick={() => orderPizza()}>
-                Order now
-            </button>
-        </>
-    );
-}
-
-OrderPizza.parameters = {
-    order: [],
-}
-
-OrderPizza.propTypes = {
-    order: PropTypes.array,
-}
 
 const Pizza = ({name, price, className, onClick}) => {
     return (
@@ -109,12 +51,16 @@ const PizzaMenu = () => {
 
     return (
         <div className="content">
-            <h2>Pizza Menu</h2>
+            <h2 className="text-2xl">Order your favorite pizza</h2>
+            <p className="mb-3 text-lg font-light text-gray-600 leading-7">
+                Welcome to our pizza ordering service. Please select the pizzas you would like to order from the menu
+                below.
+            </p>
 
-            <div className="pizza-menu-container">
+            <div className="flex justify-between gap-4 content-start pizza-menu-container">
                 <div className="pizza-menu">
-                    <h3>
-                        Menu
+                    <h3 className="text-xl">
+                        Menu:
                     </h3>
 
                     <ul className="pizza-list">
@@ -125,8 +71,8 @@ const PizzaMenu = () => {
                     </ul>
                 </div>
                 <div className="pizza-order">
-                    <h3>
-                        Your current order
+                    <h3 className="text-xl">
+                        Your current order:
                     </h3>
 
                     <ul className="pizza-list">
@@ -136,9 +82,14 @@ const PizzaMenu = () => {
                         ))}
                     </ul>
 
-                    <p>
-                        Total: {order.reduce((total, pizza) => total + pizza.price, 0)}€
-                    </p>
+                    <div className="mb-3">
+                        <p>
+                            Total: {order.reduce((total, pizza) => total + pizza.price, 0)}€
+                        </p>
+                        {order.length > 0 && <p className="font-light text-xs">
+                            Your order will be ready in {order.length * 10} minutes
+                        </p>}
+                    </div>
                     <OrderPizza order={order}/>
                 </div>
             </div>

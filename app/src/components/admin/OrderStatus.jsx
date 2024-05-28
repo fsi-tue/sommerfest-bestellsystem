@@ -12,13 +12,13 @@ const OrderStatus = () => {
 	const [orders, setOrders] = useState(toyOrders); // state to hold order status
 
 	// Get the order status from the server
-	fetch('/api/order/')
+	fetch('/orders/')
 		.then(response => response.json())
 		.then(data => setOrders(data));
 
 	// Function to update the order status
 	const updateOrderStatus = (orderNumber, status) => {
-		fetch('/api/order/' + orderNumber, {
+		fetch('/orders/' + orderNumber, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',

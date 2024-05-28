@@ -15,7 +15,11 @@ const OrderQueue = () => {
 
 	return (
 		<div className="content">
-			<h2>Queue</h2>
+			<h2 className="text-2xl">Queue</h2>
+			<p className="mb-3 text-lg font-light text-gray-600 leading-7">
+				Here you can see the order queue.
+			</p>
+
 			<div className="timeline-container">
 				<Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT}
 						  every_x_seconds={every_x_seconds}/>

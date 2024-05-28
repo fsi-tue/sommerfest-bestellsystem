@@ -10,14 +10,14 @@ const Login = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const username = event.target.username.value;
+        const token = event.target.token.value;
 
         fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({username}),
+            body: JSON.stringify({token}),
         })
             .then((response) => {
                 if (response.ok) {
@@ -38,8 +38,8 @@ const Login = () => {
     return (
         <div className="content">
             <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Username</label>
-                <input type="text" id="username" name="username"/>
+                <label htmlFor="token">Token</label>
+                <input type="text" id="token" name="token"/>
                 <button type="submit">Login</button>
                 {errorMessage && <p>{errorMessage}</p>}
             </form>
