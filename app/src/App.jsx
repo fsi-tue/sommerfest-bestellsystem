@@ -1,29 +1,24 @@
 // App.js
-import './App.css';
-
-import {useState} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Footer from './components/Footer.jsx';
 import PizzaMenu from './components/PizzaMenu.jsx';
-import OrderSubmit from './components/OrderSubmit.jsx';
 import OrderQueue from './components/OrderQueue.jsx';
 import ManufacturedOrders from './components/ManufacturedOrders.jsx';
 import Header from "./components/Header.jsx";
+import OrderStatus from "./components/OrderStatus.jsx";
 
 const App = () => {
-	const [order, setOrder] = useState(null); // state to hold selected order
-
 	return (
 		<>
 			<Router>
-				<div>
+				<main>
 					<Header/>
 					<Switch>
 						<Route path="/" exact>
-							<PizzaMenu setOrder={setOrder}/>
+							<PizzaMenu/>
 						</Route>
 						<Route path="/order/:orderNumber">
-							<OrderSubmit order={order}/>
+							<OrderStatus/>
 						</Route>
 						<Route path="/order-queue">
 							<OrderQueue/>
@@ -33,7 +28,7 @@ const App = () => {
 						</Route>
 					</Switch>
 					<Footer/>
-				</div>
+				</main>
 			</Router>
 		</>
 	);
