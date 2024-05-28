@@ -7,6 +7,21 @@
     gap: 1rem;
 }
 
+
+.pizza-menu-container > div {
+    width: 48%;
+}
+
+@media (max-width: 768px) {
+    .pizza-menu-container {
+        flex-direction: column;
+    }
+
+    .pizza-menu-container > div {
+        width: 100%;
+    }
+}
+
 .pizza-list {
     justify-content: center;
     margin: 0 auto;
