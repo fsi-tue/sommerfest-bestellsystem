@@ -1,5 +1,5 @@
 // Header.jsx
-import {Link} from 'react-router-dom';
+import { Link } from "react-router-dom";
 import './Header.css';
 
 const Header = () => {
@@ -8,9 +8,12 @@ const Header = () => {
 			<h1>Pizza Ordering</h1>
 			<nav>
 				<ul>
-					<li><Link to="/">Home</Link></li>
-					<li><Link to="/order-queue">Order Queue</Link></li>
-					<li><Link to="/manufactured-orders">Manufactured Orders</Link></li>
+					<li>
+						<Link to="/">Home</Link>
+					</li>
+					<li>
+						<Link to="/order/queue">Order Queue</Link>
+					</li>
 				</ul>
 			</nav>
 		</header>
