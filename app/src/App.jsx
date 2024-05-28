@@ -1,6 +1,4 @@
 // App.js
-import './App.css';
-
 import {useState} from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Footer from './components/Footer.jsx';
@@ -16,7 +14,7 @@ const App = () => {
 	return (
 		<>
 			<Router>
-				<div>
+				<main>
 					<Header/>
 					<Switch>
 						<Route path="/" exact>
@@ -33,7 +31,7 @@ const App = () => {
 						</Route>
 					</Switch>
 					<Footer/>
-				</div>
+				</main>
 			</Router>
 		</>
 	);
