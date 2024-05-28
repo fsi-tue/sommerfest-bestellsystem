@@ -7,6 +7,21 @@
     gap: 1rem;
 }
 
+
+.pizza-menu-container > div {
+    width: 48%;
+}
+
+@media (max-width: 768px) {
+    .pizza-menu-container {
+        flex-direction: column;
+    }
+
+    .pizza-menu-container > div {
+        width: 100%;
+    }
+}
+
 .pizza-list {
     justify-content: center;
     margin: 0 auto;
@@ -39,14 +54,4 @@
 .pizza:hover {
     background-color: rgba(var(--primary-color-rgb), 0.2);
     transform: scale(1.01);
-}
-
-.order-button {
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 1rem;
 }

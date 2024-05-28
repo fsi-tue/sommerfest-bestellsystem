@@ -1,13 +1,9 @@
-FROM node:latest
-EXPOSE 8000
-RUN mkdir -p /app/public /app/src
+FROM node:alpine
+
 WORKDIR /app
-
-ENV NODE_OPTIONS=--openssl-legacy-provider
-
-COPY package.json /app/package.json
-COPY package-lock.json /app/package-lock.json
-
+COPY package.json .
 RUN npm install
+COPY . .
+EXPOSE 8000
 
 CMD ["npm", "run", "dev"]

@@ -39,5 +39,20 @@ app.get("/timeline", (req, res) => {
 	})));
 });
 
+// TODO: This is only toy data, replace with real data from a database
+app.get("/pizzas", (req, res) => {
+	res.send([
+		{name: "Margherita", price: 3},
+		{name: "Pepperoni", price: 4},
+		{name: "Vegetarian", price: 5},
+		{name: "Four Cheese", price: 7},
+	]);
+});
+
+// TODO: This is only a toy implementation, replace with a real implementation
+app.post("/order", (req, res) => {
+	res.send({orderNumber: Math.floor(Math.random() * 1000)});
+})
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));

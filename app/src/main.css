@@ -77,7 +77,8 @@ main {
 
 main > .content {
     /* Layout */
-    margin: 0 auto;
+    margin: 1rem auto;
+    padding: 1rem 0;
     width: 100%;
     max-width: 800px;
 }
@@ -97,38 +98,20 @@ main {
 }
 
 button {
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
+    width: 100%;
+    padding: 0.75rem;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: 1rem;
     cursor: pointer;
-    margin-top: 1rem;
+    transition: background-color 0.3s ease;
 }
+
 
 button:hover {
     background-color: rgba(var(--primary-color-rgb), 0.8);
-}
-
-/* Additional styles based on the provided image */
-.container {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.container > div {
-    flex: 1;
-    padding: 20px;
-}
-
-section {
-    margin-bottom: 20px;
-}
-
-section h3 {
-    color: var(--primary-color);
-    border-bottom: 2px solid rgba(var(--primary-color-rgb), 0.5);
-    padding-bottom: 5px;
 }
 
 ul {
@@ -147,43 +130,4 @@ ul li a {
 
 ul li a:hover {
     text-decoration: underline;
-}
-
-/* Sidebar */
-.sidebar {
-    background-color: #ffffff;
-    padding: 20px;
-    box-shadow: var(--box-shadow);
-}
-
-.sidebar h3 {
-    color: var(--primary-color);
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    margin-bottom: 10px;
-}
-
-/* FSI Schedule */
-.fsi-schedule {
-    background-color: #001f72;
-    color: #ffffff;
-    padding: 10px;
-    margin-bottom: 10px;
-    text-align: center;
-    border-radius: 5px;
-}
-
-.fsi-schedule h4 {
-    margin: 0;
-    font-size: 1.2em;
-}
-
-.fsi-schedule p {
-    margin: 0;
 }

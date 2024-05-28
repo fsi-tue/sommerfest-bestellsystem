@@ -2,7 +2,7 @@ import {useState} from "react";
 import {useParams} from 'react-router-dom';
 
 const OrderStatus = () => {
-	const [status, setStatus] = useState(''); // state to hold order status
+	const [status, setStatus] = useState('Please wait...'); // state to hold order status
 	const {orderNumber} = useParams();
 
 	fetch('/api/order/' + orderNumber)
