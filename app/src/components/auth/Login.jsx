@@ -1,9 +1,12 @@
 import './Login.css';
-import {redirect} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('')
+
+    const navigate = useNavigate();
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -25,7 +28,7 @@ const Login = () => {
             })
             .then((data) => {
                 localStorage.setItem('token', data.token);
-                redirect('/');
+                navigate('/');
             }).catch((error) => {
             setErrorMessage(error.message);
         });
