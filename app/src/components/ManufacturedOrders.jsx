@@ -1,6 +1,4 @@
 // OrderQueue.jsx
-import React from 'react';
-
 const ManufacturedOrders = () => {
     return (
         <div>

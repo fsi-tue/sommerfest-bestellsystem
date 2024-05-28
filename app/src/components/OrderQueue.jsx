@@ -1,7 +1,5 @@
 // OrderQueue.jsx
-import React from 'react';
 import Timeline from './Timeline.jsx';
-
 
 const API_ENDPOINT = "http://localhost:3000";
 const every_x_seconds = 60;
@@ -16,8 +14,8 @@ const OrderQueue = () => {
     end.setMinutes(59, 59, 999);
 
     return (
-        <div>
-            <p>OrderQueue</p>
+        <div className="content">
+            <h2>Queue</h2>
             <div className="timeline-container">
                 <Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT} every_x_seconds={every_x_seconds} />
             </div>
