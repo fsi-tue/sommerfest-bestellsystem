@@ -2,7 +2,7 @@
 import './PizzaMenu.css';
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import {redirect, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 // Toy data
 const toyPizzas = [
@@ -21,7 +21,7 @@ const WaitTime = ({waitTime}) => {
     }
 
     return (
-        <p>
+        <p className="wait-time">
             Estimated wait time: {waitTime} minutes
         </p>
     );
@@ -55,7 +55,6 @@ const OrderPizza = ({order}) => {
 
     return (
         <>
-            <WaitTime waitTime={order.length * 10}/>
             <button onClick={() => orderPizza()}>
                 Order now
             </button>
@@ -111,7 +110,7 @@ const PizzaMenu = () => {
         <div className="content">
             <h2>Pizza Menu</h2>
 
-            <div className="pizza-menu-container">
+            <div className="flex justify-between gap-4 content-start pizza-menu-container">
                 <div className="pizza-menu">
                     <h3>
                         Menu
@@ -136,9 +135,14 @@ const PizzaMenu = () => {
                         ))}
                     </ul>
 
-                    <p>
-                        Total: {order.reduce((total, pizza) => total + pizza.price, 0)}€
-                    </p>
+                    <div className="mb-3">
+                        <p>
+                            Total: {order.reduce((total, pizza) => total + pizza.price, 0)}€
+                        </p>
+                        {order.length > 0 && <p className="font-light text-xs">
+                            Your order will be ready in {order.length * 10} minutes
+                        </p>}
+                    </div>
                     <OrderPizza order={order}/>
                 </div>
             </div>

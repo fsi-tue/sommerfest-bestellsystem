@@ -1,4 +1,8 @@
 /* General Styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
     /* Colors */
     --background-color: #f5f5f5;
