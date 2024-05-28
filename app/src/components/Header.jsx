@@ -5,7 +5,7 @@ import './Header.css';
 const Header = () => {
 	return (
 		<header>
-			<h1>Pizza Ordering</h1>
+			<h1><Link to="/">Order your pizza</Link></h1>
 			<nav>
 				<ul>
 					<li>
@@ -13,6 +13,11 @@ const Header = () => {
 					</li>
 					<li>
 						<Link to="/order/queue">Order Queue</Link>
+					</li>
+				</ul>
+				<ul>
+					<li>
+						<Link to="/login">Login</Link>
 					</li>
 				</ul>
 			</nav>
