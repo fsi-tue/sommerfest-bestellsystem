@@ -1,10 +1,10 @@
 import express, { Express, Request, Response, Application } from 'express';
 import cors from 'cors'
-import db from './config/db'
 
 import index from './routes/index'
 import timeline from './routes/timeline'
 import orders from './routes/orders';
+import pizza from './routes/pizza';
 
 
 export const app = express();
@@ -61,11 +61,17 @@ app.resource = function (path, obj) {
         var id = parseInt(req.params.id, 10);
         obj.destroy(req, res, id);
     });
+    this.post("^/order", (req, res) => {
+        // create a new order
+        obj.create(req, res)
+    })
+
 };
 
 //routes
 app.get('^/$', index);
 app.get('^/timeline', loadUser, timeline.timeline);
 app.resource('^/orders', orders);
+app.resource("^/pizzas", pizza);
 
 

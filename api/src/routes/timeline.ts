@@ -1,4 +1,3 @@
-import query from '../config/db'
 
 function timeline(req: Request, res: Response) {
     const TIME_SLOT_SIZE_MINUTES = 5;
