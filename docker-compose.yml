@@ -47,7 +47,6 @@ services:
       - db
       - app
     restart: unless-stopped
-    command: tail -f /dev/null
   app:
     container_name: app
     build:
