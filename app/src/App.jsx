@@ -1,42 +1,1 @@
-// App.js
-import './App.css';
-
-import {useState} from 'react';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import Footer from './components/Footer.jsx';
-import PizzaMenu from './components/PizzaMenu.jsx';
-import OrderSubmit from './components/OrderSubmit.jsx';
-import OrderQueue from './components/OrderQueue.jsx';
-import ManufacturedOrders from './components/ManufacturedOrders.jsx';
-import Header from "./components/Header.jsx";
-
-const App = () => {
-	const [order, setOrder] = useState(null); // state to hold selected order
-
-	return (
-		<>
-			<Router>
-				<div>
-					<Header/>
-					<Switch>
-						<Route path="/" exact>
-							<PizzaMenu setOrder={setOrder}/>
-						</Route>
-						<Route path="/order/:orderNumber">
-							<OrderSubmit order={order}/>
-						</Route>
-						<Route path="/order-queue">
-							<OrderQueue/>
-						</Route>
-						<Route path="/manufactured-orders">
-							<ManufacturedOrders/>
-						</Route>
-					</Switch>
-					<Footer/>
-				</div>
-			</Router>
-		</>
-	);
-};
-
-export default App;
+// App.js// Pages and components// Layoutimport Layout from "./components/Layout.jsx";// Ordersimport PizzaMenu from './components/order/PizzaMenu.jsx';import OrderQueue from './components/OrderQueue.jsx';import UserOrderStatus from "./components/user/OrderStatus.jsx";import ThankYou from "./components/order/ThankYou.jsx";// Authenticationimport Login from "./components/auth/Login.jsx";import AdminOrderStatus from "./components/admin/OrderStatus.jsx";// Reduximport { Provider } from 'react-redux'// React Routerimport {createBrowserRouter, createRoutesFromElements, Route, RouterProvider,} from "react-router-dom";// Create a router with the routesconst router = createBrowserRouter(    createRoutesFromElements(        <Route path="/" element={<Layout/>}>            <Route index element={<PizzaMenu/>}/>            <Route path="order">                <Route path="queue" element={<OrderQueue/>}/>                <Route path="thank-you/:orderNumber" element={<ThankYou/>}/>                <Route path=":orderNumber" element={<UserOrderStatus/>}/>            </Route>            <Route path="login" element={<Login/>}/>            <Route path="admin"                   element={<AdminOrderStatus/>}>            </Route>            <Route path="*" element={<h1>Not Found</h1>}/>        </Route>    ));import { store } from './store'const App = () => {    return (        <>            <Provider store={store}>                <RouterProvider router={router}/>            </Provider>        </>    );};export default App;

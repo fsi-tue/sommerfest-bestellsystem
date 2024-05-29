@@ -1,0 +1,52 @@
+/* PizzaMenu.css */
+.pizza-menu-container {
+    flex-flow: row wrap;
+}
+
+.pizza-menu-container > div {
+    width: 48%;
+}
+
+@media (max-width: 768px) {
+    .pizza-menu-container {
+        flex-direction: column;
+    }
+
+    .pizza-menu-container > div {
+        width: 100%;
+    }
+}
+
+.pizza-list {
+    justify-content: center;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+}
+
+.pizza {
+    /* Color */
+    background-color: rgba(var(--primary-color-rgb), 0.1);
+    color: var(--text-color);
+
+    /* Layout */
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    box-shadow: var(--box-shadow);
+
+    cursor: pointer;
+
+    /* Animation */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.pizza.order:hover {
+    background-color: rgba(var(--danger-color-rgb), 0.2);
+    transform: scale(1.01);
+}
+
+.pizza:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.2);
+    transform: scale(1.01);
+}

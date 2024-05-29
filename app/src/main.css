@@ -1,0 +1,137 @@
+/* General Styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Colors */
+    --background-color: #f5f5f5;
+    --background-color-light: #ffffff;
+
+    /* Primary Color */
+    --primary-color: #000080;
+    --primary-color-rgb: 0, 0, 128;
+
+    /* Success Color */
+    --success-color: #008000;
+    --success-color-rgb: 0, 128, 0;
+    --success-color-light: #cce5cc;
+
+    /* Danger Color */
+    --danger-color: #800000;
+    --danger-color-rgb: 128, 0, 0;
+    --danger-color-light: #f5c6cb;
+
+    /* Text Color */
+    --text-color: #202020;
+    --text-color-light: #ffffff;
+    --text-hover-color: var(--primary-color);
+    --text-inactive-color: #606060;
+
+    /* Box Color */
+    --box-color: #ffffff;
+    --box-hover-color: #dddddd;
+    --box-inactive-color: #cccccc;
+
+    /* Border */
+    --border: 1px solid #999;
+    --border-radius: 10px;
+
+    /* Shadow */
+    --box-shadow: 6px 6px 12px 0 rgba(0, 0, 0, 0.2), -6px -6px 12px 0 rgba(255, 255, 255, 0.5);
+    --box-shadow-hover: 9px 9px 15px 0 rgba(var(--primary-color-rgb), 0.2), -9px -9px 15px 0 rgba(255, 255, 255, 0.5);
+
+    /* Transition */
+    --transition: all .5s cubic-bezier(.14, .71, .78, .96);
+
+    /* Font */
+    --font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-weight: 500;
+    --letter-spacing: 0.02em;
+}
+
+body {
+    /* Font + Text */
+    font-family: var(--font-family), serif;
+    font-weight: var(--font-weight);
+    letter-spacing: var(--letter-spacing);
+    font-size: calc(10pt + 0.3vw);
+    text-align: justify;
+
+    /* Colors */
+    background-color: var(--background-color);
+    color: var(--text-color);
+
+    /* Margin + Padding */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+main {
+    /* Layout */
+    margin: 10px auto;
+    width: 80%;
+    max-width: 1200px;
+    padding: 15px;
+
+    /* Colors */
+    background-color: var(--background-color-light);
+}
+
+main > .content {
+    /* Layout */
+    margin: 1rem auto;
+    padding: 1rem 0;
+    width: 100%;
+    max-width: 800px;
+}
+
+header, footer {
+    width: 100%;
+    border-radius: 10px;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+button {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+button:hover {
+    background-color: rgba(var(--primary-color-rgb), 0.8);
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+ul li a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+ul li a:hover {
+    text-decoration: underline;
+}
