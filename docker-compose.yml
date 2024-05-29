@@ -56,7 +56,6 @@ services:
     volumes:
       - ./app/node_modules:/app/node_modules
       - ./app:/app
-    command: tail -f /dev/null
     ports:
       - "8000:8080"
     networks:
