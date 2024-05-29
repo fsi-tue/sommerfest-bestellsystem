@@ -1,10 +1,15 @@
+
 import db from '../config/db'
 
 function index(req: Request, res: Response) {
-    res.send('list all')
-    const result = db.query('SELECT * FROM orders');
-    console.log(result);
+    res.send([
+        { name: "Margherita", price: 3 },
+        { name: "Pepperoni", price: 4 },
+        { name: "Vegetarian", price: 5 },
+        { name: "Four Cheese", price: 7 },
+    ]);
 }
+
 function range(req: Request, res: Response, a: int, b: int, format: string) {
     res.send('list range orders')
     const result = db.query('SELECT * FROM orders');
