@@ -1,6 +1,5 @@
 import express, { Express, Request, Response, Application } from 'express';
 import cors from 'cors'
-import db from './config/db'
 
 import index from './routes/index'
 import timeline from './routes/timeline'
