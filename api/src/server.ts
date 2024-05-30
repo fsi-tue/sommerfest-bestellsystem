@@ -13,6 +13,9 @@ export const app_port = process.env.PORT || 3000;
 //enable CORS 
 app.use(cors({ origin: true, credentials: true }));
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
 // Dummy users
 var users = [
     { id: 0, name: 'anyone', email: '', role: '' },
@@ -48,7 +51,7 @@ function forward(forwardpath: string) {
 }
 
 
-app.resource = function (path, obj) {
+app.resource = function (path: string, obj: any) {
     this.get(path, obj.index);
     this.get(path + '/:a..:b.:format?', function (req, res) {
         var a = parseInt(req.params.a, 10);

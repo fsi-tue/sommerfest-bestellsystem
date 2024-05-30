@@ -2,11 +2,15 @@
 import { pizza } from '../../db/schema';
 import { db } from '../db'
 
+const invalid_elements = item => item !== null && item !== undefined && !(Array.isArray(item) && item.length === 0);
 
 function index(req: Request, res: Response) {
-    db.query.pizza.findMany().then((result) => {
-        res.send(result.map((pizz) => {
+    db.query.pizza.findMany({
+        where: (pizza, { eq }) => (eq(pizza.enabled, true)),
+    }).then((result) => {
+        res.send(result.filter(invalid_elements).map((pizz) => {
             return {
+                id: pizz.id,
                 name: pizz.name,
                 price: pizz.price
             };
