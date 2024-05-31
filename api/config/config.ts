@@ -8,3 +8,7 @@ export const database = {
     "database": process.env.DB_DATABASE || "pizza_system_database",
     "port": parseInt(process.env.DB_PORT || "5432") || 5432, //PG-PORT is default 5432
 };
+
+export const constants = {
+    LIFETIME_BEARER_HOURS: 8,
+}

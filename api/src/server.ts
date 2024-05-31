@@ -1,80 +1,52 @@
 import express, { Express, Request, Response, Application } from 'express';
 import cors from 'cors'
+import { rateLimit } from 'express-rate-limit'
 
-import index from './routes/index'
+import { validateBearer } from './middleware/auth_bearer';
+import { addResourceFunction } from './middleware/resource';
+
+import { index, login, logout } from './routes/index'
 import timeline from './routes/timeline'
 import orders from './routes/orders';
 import pizza from './routes/pizza';
+import payment from './routes/payment';
 
 
 export const app = express();
 export const app_port = process.env.PORT || 3000;
 
+// Middleware to parse JSON bodies
+
 //enable CORS 
 app.use(cors({ origin: true, credentials: true }));
-
-// Middleware to parse JSON bodies
+//we want to be able to parse json
 app.use(express.json());
+//we want to do rate limiting
 
-// Dummy users
-var users = [
-    { id: 0, name: 'anyone', email: '', role: '' },
-    { id: 1, name: 'admin', email: '', role: 'admin' },
-    { id: 2, name: 'user', email: '', role: 'user' },
-];
-function loadUser(req, res, next) {
-    // TODO: fetch user from db
-    var user = users[0];
-    if (user) {
-        req.user = user;
-        next();
-    } else {
-        next(new Error('Failed to load user ' + req.params.id));
-    }
-}
-
-function restrictToRole(role) {
-    return function (req, res, next) {
-        if (req.user.role === role) {
-            next();
-        } else {
-            next(new Error('Unauthorized'));
-        }
-    }
-}
-
-function forward(forwardpath: string) {
-    return (req: Request, res: Response) => {
-        res.location(forwardpath);
-        res.send("forwarding...");
-    }
-}
-
-
-app.resource = function (path: string, obj: any) {
-    this.get(path, obj.index);
-    this.get(path + '/:a..:b.:format?', function (req, res) {
-        var a = parseInt(req.params.a, 10);
-        var b = parseInt(req.params.b, 10);
-        var format = req.params.format;
-        obj.range(req, res, a, b, format);
-    });
-    this.get(path + '/:id', obj.show);
-    this.delete(path + '/:id', function (req, res) {
-        var id = parseInt(req.params.id, 10);
-        obj.destroy(req, res, id);
-    });
-    this.post("^/order", (req, res) => {
-        // create a new order
-        obj.create(req, res)
-    })
-
-};
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+    // TODO: change from memory to redis/memcached
+    // store: ... , // Redis, Memcached, etc. See below.
+})
+// Apply the rate limiting middleware to all requests.
+app.use(limiter)
+//we want resource
+addResourceFunction(app);
 
 //routes
 app.get('^/$', index);
-app.get('^/timeline', loadUser, timeline.timeline);
+
+app.get('^/api/login$', (req, res) => res.send("pls post"));
+app.post('^/api/login$', login);
+app.get('^/api/logout$', logout);
+
+app.get('^/timeline', timeline.timeline);
+
 app.resource('^/orders', orders);
 app.resource("^/pizzas", pizza);
+app.resource("^/payment", payment);
 
 
