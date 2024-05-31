@@ -1,45 +1,77 @@
+import { SQLWrapper, eq, sql } from 'drizzle-orm';
 import { open_order, paid_order, waiting_order, collected_order, pizza_order_map } from '../../db/schema';
 import { db } from '../db';
 import { Request, Response } from 'express';
 
-async function index(req: Request, res: Response) {
-    //we show everything?
-    var orders = [];
-    await db.query.open_order.findMany({
-        where: (order, { isNull }) => isNull(order.paidorder),
-    }).then(found_orders => (found_orders.forEach(found_order => {
+const rangeArray = (start, stop) => Array.from({ length: stop - start }, (_, i) => i + start);
+
+type CollectedOrder = {
+    id: number,
+    type: string,
+    status: string,
+    orderNumber: number,
+};
+type OrderIdType = {
+    id: Aliased<number>,
+}
+
+async function collect_orders(...ids: number[]) {
+    var orders: CollectedOrder[] = [];
+    // console.log("filter", ids);
+    const whereFilter = (isNullCheck: (arg: any) => SQLWrapper) => {
+        if (ids.length > 0)
+            return {
+                where: (order, { isNull, and, inArray }) => and(isNull(isNullCheck(order)), inArray(order.id, ids))
+            };
+        return {
+            where: (order, { isNull }) => isNull(isNullCheck(order)),
+        };
+    };
+    await db.query.open_order.findMany(whereFilter((order) => order.paidorder)).then(found_orders => (found_orders.forEach(found_order => {
         orders.push({
             id: found_order.id,
             type: "open_order",
+            status: "unpaid",
+            orderNumber: found_order.id,
         });
     })));
-    await db.query.paid_order.findMany({
-        where: (order, { isNull }) => isNull(order.waitingorder),
-    }).then(found_orders => (found_orders.forEach(found_order => {
+    await db.query.paid_order.findMany(whereFilter((order) => order.waitingorder)).then(found_orders => (found_orders.forEach(found_order => {
         orders.push({
             id: found_order.id,
             type: "paid_order",
+            status: "paid",
+            orderNumber: found_order.id,
         });
     })));
-    await db.query.waiting_order.findMany({
-        where: (order, { isNull }) => isNull(order.collectedorder),
-    }).then(found_orders => (found_orders.forEach(found_order => {
-        orders.push({
-            id: found_order.id,
-            type: "waiting_order",
-        });
-    })));
+
+    // await db.query.waiting_order.findMany(whereFilter((order) => order.paidorder)).then(found_orders => (found_orders.forEach(found_order => {
+    //     orders.push({
+    //         id: found_order.id,
+    //         type: "waiting_order",
+    //     });
+    // })));
     await db.query.collected_order.findMany().then(found_orders => (found_orders.forEach(found_order => {
         orders.push({
             id: found_order.id,
             type: "collected_order",
+            status: "collected",
+            orderNumber: found_order.id,
         });
     })));
+    if (ids.length == 1 && orders.length == 1)
+        return orders[0];
+    return orders;
+}
 
+async function index(req: Request, res: Response) {
+    //we show everything?
+    const orders = await collect_orders();
     res.send(orders);
 }
-function range(req: Request, res: Response, a: int, b: int, format: string) {
-    res.send('list range orders');
+async function range(req: Request, res: Response, from: number, to: number, format: string) {
+    const ids = rangeArray(Math.min(from, to), Math.max(from, to) + 1);
+    const orderinfos = await collect_orders(...ids);
+    res.send(orderinfos);
 }
 function show(req: Request, res: Response, id: int) {
     return range(req, res, id, id);
@@ -54,7 +86,7 @@ function create(req: Request, res: Response) {
         const posted_pizza_array = req.body;
         if (Array.isArray(posted_pizza_array)) { // && posted_pizza_array.every(item => typeof item === 'number')
             db.insert(open_order).values({
-                name: "testname",
+                name: "testname",//TODO: change 
             }).returning().then((orders) => {
                 const order = orders[0];
                 const orderid = order.id;
@@ -73,10 +105,15 @@ function create(req: Request, res: Response) {
         }
         else {
             //someone is testing our api?
-            console.log("our api got a weird value")
+            console.log("our api got a weird value");
+            return res.status(406).end();
         }
     };
     return reqFunc();
 }
 
-export default { index, range, show, destroy, create };
+function replace(req: Request, res: Response, id: int) {
+    res.status(404).end();// TODO: not yet
+}
+
+export default { index, range, show, destroy, create, replace };

@@ -26,8 +26,14 @@ export function addResourceFunction(app: Application) {
             var id = parseInt(req.params.id, 10);
             resourceHandlerFunction.destroy(req, res, id);
         });
-        this.post("^/order", ...middleware, function (req: Request, res: Response) {
+        this.post(path, ...middleware, function (req: Request, res: Response) {
             return resourceHandlerFunction.create(req, res);
+        });
+        this.put(path + '/:id', ...middleware, function (req: Request, res: Response) {
+            // what is a put option on a regular resourceHandler?
+            //create or replace
+            var id = parseInt(req.params.id, 10);
+            return resourceHandlerFunction.replace(req, res, id);
         });
     };
 }

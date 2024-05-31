@@ -35,4 +35,8 @@ function create(req: Request, res: Response) {
     //no.
 }
 
-export default { index, range, show, destroy, create };
+function replace(req: Request, res: Response, id: int) {
+    res.status(404).end();// TODO: not yet
+}
+
+export default { index, range, show, destroy, create, replace };

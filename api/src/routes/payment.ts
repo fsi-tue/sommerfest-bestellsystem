@@ -41,7 +41,7 @@ function show(req: Request, res: Response, id: int) {
                     });
                     if (result != null) {
                         const timestamp = moment(result.timestamp);
-                        return res.status(404).send({
+                        return res.send({
                             payment_orderid: paid_order_id,
                             on_unix: timestamp.unix(),
                             on: timestamp.format("LLLL"),
@@ -49,8 +49,8 @@ function show(req: Request, res: Response, id: int) {
                         });
                     }
                 }
+                return res.status(404).send(`there is a paid order, but we could not find it?`).end();
             }
-            return res.status(404).send(`something happened`).end();
         }
         return res.status(404).send(`did not find order`).end();
     };
@@ -68,4 +68,8 @@ function create(req: Request, res: Response) {
     return show(req, res, id);
 }
 
-export default { index, range, show, destroy, create };
+function replace(req: Request, res: Response, id: int) {
+    res.status(404).end();// TODO: not yet
+}
+
+export default { index, range, show, destroy, create, replace };
