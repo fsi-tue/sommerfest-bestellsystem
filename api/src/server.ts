@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, Application } from 'express';
+import express, {Request, Response} from 'express';
 import cors from 'cors'
 
 import index from './routes/index'
@@ -11,14 +11,15 @@ export const app = express();
 export const app_port = process.env.PORT || 3000;
 
 //enable CORS 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({origin: true, credentials: true}));
 
 // Dummy users
 var users = [
-    { id: 0, name: 'anyone', email: '', role: '' },
-    { id: 1, name: 'admin', email: '', role: 'admin' },
-    { id: 2, name: 'user', email: '', role: 'user' },
+    {id: 0, name: 'anyone', email: '', role: ''},
+    {id: 1, name: 'admin', email: '', role: 'admin'},
+    {id: 2, name: 'user', email: '', role: 'user'},
 ];
+
 function loadUser(req, res, next) {
     // TODO: fetch user from db
     var user = users[0];
@@ -73,5 +74,3 @@ app.get('^/$', index);
 app.get('^/timeline', loadUser, timeline.timeline);
 app.resource('^/orders', orders);
 app.resource("^/pizzas", pizza);
-
-

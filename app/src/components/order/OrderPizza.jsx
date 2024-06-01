@@ -1,8 +1,7 @@
 // Button to order the pizzas
 import PropTypes from "prop-types";
 import {useNavigate} from "react-router-dom";
-
-const API_ENDPOINT = "http://localhost:3000";
+import {API_ENDPOINT} from "../../globals.js";
 
 const OrderPizza = ({order}) => {
     if (!order || order.length === 0) {

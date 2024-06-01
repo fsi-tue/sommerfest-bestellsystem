@@ -1,4 +1,3 @@
-
 function timeline(req: Request, res: Response) {
     const TIME_SLOT_SIZE_MINUTES = 5;
     const AMOUNT_WARNING = 8;
@@ -13,7 +12,7 @@ function timeline(req: Request, res: Response) {
     currentTime.setMinutes(minutes - (minutes % TIME_SLOT_SIZE_MINUTES));
     for (let i = -5; i < 15; i++) {
         // Generate time slots every TIME_SLOT_SIZE_MINUTES minutes
-        timeSlots.push({ time: currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+        timeSlots.push({time: currentTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})});
         currentTime.setMinutes(currentTime.getMinutes() + TIME_SLOT_SIZE_MINUTES);
     }
 
@@ -27,6 +26,6 @@ function timeline(req: Request, res: Response) {
         border: index === 5 ? '#000' : '#FFF',
         width: index === 5 ? 4 : 0,
     })));
-};
+}
 
-export default { timeline };
+export default {timeline};

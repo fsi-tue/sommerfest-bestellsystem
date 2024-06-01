@@ -1,6 +1,4 @@
-
-import { pizza } from '../../db/schema';
-import { db } from '../db'
+import {db} from '../db'
 
 
 function index(req: Request, res: Response) {
@@ -11,14 +9,13 @@ function index(req: Request, res: Response) {
                 price: pizz.price
             };
         }));
-
     });
-
 }
 
 function range(req: Request, res: Response, a: int, b: int, format: string) {
     res.send('list range orders');
 }
+
 function show(req: Request, res: Response, id: int) {
     res.send('list one')
 }
@@ -31,4 +28,4 @@ function create(req: Request, res: Response) {
     //no.
 }
 
-export default { index, range, show, destroy, create };
+export default {index, range, show, destroy, create};

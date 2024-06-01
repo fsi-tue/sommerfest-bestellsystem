@@ -1,6 +1,7 @@
 import './Login.css';
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
+import {API_ENDPOINT} from "../../globals.js";
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('')
@@ -12,7 +13,7 @@ const Login = () => {
         event.preventDefault();
         const token = event.target.token.value;
 
-        fetch('/api/login', {
+        fetch(API_ENDPOINT + '/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

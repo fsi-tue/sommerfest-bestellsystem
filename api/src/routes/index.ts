@@ -1,5 +1,5 @@
 function index(req: Request, res: Response) {
-    res.send("Hello World from express?!");
-};
+    res.send('Welcome to the API');
+}
 
 export default index;
