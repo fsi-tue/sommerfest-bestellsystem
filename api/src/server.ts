@@ -1,4 +1,4 @@
-import express, { Express, Request, Response, Application } from 'express';
+import express, {Request, Response} from 'express';
 import cors from 'cors'
 import { rateLimit } from 'express-rate-limit'
 
@@ -18,7 +18,7 @@ export const app_port = process.env.PORT || 3000;
 // Middleware to parse JSON bodies
 
 //enable CORS 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({origin: true, credentials: true}));
 //we want to be able to parse json
 app.use(express.json());
 //we want to do rate limiting

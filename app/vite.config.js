@@ -6,9 +6,13 @@ export default defineConfig({
     plugins: [
         react()
     ],
-    server: {
-        port: 8080,
-        strictPort: true,
-        host: true,
+    build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
+        minify: 'esbuild',
+        sourcemap: true,
+    },
+    optimizeDeps: {
+        include: ['react', 'react-dom'],
     }
 })

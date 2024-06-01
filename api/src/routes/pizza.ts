@@ -1,6 +1,5 @@
+import {db} from '../db'
 
-import { pizza } from '../../db/schema';
-import { db } from '../db'
 
 const invalid_elements = item => item !== null && item !== undefined && !(Array.isArray(item) && item.length === 0);
 
@@ -23,6 +22,7 @@ function index(req: Request, res: Response) {
 function range(req: Request, res: Response, a: int, b: int, format: string) {
     res.send('list range orders');
 }
+
 function show(req: Request, res: Response, id: int) {
     res.send('list one')
 }

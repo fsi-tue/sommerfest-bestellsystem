@@ -5,8 +5,8 @@ import { db } from "../db";
 import { v4 as uuidv4 } from 'uuid';
 
 export function index(req: Request, res: Response) {
-    res.send("Hello World from express?!");
-};
+    res.send('Welcome to the API');
+}
 
 export async function login(req: Request, res: Response) {
     var bearer = { token: '', expires: 0 };
