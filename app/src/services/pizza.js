@@ -1,8 +1,9 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
+import {API_ENDPOINT} from "../globals.js";
 
 export const pizzaApi = createApi({
     reducerPath: 'pizza',
-    baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3000/'}),
+    baseQuery: fetchBaseQuery({baseUrl: API_ENDPOINT}),
     endpoints: (builder) => ({
         getPizzas: builder.query({
             query: () => 'pizzas',

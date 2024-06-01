@@ -2,6 +2,7 @@
 import './PizzaMenu.css';
 import {useEffect, useState} from "react";
 import OrderPizza from "./OrderPizza.jsx";
+import {API_ENDPOINT} from "../../globals.js";
 
 // Toy data
 const toyPizzas = [
@@ -10,8 +11,6 @@ const toyPizzas = [
     {name: "Vegetarian", price: 6},
     {name: "Four Cheese", price: 8},
 ];
-
-const API_ENDPOINT = "http://localhost:3000";
 
 const Pizza = ({name, price, className, onClick}) => {
     return (
