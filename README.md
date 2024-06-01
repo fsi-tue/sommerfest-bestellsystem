@@ -10,26 +10,26 @@ to <http://localhost:8000>.
 You will need to install:
 
 - [Docker](https://docs.docker.com/get-docker/)
-- [Node.JS / NPM](https://nodejs.org/en/download/)
+- [Bun](https://bun.sh/)
 
 ### Controls
 
 Starts Docker containers and networks (will build first if no build exists):
 
 ```
-npm run docker:up
+bun run docker:up
 ```
 
 Builds Docker images from a docker-compose.yml, Dockerfile and "context";
 
 ```
-npm run docker:build
+bun run docker:build
 ```
 
 Stops Docker containers and networks:
 
 ```
-npm run docker:down
+bun run docker:down
 ```
 
 ### Access to PgAdmin4
@@ -56,3 +56,8 @@ npm run docker:down
 ## Abbreviations Used
 
 - PERN = (PostgreSQL, Express JS, React, Node.JS)
+
+## Authors
+
+- [Zeilenschubser](https://github.com/zeilenschubser) (Original Author)
+- [Josef Müller](https://github.com/am9zZWY)

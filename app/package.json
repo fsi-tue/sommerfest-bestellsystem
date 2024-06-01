@@ -1,5 +1,14 @@
 {
   "name": "pizza-system-app",
+  "contributors": [
+    {
+      "name": "Josef Müller",
+      "email": "46693545+am9zZWY@users.noreply.github.com"
+    },
+    {
+      "name": "Zeilenschubser"
+    }
+  ],
   "version": "0.1.0",
   "private": true,
   "type": "module",

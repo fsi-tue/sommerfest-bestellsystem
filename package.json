@@ -1,8 +1,16 @@
 {
-  "name": "t18",
+  "name": "pizza-order",
+  "contributors": [
+    {
+      "name": "Josef Müller",
+      "email": "46693545+am9zZWY@users.noreply.github.com"
+    },
+    {
+      "name": "Zeilenschubser"
+    }
+  ],
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A simple pizza order app",
   "scripts": {
     "docker:build": "docker-compose -p pern_stack build",
     "docker:up": "docker-compose -p pern_stack up",
@@ -10,6 +18,5 @@
     "docker:down:volumes": "docker-compose -p pern_stack down --volumes"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC"
 }
