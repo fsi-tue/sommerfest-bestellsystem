@@ -8,6 +8,34 @@
       "when": 1717003116359,
       "tag": "0000_complex_shadow_king",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1717070588654,
+      "tag": "0001_skinny_timeslip",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1717088905679,
+      "tag": "0002_brave_yellow_claw",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1717100303646,
+      "tag": "0003_equal_firedrake",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1717103484103,
+      "tag": "0004_medical_purple_man",
+      "breakpoints": true
     }
   ]
 }
