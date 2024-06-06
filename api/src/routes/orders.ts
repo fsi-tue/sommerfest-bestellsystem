@@ -16,7 +16,7 @@ type OrderIdType = {
 
 async function collect_orders(...ids: number[]): CollectedOrder[] {
     var orders: CollectedOrder[] = [];
-    // console.log("filter", ids);
+    console.log("filter", ids);
     const whereFilter = (isNullCheck: (arg: any) => SQLWrapper) => {
         if (ids.length > 0)
             return {
@@ -27,6 +27,7 @@ async function collect_orders(...ids: number[]): CollectedOrder[] {
         };
     };
     await db.query.open_order.findMany(whereFilter((order) => order.paidorder)).then(found_orders => (found_orders.forEach(found_order => {
+
         orders.push({
             id: found_order.id,
             type: "open_order",
@@ -35,6 +36,7 @@ async function collect_orders(...ids: number[]): CollectedOrder[] {
         });
     })));
     await db.query.paid_order.findMany(whereFilter((order) => order.waitingorder)).then(found_orders => (found_orders.forEach(found_order => {
+
         orders.push({
             id: found_order.id,
             type: "paid_order",
@@ -43,13 +45,18 @@ async function collect_orders(...ids: number[]): CollectedOrder[] {
         });
     })));
 
-    // await db.query.waiting_order.findMany(whereFilter((order) => order.paidorder)).then(found_orders => (found_orders.forEach(found_order => {
-    //     orders.push({
-    //         id: found_order.id,
-    //         type: "waiting_order",
-    //     });
-    // })));
+    await db.query.waiting_order.findMany(whereFilter((order) => order.collectedorder)).then(found_orders => (found_orders.forEach(found_order => {
+
+        orders.push({
+            id: found_order.id,
+            type: "waiting_order",
+            status: "collected",
+            orderNumber: found_order.id,
+        });
+    })));
+
     await db.query.collected_order.findMany().then(found_orders => (found_orders.forEach(found_order => {
+
         orders.push({
             id: found_order.id,
             type: "collected_order",
@@ -84,9 +91,11 @@ export async function create(body) {
         }));
         const pizzas = await db.insert(pizza_order_map).values(pizza_mappings).returning();
         return {
-            orderNumber: orderid,
-            name: order.name,
-            pizzas: pizzas.map((pizz) => pizz.pizza),//TODO: fix
+            rows: {
+                orderNumber: orderid,
+                name: order.name,
+                pizzas: pizzas.map((pizz) => pizz.pizza),//TODO: fix
+            }, count: 1
         };
     } else {
         //someone is testing our api?
