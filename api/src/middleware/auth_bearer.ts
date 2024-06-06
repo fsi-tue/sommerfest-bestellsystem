@@ -29,20 +29,16 @@ function validateHasBearer(req: Request, res: Response, next: NextFunction) {
 
 export function validateBearer(req: Request, res: Response, next: NextFunction) {
     // myRequestHeaders
-    return validateHasBearer(req, res, () => {
+    return validateHasBearer(req, res, async () => {
         // now we check the bearer if its good
         const userBearer: string = "test"; //TODO: change to real token?
-        return db.query.auth_bearer_tokens.findFirst({
-            where: (auth_bearer_tokens, { eq }) => (eq(auth_bearer_tokens.token, userBearer)),
-        }).then((result) => {
-            if (moment(result?.expiresAt) > moment()) {
-                next();
-            }
-            else {
-                return res.status(403).send("missing a valid bearer").end();
-                //dude no. not authenticated, not even an error message,
-                //someone is testing our api?
-            }
+        const result = await db.query.auth_bearer_tokens.findFirst({
+            where: (auth_bearer_tokens_1, {eq}) => (eq(auth_bearer_tokens_1.token, userBearer)),
         });
+        if (moment(result?.expiresAt) > moment()) {
+            next();
+        } else {
+            return res.status(403).send("missing a valid bearer").end();
+        }
     });
 }
