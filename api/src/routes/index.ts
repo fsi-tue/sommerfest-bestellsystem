@@ -1,15 +1,16 @@
 import moment from "moment";
-import { constants } from "../../config/config";
-import { auth_bearer_tokens } from "../../db/schema";
-import { db } from "../db";
-import { v4 as uuidv4 } from 'uuid';
+import {constants} from "../../config/config";
+import {auth_bearer_tokens} from "../../db/schema";
+import {db} from "../db";
+import {v4 as uuidv4} from 'uuid';
+import {Request, Response} from 'express';
 
 export function index(req: Request, res: Response) {
     res.send('Welcome to the API');
 }
 
 export async function login(req: Request, res: Response) {
-    var bearer = { token: '', expires: 0 };
+    var bearer = {token: '', expires: 0};
     if (req.body != null) {
         if ("token" in req.body) {
             const token: string = req.body.token as string;
