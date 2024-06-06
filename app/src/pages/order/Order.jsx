@@ -1,8 +1,8 @@
-// PizzaMenu.jsx
-import './PizzaMenu.css';
+// Order.jsx
+import './Order.css';
 import {useEffect, useState} from "react";
-import OrderPizza from "./OrderPizza.jsx";
 import {API_ENDPOINT} from "../../globals.js";
+import OrderButton from "../../components/order/OrderButton.jsx";
 
 // Toy data
 const toyPizzas = [
@@ -20,8 +20,8 @@ const Pizza = ({name, price, className, onClick}) => {
     );
 }
 
-// PizzaMenu component
-const PizzaMenu = () => {
+// Order component
+const Order = () => {
     // State to hold the order
     const [order, setOrder] = useState([]);
     const [pizzas, setPizzas] = useState(toyPizzas);
@@ -89,11 +89,11 @@ const PizzaMenu = () => {
                             Your order will be ready in {order.length * 10} minutes
                         </p>}
                     </div>
-                    <OrderPizza order={order}/>
+                    <OrderButton order={order}/>
                 </div>
             </div>
         </div>
     );
 };
 
-export default PizzaMenu;
+export default Order;

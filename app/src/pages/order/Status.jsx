@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {useParams} from 'react-router-dom';
 
-const OrderStatus = () => {
+const Status = () => {
 	const [status, setStatus] = useState('Please wait...'); // state to hold order status
 	const {orderNumber} = useParams();
 
@@ -17,4 +17,4 @@ const OrderStatus = () => {
 	);
 }
 
-export default OrderStatus;
+export default Status;

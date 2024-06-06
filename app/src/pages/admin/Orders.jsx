@@ -9,7 +9,7 @@ const toyOrders = [
     {orderNumber: 5, status: 'pending'},
 ];
 
-const OrderStatus = () => {
+const Orders = () => {
     const [orders, setOrders] = useState(toyOrders); // state to hold order status
 
     // Get the order status from the server
@@ -66,4 +66,4 @@ const OrderStatus = () => {
 }
 
 
-export default OrderStatus;
+export default Orders;

@@ -1,7 +1,7 @@
 import './Login.css';
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
-import {API_ENDPOINT} from "../../globals.js";
+import {API_ENDPOINT} from "../globals.js";
 
 const Login = () => {
     const [errorMessage, setErrorMessage] = useState('')

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {useNavigate} from "react-router-dom";
 import {API_ENDPOINT} from "../../globals.js";
 
-const OrderPizza = ({order}) => {
+const OrderButton = ({order}) => {
     if (!order || order.length === 0) {
         return;
     }
@@ -37,12 +37,12 @@ const OrderPizza = ({order}) => {
     );
 }
 
-OrderPizza.parameters = {
+OrderButton.parameters = {
     order: [],
 }
 
-OrderPizza.propTypes = {
+OrderButton.propTypes = {
     order: PropTypes.array,
 }
 
-export default OrderPizza;
+export default OrderButton;
