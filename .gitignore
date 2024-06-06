@@ -8,3 +8,6 @@
 */.eslintcache
 **/*/.eslintcache
 
+# idea
+.idea
+*/.idea
