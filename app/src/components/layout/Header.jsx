@@ -18,11 +18,6 @@ const Header = () => {
 						<Link to="/order/queue">Queue</Link>
 					</li>
 				</ul>
-				<ul>
-					<li>
-						<Link to="/login">Login</Link>
-					</li>
-				</ul>
 			</nav>
 		</header>
 	);

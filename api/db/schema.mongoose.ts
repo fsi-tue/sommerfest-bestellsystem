@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const { Schema, model } = mongoose;
 
-// User schema
+// User model
 const userSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true },
     name: { type: String },
@@ -15,18 +15,7 @@ const userSchema = new Schema({
 
 const User = model('User', userSchema);
 
-// Pizza schema
-const pizzaSchema = new Schema({
-    id: { type: Number, autoIncrement: true, primaryKey: true },
-    name: { type: String, required: true },
-    price: { type: Number },
-    enabled: { type: Boolean },
-    createdAt: { type: Date, default: Date.now }
-});
-
-const Pizza = model('Pizza', pizzaSchema);
-
-// Payment schema
+// Payment model
 const paymentSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true }
 });
@@ -36,7 +25,7 @@ const Payment = model('Payment', paymentSchema);
 // OrderState Enum (Mongoose doesn't support enums directly, so we use validation)
 const orderStateEnum = ['open', 'paid', 'delivered'];
 
-// PizzaOrderMap schema
+// PizzaOrderMap model
 const pizzaOrderMapSchema = new Schema({
     orderid: { type: Number },
     pizza: { type: Number }
@@ -44,7 +33,7 @@ const pizzaOrderMapSchema = new Schema({
 
 const PizzaOrderMap = model('PizzaOrderMap', pizzaOrderMapSchema);
 
-// CollectedOrder schema
+// CollectedOrder model
 const collectedOrderSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true },
     timestamp: { type: Date, default: Date.now }
@@ -52,7 +41,7 @@ const collectedOrderSchema = new Schema({
 
 const CollectedOrder = model('CollectedOrder', collectedOrderSchema);
 
-// WaitingOrder schema
+// WaitingOrder model
 const waitingOrderSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true },
     collectedorder: { type: Number, ref: 'CollectedOrder' },
@@ -62,7 +51,7 @@ const waitingOrderSchema = new Schema({
 
 const WaitingOrder = model('WaitingOrder', waitingOrderSchema);
 
-// PaidOrder schema
+// PaidOrder model
 const paidOrderSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true },
     waitingorder: { type: Number, ref: 'WaitingOrder' },
@@ -72,7 +61,7 @@ const paidOrderSchema = new Schema({
 
 const PaidOrder = model('PaidOrder', paidOrderSchema);
 
-// OpenOrder schema
+// OpenOrder model
 const openOrderSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true },
     name: { type: String },
@@ -82,7 +71,7 @@ const openOrderSchema = new Schema({
 
 const OpenOrder = model('OpenOrder', openOrderSchema);
 
-// AuthBearerTokens schema
+// AuthBearerTokens model
 const authBearerTokensSchema = new Schema({
     id: { type: Number, autoIncrement: true, primaryKey: true },
     userId: { type: Number, ref: 'User', required: true },

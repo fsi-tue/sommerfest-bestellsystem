@@ -9,6 +9,10 @@ export const database = {
     "port": parseInt(process.env.DB_PORT || "5432") || 5432, //PG-PORT is default 5432
 };
 
+export const mongodb = {
+    mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/pizza-system",
+}
+
 export const constants = {
     LIFETIME_BEARER_HOURS: 8,
 }

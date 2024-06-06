@@ -83,11 +83,11 @@ ALTER TABLE ONLY public.pizza ALTER COLUMN id SET DEFAULT nextval('public.pizza_
 --
 
 COPY public.pizza (id, name, price, enabled, created_at) FROM stdin;
-4	Four Cheese	7	t	2024-05-29 17:47:33.400485
-3	Vegetarian	5	t	2024-05-29 17:47:33.400485
-2	Pepperoni	4	t	2024-05-29 17:47:33.400485
-1	Margherita	3	t	2024-05-29 17:47:33.400485
-5	Plain	2	t	2024-05-29 17:54:51.353532
+4	Four Cheese	7	true	2024-05-29 17:47:33.400485
+3	Vegetarian	5	true	2024-05-29 17:47:33.400485
+2	Pepperoni	4	true	2024-05-29 17:47:33.400485
+1	Margherita	3	true	2024-05-29 17:47:33.400485
+5	Plain	2	true	2024-05-29 17:54:51.353532
 \.
 
 
@@ -114,4 +114,3 @@ ALTER TABLE ONLY public.pizza
 --
 -- PostgreSQL database dump complete
 --
-
