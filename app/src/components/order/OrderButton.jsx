@@ -1,9 +1,9 @@
 // Button to order the pizzas
 import PropTypes from "prop-types";
-import {useNavigate} from "react-router-dom";
-import {API_ENDPOINT} from "../../globals.js";
+import { useNavigate } from "react-router-dom";
+import { API_ENDPOINT } from "../../globals.js";
 
-const OrderButton = ({order}) => {
+const OrderButton = ({ order }) => {
     if (!order || order.length === 0) {
         return;
     }
@@ -12,7 +12,7 @@ const OrderButton = ({order}) => {
 
     // Function to order the pizzas
     const orderPizza = () => {
-        fetch(API_ENDPOINT + '/order', {
+        fetch(API_ENDPOINT + '/orders', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

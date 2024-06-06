@@ -3,7 +3,7 @@
 
 import Timeline from "../../components/Timeline.jsx";
 
-const API_ENDPOINT = "http://localhost:3000";
+import { API_ENDPOINT } from "../../globals.js";
 const every_x_seconds = 60;
 
 const Queue = () => {
@@ -24,7 +24,7 @@ const Queue = () => {
 
             <div className="timeline-container">
                 <Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT}
-                          every_x_seconds={every_x_seconds}/>
+                    every_x_seconds={every_x_seconds} />
             </div>
         </div>
     );
