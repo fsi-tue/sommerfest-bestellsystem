@@ -33,35 +33,41 @@ const Orders = () => {
     }
 
     return (
-        <div className="content">
-            <h2>Order Status</h2>
+      <div className="content">
+          <h2>Order Status</h2>
 
-            <table>
-                <thead>
-                <tr>
-                    <th>Order Number</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+          <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+              <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                  <th className="py-3 px-6 text-left">Order Number</th>
+                  <th className="py-3 px-6 text-left">Status</th>
+                  <th className="py-3 px-6 text-left">Actions</th>
+              </tr>
+              </thead>
+              <tbody className="text-gray-600 text-sm font-light">
+              {orders.map(order => (
+                <tr key={order.orderNumber} className="border-b border-gray-200 hover:bg-gray-100">
+                    <td className="py-3 px-6 text-left whitespace-nowrap">{order.orderNumber}</td>
+                    <td className="py-3 px-6 text-left">{order.status}</td>
+                    <td className="py-3 px-6 text-left">
+                        <button
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded"
+                          onClick={() => updateOrderStatus(order.orderNumber, 'pending')}
+                        >
+                            Pending
+                        </button>
+                        <button
+                          className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded ml-2"
+                          onClick={() => updateOrderStatus(order.orderNumber, 'completed')}
+                        >
+                            Completed
+                        </button>
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                {orders.map(order => (
-                    <tr key={order.orderNumber}>
-                        <td>{order.orderNumber}</td>
-                        <td>{order.status}</td>
-                        <td>
-                            <button onClick={() => updateOrderStatus(order.orderNumber, 'pending')}>
-                                Pending
-                            </button>
-                            <button onClick={() => updateOrderStatus(order.orderNumber, 'completed')}>
-                                Completed
-                            </button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
+              ))}
+              </tbody>
+          </table>
+      </div>
     );
 }
 
