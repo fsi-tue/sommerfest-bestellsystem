@@ -12,10 +12,11 @@
   "version": "1.0.0",
   "description": "A simple pizza order app",
   "scripts": {
-    "docker:build": "docker-compose -p pern_stack build",
-    "docker:up": "docker-compose -p pern_stack up",
-    "docker:down": "docker-compose -p pern_stack down",
-    "docker:down:volumes": "docker-compose -p pern_stack down --volumes"
+    "docker:build": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack build",
+    "docker:up": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack up",
+    "docker:db:up": "docker-compose -f docker-compose.db.yml -p pern_stack up",
+    "docker:down": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack down",
+    "docker:down:volumes": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack down --volumes"
   },
   "keywords": [],
   "license": "ISC"

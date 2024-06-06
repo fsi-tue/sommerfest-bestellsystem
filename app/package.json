@@ -13,7 +13,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bunx --bun vite --port 3000",
+    "dev": "bunx --bun vite --port 3001",
     "build": "bunx --bun vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "bunx --bun vite preview --port 3000 --host"
@@ -21,6 +21,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
     "prop-types": "^15.8.1",
+    "qrcode": "^1.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.1.2",
