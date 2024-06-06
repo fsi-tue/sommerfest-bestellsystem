@@ -11,9 +11,7 @@ export async function get({ filter, limit, offset, order }) {
 }
 
 export async function create(body) {
-
-    const rows = [];
-    const count = rows.length;
+    let rows = []
     //TODO: require rights instead of bearer
     // return validateBearer(req, res, reqFunc);
     body = body || { id: 0 };
@@ -23,40 +21,37 @@ export async function create(body) {
         where: (order, { eq }) =>
             eq(order.id, id),
     });
-    if (!found_order) return { rows, count };
+    if (!found_order)
+        return { rows: rows, count: rows.length };
 
-    if (found_order.paidorder == null) {
-        console.log("did not find a payment")
+    let paid_order_id = found_order.paidorder;
+    if (paid_order_id == null) {
+        // console.log("did not find a payment");
         const payment_result = await db.insert(payment).values({
         }).returning();
         const paid_order_result = await db.insert(paid_order).values({
             paymentid: payment_result[0]?.id,
         }).returning();
-        const paid_order_id = paid_order_result[0]?.id;
+        paid_order_id = paid_order_result[0]?.id;
         await db.update(open_order)
             .set({ paidorder: paid_order_id })
             .where(eq(open_order.id, id));
-        return { rows: [{ paid_order_id: paid_order_id }], count: 1 };
-    } else {
-        const paid_order_id = found_order.paidorder;
-        if (paid_order_id !== null) {
-            const result = await db.query.paid_order.findFirst({
-                where: (order, { eq }) => eq(order.id, paid_order_id),
-            });
-            if (result != null) {
-                const timestamp = moment(result.timestamp);
-                return {
-                    rows: [{
-                        payment_orderid: paid_order_id,
-                        on_unix: timestamp.unix(),
-                        on: timestamp.format("LLLL"),
-                        since: moment().subtract(timestamp).format("HH:MM:ss"),
-                    }], count: 1
-                };
-            }
-        }
-        return { rows, count };
     }
+    const result = await db.query.paid_order.findFirst({
+        where: (order, { eq }) => eq(order.id, paid_order_id),
+    });
+    if (result != null) {
+        const timestamp = moment(result.timestamp);
+        return {
+            rows: [{
+                payment_orderid: paid_order_id,
+                on_unix: timestamp.unix(),
+                on: timestamp.format("LLLL"),
+                since: moment().subtract(timestamp).format("HH:MM:ss"),
+            }], count: 1
+        };
+    }
+    return { rows: rows, count: rows.length };
 }
 
 export function update(id, body) {
