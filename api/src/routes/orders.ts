@@ -1,9 +1,9 @@
-import { SQLWrapper, eq, sql } from 'drizzle-orm';
-import { open_order, paid_order, waiting_order, collected_order, pizza_order_map } from '../../db/schema';
-import { db } from '../db';
-import { Request, Response } from 'express';
+import {SQLWrapper} from 'drizzle-orm';
+import {collected_order, open_order, paid_order, pizza_order_map} from '../../db/schema';
+import {db} from '../db';
+import {Request, Response} from 'express';
 
-const rangeArray = (start, stop) => Array.from({ length: stop - start }, (_, i) => i + start);
+const rangeArray = (start, stop) => Array.from({length: stop - start}, (_, i) => i + start);
 
 type CollectedOrder = {
     id: number,
@@ -21,10 +21,10 @@ async function collect_orders(...ids: number[]) {
     const whereFilter = (isNullCheck: (arg: any) => SQLWrapper) => {
         if (ids.length > 0)
             return {
-                where: (order, { isNull, and, inArray }) => and(isNull(isNullCheck(order)), inArray(order.id, ids))
+                where: (order, {isNull, and, inArray}) => and(isNull(isNullCheck(order)), inArray(order.id, ids))
             };
         return {
-            where: (order, { isNull }) => isNull(isNullCheck(order)),
+            where: (order, {isNull}) => isNull(isNullCheck(order)),
         };
     };
     await db.query.open_order.findMany(whereFilter((order) => order.paidorder)).then(found_orders => (found_orders.forEach(found_order => {
@@ -68,16 +68,18 @@ async function index(req: Request, res: Response) {
     const orders = await collect_orders();
     res.send(orders);
 }
+
 async function range(req: Request, res: Response, from: number, to: number, format: string) {
     const ids = rangeArray(Math.min(from, to), Math.max(from, to) + 1);
     const orderinfos = await collect_orders(...ids);
     res.send(orderinfos);
 }
-function show(req: Request, res: Response, id: int) {
+
+function show(req: Request, res: Response, id: number) {
     return range(req, res, id, id);
 }
 
-function destroy(req: Request, res: Response, id: int) {
+function destroy(req: Request, res: Response, id: number) {
     res.status(404).end();//no.
 }
 
@@ -102,8 +104,7 @@ function create(req: Request, res: Response) {
                     });
                 });
             });
-        }
-        else {
+        } else {
             //someone is testing our api?
             console.log("our api got a weird value");
             return res.status(406).end();
@@ -112,8 +113,8 @@ function create(req: Request, res: Response) {
     return reqFunc();
 }
 
-function replace(req: Request, res: Response, id: int) {
+function replace(req: Request, res: Response, id: number) {
     res.status(404).end();// TODO: not yet
 }
 
-export default { index, range, show, destroy, create, replace };
+export default {index, range, show, destroy, create, replace};

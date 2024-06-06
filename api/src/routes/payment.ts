@@ -3,6 +3,7 @@ import { open_order, paid_order, payment } from "../../db/schema";
 import { db } from "../db";
 import { validateBearer } from "../middleware/auth_bearer";
 import moment from 'moment';
+import { Request, Response } from 'express';
 
 // api endpoint is create a /payment/id
 
@@ -11,10 +12,10 @@ function index(req: Request, res: Response) {
     // return db.query.paid_order.findFirst().then(() => { });
     return res.status(404).send("sorry, not showing all payments");
 }
-function range(req: Request, res: Response, a: int, b: int, format: string) {
+function range(req: Request, res: Response, a: number, b: number, format: string) {
     return res.status(404).end();//no.
 }
-function show(req: Request, res: Response, id: int) {
+function show(req: Request, res: Response, id: number) {
     const reqFunc = async () => {
         //we add a payment
         const found_order = await db.query.open_order.findFirst({
@@ -58,7 +59,7 @@ function show(req: Request, res: Response, id: int) {
     return validateBearer(req, res, reqFunc);
 }
 
-function destroy(req: Request, res: Response, id: int) {
+function destroy(req: Request, res: Response, id: number) {
     return res.status(404).end();//no.
 }
 
@@ -68,7 +69,7 @@ function create(req: Request, res: Response) {
     return show(req, res, id);
 }
 
-function replace(req: Request, res: Response, id: int) {
+function replace(req: Request, res: Response, id: number) {
     res.status(404).end();// TODO: not yet
 }
 

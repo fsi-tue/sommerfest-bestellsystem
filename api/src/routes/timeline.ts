@@ -1,3 +1,5 @@
+import {Request, Response} from 'express';
+
 function timeline(req: Request, res: Response) {
     const TIME_SLOT_SIZE_MINUTES = 5;
     const AMOUNT_WARNING = 8;
