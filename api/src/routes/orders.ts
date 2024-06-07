@@ -1,117 +1,184 @@
-import { SQLWrapper } from 'drizzle-orm';
-import { collected_order, open_order, paid_order, pizza_order_map } from '../../db/schema';
-import { db } from '../db';
+import { MAX_PIZZAS, Order } from "../../model/order";
+import { Pizza } from "../../model/pizza";
+import { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
 
-const rangeArray = (start, stop) => Array.from({ length: stop - start }, (_, i) => i + start);
 
-type CollectedOrder = {
-    id: number,
-    type: string,
-    status: string,
-    orderNumber: number,
-};
-type OrderIdType = {
-    id: Aliased<number>,
-}
+/**
+ * Get all orders
+ */
+async function getAll(req: Request, res: Response) {
+    const orders = await Order.find();
 
-async function collect_orders(...ids: number[]): CollectedOrder[] {
-    var orders: CollectedOrder[] = [];
-    console.log("filter", ids);
-    const whereFilter = (isNullCheck: (arg: any) => SQLWrapper) => {
-        if (ids.length > 0)
-            return {
-                where: (order, { isNull, and, inArray }) => and(isNull(isNullCheck(order)), inArray(order.id, ids))
-            };
-        return {
-            where: (order, { isNull }) => isNull(isNullCheck(order)),
-        };
-    };
-    await db.query.open_order.findMany(whereFilter((order) => order.paidorder)).then(found_orders => (found_orders.forEach(found_order => {
-
-        orders.push({
-            id: found_order.id,
-            type: "open_order",
-            status: "unpaid",
-            orderNumber: found_order.id,
-        });
-    })));
-    await db.query.paid_order.findMany(whereFilter((order) => order.waitingorder)).then(found_orders => (found_orders.forEach(found_order => {
-
-        orders.push({
-            id: found_order.id,
-            type: "paid_order",
-            status: "paid",
-            orderNumber: found_order.id,
-        });
-    })));
-
-    await db.query.waiting_order.findMany(whereFilter((order) => order.collectedorder)).then(found_orders => (found_orders.forEach(found_order => {
-
-        orders.push({
-            id: found_order.id,
-            type: "waiting_order",
-            status: "collected",
-            orderNumber: found_order.id,
-        });
-    })));
-
-    await db.query.collected_order.findMany().then(found_orders => (found_orders.forEach(found_order => {
-
-        orders.push({
-            id: found_order.id,
-            type: "collected_order",
-            status: "collected",
-            orderNumber: found_order.id,
-        });
-    })));
-    return orders;
-}
-
-export async function get({ filter, limit, offset, order }) {
-    var ids = [];
-    if ("id" in filter) {
-        ids.push(parseInt(filter["id"]));
+    // Add the pizzas to the orders
+    for (const order of orders) {
+        order.pizzas = await Pizza.find({ _id: { $in: order.pizzas } });
     }
-    // const ids = rangeArray(Math.min(from, to), Math.max(from, to) + 1);
-    const rows = await collect_orders(...ids);
-    const count = rows.length;
-    return { rows, count };
-}
-export async function create(body) {
-    const posted_pizza_array = body;
-    if (Array.isArray(posted_pizza_array)) { // && posted_pizza_array.every(item => typeof item === 'number')
-        const orders = await db.insert(open_order).values({
-            name: "testname",//TODO: change 
-        }).returning()
-        const order = orders[0];
-        const orderid = order.id;
-        //now we create all of the pizza entries
-        const pizza_mappings = posted_pizza_array.map(pizza_element => pizza_element.id).map(pizzaid => ({
-            orderid: orderid, pizza: pizzaid,
-        }));
-        const pizzas = await db.insert(pizza_order_map).values(pizza_mappings).returning();
-        return {
-            rows: {
-                orderNumber: orderid,
-                name: order.name,
-                pizzas: pizzas.map((pizz) => pizz.pizza),//TODO: fix
-            }, count: 1
-        };
-    } else {
-        //someone is testing our api?
-        console.log("our api got a weird value");
-        return {};
-    }
-}
-export function update(id, body) {
-    const rows = [];
-    const count = rows.length;
-    return { rows, count };
-}
-export function destroy(id) {
-    const rows = [];
-    const count = rows.length;
-    // return res.status(404).end();//no.
-    return { rows, count };
+
+    res.send(orders);
 }
 
+/**
+ * Get order by ID
+ * /orders/:id
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+async function getById(req: Request, res: Response, next: NextFunction) {
+    // Check if the request was GET
+    if (req.method !== 'GET') {
+        next();
+        return;
+    }
+
+    // Get the ID from the URL
+    const id = req.params.id;
+
+    // Check if the ID is valid and ObjectId
+    if (!id || !mongoose.isValidObjectId(id)) {
+        res.status(400).send(`
+            The ID is not valid.
+            Please provide a valid ID.
+            We can't find anything with this ID.
+            Don't you know how to copy and paste?
+            Seek help from someone who knows how to copy and paste.
+        `);
+        return;
+    }
+
+    // Find the order by ID
+    const order = await Order.findById(id);
+    if (!order) {
+        res.status(404).send(`
+            The order with the ID ${id} was not found.
+            Are you sure you copied the right ID?
+            Stop making up IDs and try again.
+        `)
+        return;
+    }
+
+    // Check if the order is paid
+    if (order.status === 'paid') {
+        res.status(400).send(`
+            The order with the ID ${id} is already paid.
+            You can't pay for it again.
+            Stop trying to pay for the same order twice.
+        `);
+        return;
+    }
+
+    // Send the order
+    res.send(order);
+}
+
+/**
+ * Create a new order
+ *
+ * @param req
+ * @param res
+ */
+async function create(req: Request, res: Response) {
+    // Get the body of the request
+    const body = req.body;
+    console.log('Creating a new order', body);
+
+    // Check if there are too many pizzas
+    if (body.pizzas.length > MAX_PIZZAS || body.pizzas.length < 1) {
+        console.error('Too many or too few pizzas', body.pizzas.length);
+        res.status(400).send(`Too many or too few pizzas.
+                                        We don't know what to do with that.
+                                        Can't you just order a normal amount of pizzas?`
+        );
+    }
+
+    // Check if pizzas exist
+    const pizzas = await Pizza.find({ _id: { $in: body.pizzas } });
+    if (pizzas.length !== body.pizzas.length) {
+        console.error('Some pizzas are missing', body.pizzas);
+        res.status(400).send(`Some of the pizzas you ordered seem to have vanished into thin crust.
+                                        Are you trying to order ghost pizzas?
+                                        Let's try ordering real ones this time!`
+        );
+    }
+
+    // Calculate the total price
+    const totalPrice = pizzas.reduce((acc, pizz) => acc + pizz?.price, 0);
+
+
+    // Create the order
+    const order = new Order();
+    order.name = "Zeilenschubser";
+    order.pizzas = pizzas
+    order.totalPrice = totalPrice;
+    await order.save()
+
+    // Get the order ID
+    const orderId = order._id;
+
+    // Send the order ID
+    res.send({ orderId });
+}
+
+/**
+ * Not supported!
+ *
+ * @returns An object containing the rows and the count
+ * @param req
+ * @param res
+ */
+async function update(req: Request, res: Response) {
+    // Get the order details from the request body
+    const body = req.body;
+
+    // Get id from the request
+    const id = body.id;
+    const status = body.status;
+    console.log('Updating order', id, status)
+
+    if (!id || !mongoose.isValidObjectId(id)) {
+        console.error('Invalid ID:', id);
+        res.status(400).send('Invalid ID');
+        return;
+    }
+
+    try {
+        // Find the order by ID
+        const foundOrder = await Order.findById(id);
+
+        if (!foundOrder) {
+            return { rows: [], count: 0 };
+        }
+
+        // Update the order status
+        foundOrder.status = status;
+
+        // Save the updated order
+        await foundOrder.save();
+
+        console.log('Order updated:', foundOrder)
+        res.send(foundOrder);
+    } catch (error) {
+        console.error('Error setting order as paid:', error);
+        res.status(500).send('Error setting order as paid');
+    }
+}
+
+/**
+ * Not supported!
+ *
+ * @param id - ID of the pizza to delete
+ * @returns An object containing the rows and the count
+ */
+async function destroy(id: number) {
+    throw new Error('Not supported!');
+}
+
+export default {
+    getAll,
+    getById,
+    create,
+    update,
+    destroy,
+}

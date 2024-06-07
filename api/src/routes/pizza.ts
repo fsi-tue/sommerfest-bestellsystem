@@ -1,29 +1,22 @@
-import {db} from '../db';
-
-const invalidElements = (item: any): boolean => item !== null && item !== undefined && !(Array.isArray(item) && item.length === 0);
-
-interface Pizza {
-    id: number;
-    name: string;
-    enabled: boolean;
-}
+import { Pizza } from '../../model/pizza';
+import { Request, Response } from 'express';
 
 /**
  * Get all pizzas
  *
- * @param params - Object containing filter, limit, offset, and order parameters
  * @returns An object containing the rows and the count
+ * @param req
+ * @param res
  */
-export async function get({filter, limit, offset, order}): Promise<{ rows: Pizza[], count: number }> {
-    const pizzas = await db.query.pizza.findMany({
-        where: (pizza, {eq}) => (eq(pizza.enabled, true)),
-    });
-    const count = pizzas.length;
-    return {rows: pizzas, count};
-}
+async function getAll(req: Request, res: Response) {
+    try {
+        const pizzas = await Pizza.find()
+        return res.send(pizzas);
+    } catch (error) {
+        console.error('Error fetching pizzas:', error);
+    }
 
-interface Body {
-    [key: string]: any;
+    res.status(500).send('Error fetching pizzas');
 }
 
 /**
@@ -32,7 +25,7 @@ interface Body {
  * @param body - Object containing the pizza details
  * @returns An object containing the rows and the count
  */
-export async function create(body: Body): Promise<{ rows: Pizza[], count: number }> {
+async function create<T>(body: T) {
     throw new Error('Not supported!');
 }
 
@@ -43,7 +36,7 @@ export async function create(body: Body): Promise<{ rows: Pizza[], count: number
  * @param body - Object containing the updated pizza details
  * @returns An object containing the rows and the count
  */
-export async function update(id: number, body: Body): Promise<{ rows: Pizza[], count: number }> {
+async function update(id: number, body: Body) {
     throw new Error('Not supported!');
 }
 
@@ -53,6 +46,13 @@ export async function update(id: number, body: Body): Promise<{ rows: Pizza[], c
  * @param id - ID of the pizza to delete
  * @returns An object containing the rows and the count
  */
-export async function destroy(id: number): Promise<{ rows: Pizza[], count: number }> {
+async function destroy(id: number) {
     throw new Error('Not supported!');
+}
+
+export default {
+    getAll,
+    create,
+    update,
+    destroy
 }

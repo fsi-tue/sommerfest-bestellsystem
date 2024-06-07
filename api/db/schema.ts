@@ -1,4 +1,4 @@
-// src/schema.ts
+// src/model.ts
 
 import { sql } from "drizzle-orm";
 import { pgTable, pgEnum, serial, text, timestamp, integer, real, boolean } from "drizzle-orm/pg-core";
