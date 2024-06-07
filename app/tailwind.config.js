@@ -10,6 +10,7 @@ export default {
       secondary: '#ecc94b',
       success: '#008000',
       danger: '#800000',
+
     }
   },
   plugins: [],

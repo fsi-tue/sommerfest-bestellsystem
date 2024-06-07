@@ -1,72 +1,98 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {API_ENDPOINT} from "../../globals.js";
 
-const toyOrders = [
-	{orderNumber: 1, status: 'pending'},
-	{orderNumber: 2, status: 'pending'},
-	{orderNumber: 3, status: 'pending'},
-	{orderNumber: 4, status: 'pending'},
-	{orderNumber: 5, status: 'pending'},
-];
-
 const Orders = () => {
-	const [orders, setOrders] = useState(toyOrders); // state to hold order status
+	const [orders, setOrders] = useState([]); // state to hold order status
+	const [searchQuery, setSearchQuery] = useState(''); // state to hold searchQuery query
+	const [filteredOrders, setFilteredOrders] = useState([]); // state to hold order status
 
-	// Get the order status from the server
-	fetch(API_ENDPOINT + '/orders/')
-		.then(response => response.json())
-		.then(data => setOrders(data));
+	// Fetch the order status from the server
+	useEffect(() => {
+		// Get the order status from the server
+		fetch(API_ENDPOINT + '/orders/')
+			.then(response => response.json())
+			.then(data => setOrders(data));
+	}, []);
+
+	// Update the filtered orders when the orders change
+	useEffect(() => {
+		setFilteredOrders(orders);
+	}, [orders]);
 
 	// Function to update the order status
-	const updateOrderStatus = (orderNumber, status) => {
-		fetch(API_ENDPOINT + '/orders/' + orderNumber, {
+	const updateOrderStatus = (_id, status) => {
+		console.log(JSON.stringify({id: _id, status}))
+
+		fetch(API_ENDPOINT + '/orders', {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({status}),
+			body: JSON.stringify({id: _id, status})
 		})
 			.then(response => response.json())
 			.then(data => {
-				console.log(data);
+				// Update the order by id
+				const newOrders = orders.map(order => {
+					if (order._id === _id) {
+						order.status = status;
+					}
+					return order;
+				});
+				setOrders(newOrders);
 			})
+	}
+
+	const search = (e) => {
+		const search = e.target.value;
+		setSearchQuery(search);
+		if (!search || search === '') {
+			setFilteredOrders(orders);
+			return;
+		}
+
+		const filtered = orders.filter(order => JSON.stringify(order).toLowerCase().includes(search.toLowerCase()));
+		setFilteredOrders(filtered);
 	}
 
 	return (
 		<div className="content">
 			<h2>Order Status</h2>
 
-			<table className="min-w-full bg-white border border-gray-300">
-				<thead>
-				<tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-					<th className="py-3 px-6 text-left">Order Number</th>
-					<th className="py-3 px-6 text-left">Status</th>
-					<th className="py-3 px-6 text-left">Actions</th>
-				</tr>
-				</thead>
-				<tbody className="text-gray-600 text-sm font-light">
-				{orders.map(order => (
-					<tr key={order.orderNumber} className="border-b border-gray-200 hover:bg-gray-100">
-						<td className="py-3 px-6 text-left whitespace-nowrap">{order.orderNumber}</td>
-						<td className="py-3 px-6 text-left">{order.status}</td>
-						<td className="py-3 px-6 text-left">
-							<button
-								className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded"
-								onClick={() => updateOrderStatus(order.orderNumber, 'pending')}
-							>
-								Pending
-							</button>
-							<button
-								className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-3 rounded ml-2"
-								onClick={() => updateOrderStatus(order.orderNumber, 'completed')}
-							>
-								Completed
-							</button>
-						</td>
-					</tr>
+			<input type="text" placeholder="Search" className="w-full p-2 border border-gray-300 rounded-lg shadow-md mb-4" onChange={search}/>
+
+			<div className="flex flex-col space-y-4">
+				{filteredOrders.map((order, index) => (
+					<div key={order._id + index} className="w-full px-2 py-2">
+						<div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
+							<div className="text-xs font-light text-gray-500 mb-0">{order._id}</div>
+							<div className="text-xl font-semibold mb-2">{order.name}</div>
+							<div className="text-sm font-light text-gray-600 mb-2">{order.address}</div>
+							<div className="flex gap-1 items-center justify-start">
+								<span className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5">
+									{order.status}
+								</span>
+							</div>
+							<ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+								{order.pizzas.map(pizza => (
+									<li key={pizza.name}>{pizza.name}: {pizza.price}€</li>
+								))}
+							</ul>
+							<div className="flex gap-1 items-center justify-start font-light">
+								{['pending', 'paid', 'ready', 'delivered'].map(status => (
+									<button
+										disabled={status === order.status} key={status}
+										className={`bg-${status === order.status ? 'green' : 'gray'}-500 hover:bg-${status === order.status ? 'green' : 'gray'}-600 text-white font-bold py-0.5 px-1 rounded`}
+										onClick={() => updateOrderStatus(order._id, status)}
+									>
+										{status}
+									</button>
+								))}
+							</div>
+						</div>
+					</div>
 				))}
-				</tbody>
-			</table>
+			</div>
 		</div>
 	);
 }

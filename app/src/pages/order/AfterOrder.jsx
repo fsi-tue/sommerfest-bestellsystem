@@ -9,6 +9,7 @@ const AfterOrder = () => {
 	// Link to the order page
 	const orderLink = `/order/${orderNumber}`;
 
+	// Generate QR code
 	useEffect(() => {
 		if (orderNumber) {
 			QRCode.toCanvas(canvasRef.current, orderLink, {errorCorrectionLevel: 'H'}, (error) => {
@@ -26,6 +27,9 @@ const AfterOrder = () => {
 
 			<p className="text-lg text-gray-700">
 				Your order number is: <Link to={orderLink} className="text-blue-500 hover:underline">{orderNumber}</Link>
+			</p>
+			<p className="text-lg text-gray-700">
+				Please proceed to pay at the counter.
 			</p>
 		</div>
 	);
