@@ -1,15 +1,26 @@
-import mongoose from "mongoose";
-import {PizzaType} from "./pizza";
+import {type Document, model, Schema} from "mongoose";
+import {PizzaDocument} from "./pizza";
 
-const orderSchema = new mongoose.Schema({
+export const MAX_PIZZAS = 12;
+
+export interface OrderDocument extends Document {
+    name: string;
+    pizzas: PizzaDocument[];
+    orderDate: Date;
+    totalPrice: number;
+    finishedAt?: Date;
+    status: 'pending' | 'paid' | 'ready' | 'delivered' | 'cancelled';
+}
+
+const orderSchema = new Schema<OrderDocument>({
     name: {
         type: String,
         required: true,
     },
     pizzas: [{
-        type: Number,
+        type: Schema.Types.ObjectId,
         ref: 'Pizza',
-        required: true,
+        required: true
     }],
     orderDate: {
         type: Date,
@@ -18,6 +29,7 @@ const orderSchema = new mongoose.Schema({
     totalPrice: {
         type: Number,
         required: true,
+        min: 0,
     },
     finishedAt: {
         type: Date,
@@ -31,6 +43,14 @@ const orderSchema = new mongoose.Schema({
     timestamps: true,
 });
 
+// Custom validator for the length of the pizzas array
+orderSchema.path('pizzas').validate({
+    validator: function(value) {
+        return value.length > 0 && value.length <= MAX_PIZZAS;
+    },
+    message: props => `An order must have between 1 and ${MAX_PIZZAS} pizzas. Currently, it has ${props.value.length}.`
+});
+
 // Middleware to set finishedAt when the order is marked as finished
 orderSchema.pre('save', function (next) {
     if (this.status === 'delivered' && !this.finishedAt) {
@@ -39,4 +59,4 @@ orderSchema.pre('save', function (next) {
     next();
 });
 
-export const Order = mongoose.model('Order', orderSchema);
+export const Order = model('Order', orderSchema);
