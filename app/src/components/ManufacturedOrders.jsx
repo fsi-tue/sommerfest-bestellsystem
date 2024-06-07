@@ -1,4 +1,4 @@
-// Queue.jsx
+// Orders.jsx
 const ManufacturedOrders = () => {
 	return (
 		<div>

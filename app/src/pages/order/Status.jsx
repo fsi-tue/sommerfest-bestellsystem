@@ -1,16 +1,21 @@
 import {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import {API_ENDPOINT} from "../../globals.js";
+import OrderQR from "../../components/order/OrderQR.jsx";
 
 const Status = () => {
 	const [status, setStatus] = useState(''); // state to hold order status
+	const [pizzas, setPizzas] = useState([]); // state to hold order status
 	const {orderNumber} = useParams();
 
 	useEffect(() => {
 		// Get the order status from the server
 		fetch(API_ENDPOINT + '/orders/' + orderNumber)
 			.then(response => response.json())
-			.then(data => setStatus(data.status));
+			.then(data => {
+				setStatus(data.status)
+				setPizzas(data.pizzas)
+			});
 	}, [orderNumber]);
 
 	const statusToText = (status) => {
@@ -25,33 +30,32 @@ const Status = () => {
 		} else if (status === 'cancelled') {
 			return 'Your order has been cancelled.';
 		} else {
-			return 'Please wait...';
-		}
-	}
-
-	const statusToStyle = (status) => {
-		if (status === 'ready') {
-			return 'bg-green-200 text-green-800';
-		} else if (status === 'pending') {
-			return 'bg-yellow-200 text-yellow-800';
-		} else if (status === 'paid') {
-			return 'bg-blue-200 text-blue-800';
-		} else if (status === 'delivered') {
-			return 'bg-purple-200 text-purple-800';
-		} else if (status === 'cancelled') {
-			return 'bg-red-200 text-red-800';
-		} else {
-			return 'bg-gray-200 text-gray-800';
+			return 'Unknown status';
 		}
 	}
 
 	return (
-		<div className="flex flex-col items-center p-4 bg-gray-100 rounded-lg shadow-md">
-			<h2 className="text-2xl font-bold mb-4 text-center text-gray-700">Order Status</h2>
-			<div className={`p-4 rounded-lg text-center ${statusToStyle(status)} animate-fade-in`}>
-				<p className="text-lg font-semibold">
-					{statusToText(status)}
-				</p>
+		<div className="content">
+
+			<h2 className="text-2xl">Order Status</h2>
+
+			<div className="flex flex-row items-start p-4 rounded-lg shadow-md">
+				<div>
+					<h3 className="text-lg font-bold">QR Code</h3>
+					<OrderQR orderId={orderNumber}/>
+
+					<p className="mb-3 text-lg font-light text-gray-600 leading-7">
+						{statusToText(status)}
+					</p>
+				</div>
+				<div className="ml-4">
+					<h3 className="text-lg font-bold">Order details</h3>
+					<ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+						{pizzas.map(pizza => (
+							<li key={pizza.name}>{pizza.name}: {pizza.price}€</li>
+						))}
+					</ul>
+				</div>
 			</div>
 		</div>
 	)

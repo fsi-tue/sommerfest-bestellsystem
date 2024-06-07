@@ -2,7 +2,7 @@
 
 ## How To Use
 
-Once you have started the Docker container using the provided tools and commands below you will need to navigate
+Once you have started the Docker container using the provided tools and commands below, you will need to navigate
 to <http://localhost:8000>.
 
 ### Dependencies
@@ -20,7 +20,7 @@ Starts Docker containers and networks (will build first if no build exists):
 bun run docker:up
 ```
 
-Builds Docker images from a docker-compose.yml, Dockerfile and "context";
+Builds Docker images from a docker-compose.yml, Dockerfile, and "context":
 
 ```
 bun run docker:build
@@ -32,30 +32,28 @@ Stops Docker containers and networks:
 bun run docker:down
 ```
 
-### Access to PgAdmin4
+### Access to MongoDB
 
-- **URL:** [http://localhost:8000](http://localhost:8000)
-- **Username:** `pgadmin4@pgadmin.org`
+You can access the MongoDB instance through the following tools:
+
+- **Mongo Express:** [http://localhost:8081](http://localhost:8081)
+- **Username:** `admin`
 - **Password:** `admin`
 
-#### Add a new server in PgAdmin4
+To connect to the MongoDB database, use the following configuration in your MongoDB client:
 
-- **Host name/address** `db`
-- **Port** `5432`
-- **Username** `pern_db`
-- **Password** `root`
+- **Host name/address:** `db`
+- **Port:** `27017`
+- **Username:** `admin`
+- **Password:** `admin`
 
 ## Technologies Used
 
 - Docker
-- PostgreSQL
+- MongoDB
 - Express JS
 - React
 - Node JS
-
-## Abbreviations Used
-
-- PERN = (PostgreSQL, Express JS, React, Node.JS)
 
 ## Authors
 

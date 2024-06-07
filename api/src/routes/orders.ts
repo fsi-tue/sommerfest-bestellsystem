@@ -69,6 +69,11 @@ async function getById(req: Request, res: Response, next: NextFunction) {
         return;
     }
 
+    // Get the pizzas for the order
+    order.pizzas = await Pizza
+        .find({ _id: { $in: order.pizzas } })
+        .select('name price');
+
     // Send the order
     res.send(order);
 }
@@ -93,24 +98,32 @@ async function create(req: Request, res: Response) {
         );
     }
 
-    // Check if pizzas exist
-    const pizzas = await Pizza.find({ _id: { $in: body.pizzas } });
-    if (pizzas.length !== body.pizzas.length) {
+    // Check if the pizzas are valid
+    const pizzaIds: string[] = body.pizzas.map((pizza: { _id: string }) => pizza._id);
+    if (!pizzaIds.every(async (pizzaId: string) => await Pizza.exists({ _id: pizzaId }))) {
         console.error('Some pizzas are missing', body.pizzas);
         res.status(400).send(`Some of the pizzas you ordered seem to have vanished into thin crust.
-                                        Are you trying to order ghost pizzas?
-                                        Let's try ordering real ones this time!`
-        );
+                            Are you trying to order ghost pizzas?
+                            Let's try ordering real ones this time!`);
+        return
     }
 
     // Calculate the total price
-    const totalPrice = pizzas.reduce((acc, pizz) => acc + pizz?.price, 0);
-
+    // Don't trust the price from the request body
+    const totalPrice: number = await pizzaIds
+        .reduce(async (total: Promise<number>, pizzaId: string) => {
+            const pizza = await Pizza.findOne({ _id: pizzaId });
+            if (!pizza) {
+                console.error('Pizza not found', pizzaId)
+                return total;
+            }
+            return await total + pizza.price;
+        }, Promise.resolve(0));
 
     // Create the order
     const order = new Order();
     order.name = "Zeilenschubser";
-    order.pizzas = pizzas
+    order.pizzas = body.pizzas
     order.totalPrice = totalPrice;
     await order.save()
 

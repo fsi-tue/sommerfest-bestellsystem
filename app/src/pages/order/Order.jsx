@@ -59,7 +59,7 @@ const Order = () => {
 			</p>
 
 			<div className="flex justify-between gap-4 content-start pizza-menu-container">
-				<div className="pizza-menu">
+				<div>
 					<h3 className="text-xl">
 						Menu:
 					</h3>
@@ -71,7 +71,7 @@ const Order = () => {
 						))}
 					</ul>
 				</div>
-				<div className="pizza-order">
+				<div>
 					<h3 className="text-xl">
 						Your current order:
 					</h3>

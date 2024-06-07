@@ -9,7 +9,7 @@ services:
     ports:
       - '27017:27017'
     volumes: 
-      - db_data:/data/db
+      - db_data:/data/db.deprecated
     networks:
       - db
     restart: unless-stopped
@@ -21,7 +21,7 @@ services:
       - mongodb
     environment:
       - ME_CONFIG_MONGODB_URL=mongodb://admin:pass@mongodb:27017
-      # - ME_CONFIG_MONGODB_SERVER=db
+      # - ME_CONFIG_MONGODB_SERVER=db.deprecated
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
       - ME_CONFIG_BASICAUTH_USERNAME=admin
@@ -29,7 +29,7 @@ services:
     ports:
       - '8081:8081'
     volumes: 
-      - db_data:/data/db
+      - db_data:/data/db.deprecated
     networks:
       - db
     restart: unless-stopped

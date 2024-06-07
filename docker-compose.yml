@@ -9,7 +9,7 @@ services:
     expose:
       - "3000"
     depends_on:
-      - db
+      - db.deprecated
     networks:
       - db
       - app

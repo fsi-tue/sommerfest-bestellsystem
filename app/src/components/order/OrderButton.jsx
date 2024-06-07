@@ -31,6 +31,12 @@ const OrderButton = ({order}) => {
 			.then(data => {
 				if (data.orderId) {
 					console.log(`Order ID: ${data.orderId}`)
+
+					// Add order ID to local storage
+					const orderIds = JSON.parse(localStorage.getItem('orderIds')) || [];
+					orderIds.push(data.orderId);
+					localStorage.setItem('orderIds', JSON.stringify(orderIds));
+
 					navigate(`/order/thank-you/${data.orderId}`)
 				}
 			})
@@ -38,7 +44,7 @@ const OrderButton = ({order}) => {
 
 	return (
 		<>
-			<button onClick={() => orderPizza()}>
+			<button onClick={() => orderPizza()} className="bg-primary-950 text-white px-4 py-2 rounded-lg mt-4 w-full md:w-auto hover:bg-primary-800">
 				Order now
 			</button>
 		</>

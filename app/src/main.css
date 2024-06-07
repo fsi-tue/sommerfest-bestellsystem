@@ -101,23 +101,6 @@ main {
     padding: 2rem;
 }
 
-button {
-    width: 100%;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--primary-color);
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-
-button:hover {
-    background-color: rgba(var(--primary-color-rgb), 0.8);
-}
-
 ul {
     list-style: none;
     padding: 0;

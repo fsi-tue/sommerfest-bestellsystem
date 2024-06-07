@@ -1,5 +1,5 @@
-import {type Document, model, Schema} from "mongoose";
-import {PizzaDocument} from "./pizza";
+import { type Document, model, Schema } from "mongoose";
+import { PizzaDocument } from "./pizza";
 
 export const MAX_PIZZAS = 12;
 
@@ -17,11 +17,13 @@ const orderSchema = new Schema<OrderDocument>({
         type: String,
         required: true,
     },
-    pizzas: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Pizza',
-        required: true
-    }],
+    pizzas: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Pizza',
+            required: true
+        }
+    ],
     orderDate: {
         type: Date,
         default: Date.now,
@@ -45,7 +47,7 @@ const orderSchema = new Schema<OrderDocument>({
 
 // Custom validator for the length of the pizzas array
 orderSchema.path('pizzas').validate({
-    validator: function(value) {
+    validator: function (value) {
         return value.length > 0 && value.length <= MAX_PIZZAS;
     },
     message: props => `An order must have between 1 and ${MAX_PIZZAS} pizzas. Currently, it has ${props.value.length}.`

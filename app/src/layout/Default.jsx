@@ -4,7 +4,7 @@ import Footer from "../components/layout/Footer.jsx";
 
 const Default = () => {
 	return (
-		<main>
+		<main className="max-h-full">
 			<Header/>
 			<Outlet/>
 			<Footer/>
