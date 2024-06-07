@@ -1,25 +1,22 @@
-import {PizzaType} from '../../model/pizza';
-
-const invalidElements = (item: any): boolean => item !== null && item !== undefined && !(Array.isArray(item) && item.length === 0);
+import { Pizza } from '../../model/pizza';
+import { Request, Response } from 'express';
 
 /**
  * Get all pizzas
  *
- * @param params - Object containing filter, limit, offset, and order parameters
  * @returns An object containing the rows and the count
+ * @param req
+ * @param res
  */
-export async function get({filter, limit, offset, order}) {// Adjust the path as necessary
+async function getAll(req: Request, res: Response) {
     try {
-        const pizzas = await Pizza.find(filter)
-        return {rows: pizzas, count: pizzas.length}
+        const pizzas = await Pizza.find()
+        return res.send(pizzas);
     } catch (error) {
         console.error('Error fetching pizzas:', error);
     }
-    return {rows: [], count: 0};
-}
 
-interface Body {
-    [key: string]: any;
+    res.status(500).send('Error fetching pizzas');
 }
 
 /**
@@ -28,7 +25,7 @@ interface Body {
  * @param body - Object containing the pizza details
  * @returns An object containing the rows and the count
  */
-export async function create(body: Body) {
+async function create<T>(body: T) {
     throw new Error('Not supported!');
 }
 
@@ -39,7 +36,7 @@ export async function create(body: Body) {
  * @param body - Object containing the updated pizza details
  * @returns An object containing the rows and the count
  */
-export async function update(id: number, body: Body) {
+async function update(id: number, body: Body) {
     throw new Error('Not supported!');
 }
 
@@ -49,6 +46,13 @@ export async function update(id: number, body: Body) {
  * @param id - ID of the pizza to delete
  * @returns An object containing the rows and the count
  */
-export async function destroy(id: number) {
+async function destroy(id: number) {
     throw new Error('Not supported!');
+}
+
+export default {
+    getAll,
+    create,
+    update,
+    destroy
 }

@@ -1,23 +1,24 @@
 import mongoose from "mongoose";
-import {Order} from "../../model/order";
+import { Order } from "../../model/order";
+import { Request, Response } from "express";
 
+export async function create(req: Request, res: Response) {
+    // Get the order details from the request body
+    const body = req.body;
 
-export async function get({filter, limit, offset, order}) {
-    return await create(filter);
-}
-
-export async function create(body: { id: number }) {
-    const {id} = body;
+    // Get id from the request
+    const id = req.body.id;
+    if (!id || !mongoose.isValidObjectId(id)) {
+        res.status(400).send('Invalid ID');
+        return;
+    }
 
     try {
-        // Parse the order ID
-        const orderId = mongoose.Types.ObjectId(id);
-
         // Find the order by ID
-        const foundOrder = await Order.findById(orderId);
+        const foundOrder = await Order.findById(id);
 
         if (!foundOrder) {
-            return {rows: [], count: 0};
+            return { rows: [], count: 0 };
         }
 
         // Update the order to set it as paid and update the status
@@ -26,20 +27,36 @@ export async function create(body: { id: number }) {
         // Save the updated order
         await foundOrder.save();
 
-        return {
-            rows: [foundOrder],
-            count: 1
-        };
+        res.send(foundOrder);
     } catch (error) {
         console.error('Error setting order as paid:', error);
-        return {rows: [], count: 0, error: error.message};
+        res.status(500).send('Error setting order as paid');
     }
 }
 
-export function update(id, body) {
+/**
+ * Not supported!
+ *
+ * @param id - ID of the pizza to update
+ * @param body - Object containing the updated pizza details
+ * @returns An object containing the rows and the count
+ */
+async function update(id: number, body: Body) {
     throw new Error('Not supported!');
 }
 
-export function destroy(id) {
+/**
+ * Not supported!
+ *
+ * @param id - ID of the pizza to delete
+ * @returns An object containing the rows and the count
+ */
+async function destroy(id: number) {
     throw new Error('Not supported!');
+}
+
+export default {
+    create,
+    update,
+    destroy,
 }

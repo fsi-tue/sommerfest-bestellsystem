@@ -23,7 +23,7 @@ const Pizza = ({name, price, className, onClick}) => {
 // Order component
 const Order = () => {
 	// State to hold the order
-	const [order, setOrder] = useState([]);
+	const [order, setOrder] = useState({name: '', pizzas: []})
 	const [pizzas, setPizzas] = useState(toyPizzas);
 
 	useEffect(() => {
@@ -37,14 +37,16 @@ const Order = () => {
 
 	// Function to add a pizza to the order
 	const addToOrder = (pizza) => {
-		setOrder([...order, pizza]);
+		const newOrder = [...order.pizzas];
+		newOrder.push(pizza);
+		setOrder({name: order.name, pizzas: newOrder});
 	}
 
 	// Function to remove a pizza from the order
 	const removeFromOrder = (index) => {
-		const newOrder = [...order];
+		const newOrder = [...order.pizzas];
 		newOrder.splice(index, 1);
-		setOrder(newOrder);
+		setOrder({name: order.name, pizzas: newOrder});
 	}
 
 
@@ -75,7 +77,7 @@ const Order = () => {
 					</h3>
 
 					<ul className="pizza-list">
-						{order.map((pizza, index) => (
+						{order.pizzas.map((pizza, index) => (
 							<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza order"
 							       onClick={() => removeFromOrder(index)}/>
 						))}
@@ -83,7 +85,7 @@ const Order = () => {
 
 					<div className="mb-3">
 						<p>
-							Total: {order.reduce((total, pizza) => total + pizza.price, 0)}€
+							Total: {order.pizzas.reduce((total, pizza) => total + pizza.price, 0)}€
 						</p>
 						{order.length > 0 && <p className="font-light text-xs">
 							Your order will be ready in {order.length * 10} minutes

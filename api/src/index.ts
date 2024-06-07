@@ -1,7 +1,7 @@
-import { app, app_port } from './server';
+import { app, appPort } from './server';
 
-app.listen(app_port, () => {
+app.listen(appPort, () => {
     /* eslint-disable no-console */
-    console.log(`Listening: http://localhost:${app_port}`);
+    console.log(`Listening: http://localhost:${appPort}`);
     /* eslint-enable no-console */
 });

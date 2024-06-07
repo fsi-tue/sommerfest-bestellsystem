@@ -1,25 +1,32 @@
 import express from 'express';
 import cors from 'cors'
-import {rateLimit} from 'express-rate-limit'
-import crud from 'express-crud-router';
-import {addResourceFunction} from './middleware/resource';
 
-import {index, login, logout} from './routes'
-import timeline from './routes/timeline'
+// Connect to the mongo database
+import mongodb from './db.mongo';
+// Import routes
+import { index, login, logout } from "./routes";
+import timeline from "./routes/timeline";
+import ordersRouter from "./routes/orders";
+import pizzaRouter from "./routes/pizza";
+import { fillDb } from "./fillDb.mongo";
 
+
+mongodb();
 
 export const app = express();
-export const app_port = process.env.PORT || 3000;
+export const appPort = process.env.PORT || 3000;
 
-// Middleware to parse JSON bodies
+////////////////////////
+// Middleware
 
-//enable CORS 
-app.use(cors({origin: true, credentials: true}));
-//we want to be able to parse json
+// CORS
+app.use(cors({ origin: true, credentials: true, methods: ['GET', 'POST', 'PUT'] }));
+
+// JSON parser
 app.use(express.json());
-//we want to do rate limiting
 
-const limiter = rateLimit({
+// Rate limiting
+/* const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
     standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
@@ -27,20 +34,37 @@ const limiter = rateLimit({
     // TODO: change from memory to redis/memcached
     // store: ... , // Redis, Memcached, etc. See below.
 })
-// Apply the rate limiting middleware to all requests.
-app.use(limiter)
-//we want resource
-addResourceFunction(app);
+app.use(limiter) */
 
-//routes
+// Handle Resources
+// TODO: What does this do?
+// addResourceFunction(app);
+
+////////////////////////
+// Routes
+
+// Index
 app.get('^/$', index);
 
+// Login
 app.get('^/api/login$', (req, res) => res.send("pls post"));
 app.post('^/api/login$', login);
 app.get('^/api/logout$', logout);
 
+// Timeline
 app.get('^/timeline', timeline.timeline);
 
-app.use(crud(`/orders`, require(`./routes/orders`)));
-app.use(crud(`/pizzas`, require(`./routes/pizza`)));
-app.use(crud(`/payment`, require(`./routes/payment`)));
+// Orders routes
+app.get('/orders', ordersRouter.getAll);
+app.use('/orders/:id', ordersRouter.getById);
+app.post('/orders', ordersRouter.create);
+app.put('/orders', ordersRouter.update);
+
+// Pizzas routes
+app.get('^/pizzas', pizzaRouter.getAll);
+
+// Database filling
+app.get('^/fill', async (req, res) => {
+    await fillDb();
+    res.send('Database filled');
+});

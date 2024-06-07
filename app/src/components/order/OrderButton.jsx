@@ -4,11 +4,19 @@ import {useNavigate} from "react-router-dom";
 import {API_ENDPOINT} from "../../globals.js";
 
 const OrderButton = ({order}) => {
-	if (!order || order.length === 0) {
+	const navigate = useNavigate();
+
+	const pizzas = order.pizzas;
+	const name = order.name;
+
+	if (pizzas.length === 0) {
 		return;
 	}
 
-	const navigate = useNavigate();
+	const body = {
+		name: name,
+		pizzas: pizzas
+	}
 
 	// Function to order the pizzas
 	const orderPizza = () => {
@@ -17,13 +25,13 @@ const OrderButton = ({order}) => {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify(order),
+			body: JSON.stringify(body),
 		})
 			.then(response => response.json())
 			.then(data => {
-				if (data.orderNumber) {
-					console.log(`Order number: ${data.orderNumber}`)
-					navigate(`/order/thank-you/${data.orderNumber}`)
+				if (data.orderId) {
+					console.log(`Order ID: ${data.orderId}`)
+					navigate(`/order/thank-you/${data.orderId}`)
 				}
 			})
 	}
@@ -38,11 +46,11 @@ const OrderButton = ({order}) => {
 }
 
 OrderButton.parameters = {
-	order: [],
+	order: {}
 }
 
 OrderButton.propTypes = {
-	order: PropTypes.array,
+	order: PropTypes.object
 }
 
 export default OrderButton;
