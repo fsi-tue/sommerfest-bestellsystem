@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
+import { THIS_ENDPOINT } from "../../globals";
 
 const OrderQR = (orderId) => {
     const canvasRef = useRef(null);
 
     // Link to the order page
-    const orderLink = `/order/${orderId.orderId}`;
-    console.log("orderID in OrderQR:", orderId.orderId)
+    const orderLink = THIS_ENDPOINT + `/order/${orderId.orderId}`;
 
     // Generate QR code
     useEffect(() => {
