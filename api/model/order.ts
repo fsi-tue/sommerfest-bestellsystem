@@ -58,6 +58,7 @@ orderSchema.pre('save', function (next) {
     if (this.status === 'delivered' && !this.finishedAt) {
         this.finishedAt = new Date();
     }
+    // TODO: revalidate the pizza price
     next();
 });
 
