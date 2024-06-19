@@ -59,16 +59,6 @@ async function getById(req: Request, res: Response, next: NextFunction) {
         return;
     }
 
-    // Check if the order is paid
-    if (order.status === 'paid') {
-        res.status(400).send(`
-            The order with the ID ${id} is already paid.
-            You can't pay for it again.
-            Stop trying to pay for the same order twice.
-        `);
-        return;
-    }
-
     // Get the pizzas for the order
     order.pizzas = await Pizza
         .find({ _id: { $in: order.pizzas } })
@@ -87,7 +77,10 @@ async function getById(req: Request, res: Response, next: NextFunction) {
 async function create(req: Request, res: Response) {
     // Get the body of the request
     const body = req.body;
-    console.log('Creating a new order', body);
+    // console.log('Creating a new order', body);
+
+    body.name = body.name || "anonymous";
+
 
     // Check if there are too many pizzas
     if (body.pizzas.length > MAX_PIZZAS || body.pizzas.length < 1) {
@@ -122,7 +115,7 @@ async function create(req: Request, res: Response) {
 
     // Create the order
     const order = new Order();
-    order.name = "Zeilenschubser";
+    order.name = body.name;
     order.pizzas = body.pizzas
     order.totalPrice = totalPrice;
     await order.save()
