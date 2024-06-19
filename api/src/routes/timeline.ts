@@ -2,6 +2,7 @@ import { MAX_PIZZAS, Order } from "../../model/order";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import moment from "moment";
+import { constants } from "../../config/config";
 
 
 async function timeline(req: Request, res: Response) {
@@ -14,7 +15,7 @@ async function timeline(req: Request, res: Response) {
 
     const TIME_SLOT_SIZE_MINUTES = 5;
     const timeSlots = [];
-    let currentTime = moment().subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes').subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES,"minutes");
+    let currentTime = moment().tz(constants.TIMEZONE_ORDERS).subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes').subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES,"minutes");
 
     for (let i = -5; i < 15; i++) {
         timeSlots.push({
