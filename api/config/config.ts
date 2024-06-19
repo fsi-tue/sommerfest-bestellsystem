@@ -16,3 +16,7 @@ export const mongodb = {
 export const constants = {
     LIFETIME_BEARER_HOURS: 8,
 }
+
+export const tokens = {
+    PAYMENT_ADMIN_TOKEN: process.env.PAYMENT_ADMIN_TOKEN || "asdf",
+}

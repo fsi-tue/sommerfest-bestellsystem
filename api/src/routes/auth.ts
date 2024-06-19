@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import moment from "moment/moment";
-import { constants } from "../../config/config";
+import { constants, tokens } from "../../config/config";
 import { db } from "../db";
 import { auth_bearer_tokens } from "../../db/schema";
 
@@ -15,7 +15,7 @@ export async function login(req: Request, res: Response) {
             const token: string = req.body.token as string;
             if (token) {
                 //check token
-                const correct_token: string = "asdf";
+                const correct_token: string = tokens.PAYMENT_ADMIN_TOKEN;
                 if (token === correct_token) {
                     const expires: Date = moment().add(constants.LIFETIME_BEARER_HOURS, "hours").toDate();
                     const inserted = await db.insert(auth_bearer_tokens).values({
