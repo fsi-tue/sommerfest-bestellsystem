@@ -18,7 +18,9 @@ const OrderQR = (orderId) => {
     }, [orderId, orderLink]);
 
     return (
-        <canvas ref={canvasRef} className="border rounded-lg mb-4"></canvas>
+        <a href={orderLink}>
+            <canvas ref={canvasRef} className="border rounded-lg mb-4"></canvas>
+        </a>
     )
 }
 
