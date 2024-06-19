@@ -91,7 +91,7 @@ const OrderDetail = () => {
             <div className="flex flex-row items-start p-4 rounded-lg shadow-md">
             <div key={order._id} className="w-full px-2 py-2">
                 <div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
-                    <a className="text-xs font-light text-gray-500 mb-0" href={"#"}>{order._id}</a>
+                    <a className="text-xs font-light text-gray-500 mb-0" href={`/order/${order._id}`}>{order._id}</a>
                     <div className="text-xl font-semibold mb-2">{order.name}</div>
                     <div className="flex gap-1 items-center justify-start">
                         <span
