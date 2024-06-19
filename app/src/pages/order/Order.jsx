@@ -3,6 +3,10 @@ import './Order.css';
 import {useEffect, useState} from "react";
 import {API_ENDPOINT} from "../../globals.js";
 import OrderButton from "../../components/order/OrderButton.jsx";
+import Timeline from "../../components/Timeline.jsx";
+
+
+const every_x_seconds = 60;
 
 // Toy data
 const toyPizzas = [
@@ -25,6 +29,14 @@ const Order = () => {
 	// State to hold the order
 	const [order, setOrder] = useState({name: '', pizzas: []})
 	const [pizzas, setPizzas] = useState(toyPizzas);
+
+	const start = new Date();
+	start.setHours(start.getHours() - 1);  // Previous hour
+	start.setMinutes(0, 0, 0);
+
+	const end = new Date();
+	end.setHours(end.getHours() + 1);  // Next hour
+	end.setMinutes(59, 59, 999);
 
 	useEffect(() => {
 		// Fetch the pizza menu from the server
@@ -94,6 +106,15 @@ const Order = () => {
 					</div>
 					<OrderButton order={order}/>
 				</div>
+			</div>
+			<div className="timeline-container">
+				<h2 className="text-2xl">Timeline</h2>
+				<p className="mb-3 text-lg font-light text-gray-600 leading-7">
+					Here is the timeline of the orders.
+				</p>
+
+				<Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT}
+				          every_x_seconds={every_x_seconds}/>
 			</div>
 		</div>
 	);
