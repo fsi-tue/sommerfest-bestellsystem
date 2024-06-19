@@ -6,10 +6,10 @@ import OrderButton from "../../components/order/OrderButton.jsx";
 
 // Toy data
 const toyPizzas = [
-	{name: "Margherita", price: 5},
-	{name: "Pepperoni", price: 7},
-	{name: "Vegetarian", price: 6},
-	{name: "Four Cheese", price: 8},
+	// {name: "Margherita", price: 5},
+	// {name: "Pepperoni", price: 7},
+	// {name: "Vegetarian", price: 6},
+	// {name: "Four Cheese", price: 8},
 ];
 
 const Pizza = ({name, price, className, onClick}) => {
@@ -69,6 +69,7 @@ const Order = () => {
 							<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza"
 							       onClick={() => addToOrder(pizza)}/>
 						))}
+						<p style={pizzas.length!=0?{display:"none"}:{color:"red"}}>Error: could not fetch pizzas</p>
 					</ul>
 				</div>
 				<div>
