@@ -17,7 +17,7 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 # build the app
-RUN bun run build
+RUN bun --env-file=.env run build
 
 # copy production dependencies and source code into final image
 FROM base AS release
