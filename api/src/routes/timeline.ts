@@ -27,12 +27,15 @@ async function timeline(req: Request, res: Response) {
 
     const orders = await Order.find({
         orderDate: {
-            $gte: moment().subtract(10 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
-            $lt: moment().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
+            $gte: moment().utc().subtract(10 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
+            $lt: moment().utc().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
         },
     });
 
-    const heights = timeSlots.map((timeSlot, index) => orders.filter(order => order.orderDate >= timeSlot.startTime && order.orderDate <= timeSlot.stopTime).length);
+    const heights = timeSlots.map((timeSlot, index) => 
+        orders.filter(
+            order => order.orderDate >= timeSlot.startTime && order.orderDate <= timeSlot.stopTime
+        ).map(order => order.pizzas.length).reduce( (a,b) => a+b, 0));
 
     res.send(timeSlots.map((timeSlot, index) => ({
         time: timeSlot.time,
