@@ -29,6 +29,11 @@ const Order = () => {
 	// State to hold the order
 	const [order, setOrder] = useState({name: '', pizzas: []})
 	const [pizzas, setPizzas] = useState(toyPizzas);
+	const setName = (e) => {
+        const name = e.target.value;
+		const pizzas = [...order.pizzas];
+		setOrder({name: name, pizzas: pizzas});
+	};
 
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
@@ -103,6 +108,10 @@ const Order = () => {
 						{order.length > 0 && <p className="font-light text-xs">
 							Your order will be ready in {order.length * 10} minutes
 						</p>}
+					</div>
+					<div className='mb-3'>
+						<input name="name" type='text' placeholder="Your name if you like (or anon)" className="p-2 border border-gray-300 rounded-lg shadow-md mb-4"
+                		onChange={setName} />
 					</div>
 					<OrderButton order={order}/>
 				</div>
