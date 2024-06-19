@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1 as base
+FROM oven/bun:alpine as base
 WORKDIR /usr/src/app
 
 # install dependencies into temp directory
@@ -9,6 +9,7 @@ FROM base AS install
 RUN mkdir -p /temp/dev
 COPY package.json bun.lockb /temp/dev/
 RUN cd /temp/dev && bun install
+RUN cd /temp/dev && bun install -g serve
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
@@ -24,9 +25,8 @@ FROM base AS release
 COPY --from=install /temp/dev/node_modules node_modules
 COPY --from=prerelease /usr/src/app/dist dist
 COPY --from=prerelease /usr/src/app/package.json .
-COPY --from=prerelease /usr/src/app/vite.config.js .
 
 # run the app
 USER bun
 EXPOSE 3000
-ENTRYPOINT [ "bunx" "--bun" "serve" "-l tcp://0.0.0.0:3000" "dist"]
+ENTRYPOINT [ "bun" "serve" "-l tcp://0.0.0.0:3000" "/usr/src/app/dist"]
