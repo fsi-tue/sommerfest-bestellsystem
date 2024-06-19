@@ -32,8 +32,10 @@ const router = createBrowserRouter(
 				<Route path=":orderNumber" element={<Status/>}/>
 			</Route>
 			<Route path="login" element={<Login/>}/>
-			<Route path="admin" element={<AdminOrders/>}/>
-			<Route path="admin/:orderNumber" element={<AdminOrderDetail/>}/>
+			<Route path="admin">
+				<Route path="" element={<AdminOrders/>} />
+				<Route path=":orderNumber" element={<AdminOrderDetail/>}/>
+			</Route>
 			<Route path="*" element={<h1>Not Found</h1>}/>
 		</Route>
 	)
