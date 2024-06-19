@@ -48,6 +48,8 @@ const Status = () => {
 
             <h2 className="text-2xl">Order Status</h2>
 
+            <a className="text-xs font-light text-gray-500 mb-0" href={"#"}>{orderNumber}</a>
+
             <div className="flex flex-row items-start p-4 rounded-lg shadow-md">
                 <div>
                     <h3 className="text-lg font-bold">QR Code</h3>
