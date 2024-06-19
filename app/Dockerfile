@@ -28,4 +28,4 @@ COPY --from=prerelease /usr/src/app/package.json .
 # run the app
 USER bun
 EXPOSE 3000
-ENTRYPOINT [ "bun" "serve" "-l tcp://0.0.0.0:3000" "/usr/src/app/dist"]
+ENTRYPOINT [ "bun" "run" "start"]
