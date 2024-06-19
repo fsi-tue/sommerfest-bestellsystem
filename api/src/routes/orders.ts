@@ -70,9 +70,9 @@ async function getById(req: Request, res: Response, next: NextFunction) {
         return {
             name:order.name,
             pizzas:order.pizzas,
-            orderDate:moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format("YYYY-MM-DD HH:mm:ss"),
+            orderDate:moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
             totalPrice:order.totalPrice,
-            finishedAt:moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format("YYYY-MM-DD HH:mm:ss"),
+            finishedAt:moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
             status: order.status,
         };
     }
