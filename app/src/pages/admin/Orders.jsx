@@ -35,6 +35,7 @@ const Orders = () => {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({ id: _id, status })
         })
@@ -52,7 +53,7 @@ const Orders = () => {
     }
 
 
-    const states = ["pending", "paid", "ready", "delivered","cancelled"];
+    const states = ["pending", "paid", "ready", "delivered", "cancelled"];
 
     // Function to search the orders
     const search = (e) => {
