@@ -68,6 +68,7 @@ async function getById(req: Request, res: Response, next: NextFunction) {
 
     function transformDateKeysToMoment(order: Order) {
         return {
+            _id: order._id,
             name:order.name,
             pizzas:order.pizzas,
             orderDate:moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
