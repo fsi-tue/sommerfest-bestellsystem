@@ -19,7 +19,11 @@ const Orders = () => {
     // Fetch the order status from the server
     useEffect(() => {
         // Get the order status from the server
-        fetch(API_ENDPOINT + '/orders/')
+        fetch(API_ENDPOINT + '/orders/', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        })
             .then(response => response.json())
             .then(data => setOrders(data));
     }, []);
