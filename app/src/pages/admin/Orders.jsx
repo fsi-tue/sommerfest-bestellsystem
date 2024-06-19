@@ -1,7 +1,18 @@
 import { useEffect, useState } from "react";
 import { API_ENDPOINT, THIS_ENDPOINT } from "../../globals.js";
+import { useNavigate } from "react-router-dom";
 
 const Orders = () => {
+    //this wont deter anyone
+    const token  = localStorage.getItem('token') || "";
+    const authed = token !== "";
+    
+    const navigate = useNavigate();
+    if(!authed)
+    {
+        navigate("/");
+    }
+
     const [orders, setOrders] = useState([]); // state to hold order status
     const [filteredOrders, setFilteredOrders] = useState([]); // state to hold order status]
 

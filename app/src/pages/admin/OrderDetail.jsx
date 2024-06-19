@@ -1,8 +1,18 @@
 import { useEffect, useState } from "react";
 import { API_ENDPOINT, THIS_ENDPOINT } from "../../globals.js";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const OrderDetail = () => {
+    //this wont deter anyone
+    const token  = localStorage.getItem('token') || "";
+    const authed = token !== "";
+    
+    const navigate = useNavigate();
+    if(!authed)
+    {
+        navigate("/");
+    }
+
     const { orderNumber } = useParams();
     const [order, setOrder] = useState({
         pizzas:[],
