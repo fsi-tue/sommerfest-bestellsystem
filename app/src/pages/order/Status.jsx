@@ -13,7 +13,7 @@ const Status = () => {
     const { orderNumber } = useParams();
     if(authed)
     {
-        console.log("authed, forwarding...");
+        // console.log("authed, forwarding...");
         navigate("/admin/"+orderNumber);
     }
 

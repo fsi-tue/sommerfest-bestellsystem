@@ -42,7 +42,7 @@ const OrderDetail = () => {
         fetch(API_ENDPOINT + '/orders/' + orderNumber)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 setOrder(data);
             });
     }

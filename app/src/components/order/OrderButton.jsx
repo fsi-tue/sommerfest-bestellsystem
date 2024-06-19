@@ -30,7 +30,7 @@ const OrderButton = ({order}) => {
 			.then(response => response.json())
 			.then(data => {
 				if (data.orderId) {
-					console.log(`Order ID: ${data.orderId}`)
+					// console.log(`Order ID: ${data.orderId}`)
 
 					// Add order ID to local storage
 					const orderIds = JSON.parse(localStorage.getItem('orderIds')) || [];
