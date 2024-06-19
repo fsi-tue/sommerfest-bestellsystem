@@ -6,7 +6,8 @@ import OrderQR from "../../components/order/OrderQR.jsx";
 const Status = () => {
     const [status, setStatus] = useState(''); // state to hold order status
     const [pizzas, setPizzas] = useState([]); // state to hold order status
-    const authed = localStorage.getItem('token') != "";
+    const token  = localStorage.getItem('token') || "";
+    const authed = token !== "";
     
     const navigate = useNavigate();
     const { orderNumber } = useParams();
