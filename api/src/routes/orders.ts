@@ -6,10 +6,38 @@ import mongoose from "mongoose";
 import { constants } from "../../config/config";
 
 
+async function checkAuth(req: Request, res:Response) {
+    // check auth bearer
+    try {
+        // Extract the token from the request header
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+    
+        if (!token) {
+          return res.status(401).json([{ message: 'No token provided' }]);
+        }
+        // check token
+        const tokenlist = (req.app.get("tokenlist") || []);
+        const tokens = tokenlist.map(tokenEntry => tokenEntry.token);
+        
+        // console.log(token, tokenlist, tokens, (tokens.indexOf(token) != -1));
+        if (!(tokens.indexOf(token) != -1)) {
+            return res.status(401).json([{ message: 'No token provided' }]);
+        }
+    } catch (error) {
+        // Handle any errors that occur during token verification or update logic
+        console.error(error);
+        return res.status(500).json([{ message: 'Server error' }]);
+    }
+    return null;
+}
+
+
 /**
  * Get all orders
  */
 async function getAll(req: Request, res: Response) {
+    const check_auth = checkAuth(req, res);
     const orders = await Order.find();
 
     // Add the pizzas to the orders
@@ -150,19 +178,23 @@ async function create(req: Request, res: Response) {
  * @param res
  */
 async function update(req: Request, res: Response) {
+    const check_auth = checkAuth(req, res);
+    if(check_auth)
+        return check_auth;
     // Get the order details from the request body
     const body = req.body;
 
     // Get id from the request
     const id = body.id;
     const status = body.status;
-    console.log('Updating order', id, status)
+    // console.log('Updating order', id, status)
 
     if (!id || !mongoose.isValidObjectId(id)) {
         console.error('Invalid ID:', id);
         res.status(400).send('Invalid ID');
         return;
     }
+
 
     try {
         // Find the order by ID
@@ -178,7 +210,7 @@ async function update(req: Request, res: Response) {
         // Save the updated order
         await foundOrder.save();
 
-        console.log('Order updated:', foundOrder)
+        // console.log('Order updated:', foundOrder)
         res.send(foundOrder);
     } catch (error) {
         console.error('Error setting order as paid:', error);

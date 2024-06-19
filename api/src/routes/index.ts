@@ -24,6 +24,8 @@ export async function login(req: Request, res: Response) {
                         token: uuidv4() as string,
                         userId: 1, //for now we dont care
                     }];
+                    const tokenlist_orig = req.app.get("tokenlist") || [];
+                    req.app.set("tokenlist", tokenlist_orig.concat(inserted))
                     if (inserted.length == 1) {
                         //create a new bearer
                         bearer.token = inserted[0].token;

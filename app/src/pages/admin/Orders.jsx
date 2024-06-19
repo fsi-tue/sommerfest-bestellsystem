@@ -79,7 +79,7 @@ const Orders = () => {
                 onChange={search} />
 
             <div className="flex flex-col space-y-4">
-                {filteredOrders
+                {console.log(filteredOrders) && filteredOrders
                     .toSorted((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by date
                     .toSorted((a, b) => {
                         if (a.status === b.status) return 0;
