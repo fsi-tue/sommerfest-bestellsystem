@@ -4,17 +4,19 @@ import { API_ENDPOINT } from "../../globals.js";
 import OrderQR from "../../components/order/OrderQR.jsx";
 
 const Status = () => {
-    const [status, setStatus] = useState(''); // state to hold order status
-    const [pizzas, setPizzas] = useState([]); // state to hold order status
+    const [status, setStatus] = useState('');
+    const [pizzas, setPizzas] = useState([]);
+    const [authed, setAuthed] = useState(false);
     const token  = localStorage.getItem('token') || "";
-    const authed = token !== "";
+    setAuthed(token !== "");
     
     const navigate = useNavigate();
     const { orderNumber } = useParams();
     if(authed)
     {
         // console.log("authed, forwarding...");
-        navigate("/admin/"+orderNumber);
+        //dont auto forward
+        // navigate("/admin/"+orderNumber);
     }
 
     useEffect(() => {
@@ -48,7 +50,7 @@ const Status = () => {
 
             <h2 className="text-2xl">Order Status</h2>
 
-            <a className="text-xs font-light text-gray-500 mb-0" href={"#"}>{orderNumber}</a>
+            <a className="text-xs font-light text-gray-500 mb-0" href={authed? "/admin/"+orderNumber: ""}>{orderNumber}</a>
 
             <div className="flex flex-row items-start p-4 rounded-lg shadow-md">
                 <div>
