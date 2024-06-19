@@ -67,7 +67,7 @@ const Orders = () => {
     }
 
     const order_url = function (id) {
-        return THIS_ENDPOINT + `/admin/${id}`;
+        return THIS_ENDPOINT + `/order/${id}`;
     }
 
     return (
