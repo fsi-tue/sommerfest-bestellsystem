@@ -51,6 +51,9 @@ const Orders = () => {
             })
     }
 
+
+    const states = ["pending", "paid", "ready", "delivered","cancelled"];
+
     // Function to search the orders
     const search = (e) => {
         const search = e.target.value;
@@ -115,14 +118,14 @@ const Orders = () => {
                                 </ul>
 
 								<div className="flex gap-1 items-center justify-start font-light">
-									{['pending', 'paid', 'ready', 'delivered'].map(status => (
+									{states.map(state => (
 										<button
-											disabled={status === order.status} key={status}
-                                            style={{background:order.status === status ? 'green' : 'gray'}}
-											className={`bg-${status === order.status ? 'green' : 'gray'}-500 hover:bg-${status === order.status ? 'green' : 'gray'}-600 text-white font-bold py-0.5 px-1 rounded`}
-											onClick={() => updateOrderStatus(order._id, status)}
+											disabled={state === order.status} key={state}
+                                            style={{background:order.status === state ? 'green' : 'gray'}}
+											className={`bg-${state === order.status ? 'green' : 'gray'}-500 hover:bg-${state === order.status ? 'green' : 'gray'}-600 text-white font-bold py-0.5 px-1 rounded`}
+											onClick={() => updateOrderStatus(order._id, state)}
 										>
-											{status}
+											{state}
 										</button>
 									))}
 								</div>
