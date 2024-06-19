@@ -11,6 +11,7 @@ services:
     networks:
       - db
     restart: unless-stopped
+
   api:
     container_name: api
     build:

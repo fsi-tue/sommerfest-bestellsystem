@@ -14,7 +14,7 @@ export const mongodb = {
 }
 
 export const constants = {
-    LIFETIME_BEARER_HOURS: 8,
+    LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS || "8"),
     ENABLE_DB_FILLING: process.env.ENABLE_DB_FILLING ?? false,
 }
 

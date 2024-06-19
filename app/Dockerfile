@@ -24,6 +24,7 @@ FROM base AS release
 COPY --from=install /temp/dev/node_modules node_modules
 COPY --from=prerelease /usr/src/app/dist dist
 COPY --from=prerelease /usr/src/app/package.json .
+COPY --from=prerelease /usr/src/app/vite.config.js .
 
 # run the app
 USER bun
