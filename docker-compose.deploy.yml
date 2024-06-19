@@ -1,0 +1,48 @@
+services:
+  mongodb:
+    container_name: db
+    image: mongo:4.2
+    env_file:
+      - ./.db.env
+    # ports:
+    #   - '27017:27017'
+    volumes: 
+      - db_data:/data/db
+    networks:
+      - db
+    restart: unless-stopped
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./api:/usr/src/app
+    networks:
+      - db
+      - app
+    restart: unless-stopped
+
+  app:
+    container_name: app
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "6000:3000"
+    volumes:
+      - ./app:/usr/src/app
+    networks:
+      - app
+    restart: unless-stopped
+
+networks:
+  app:
+  db:
+    driver: bridge
+volumes:
+  db_data:
