@@ -29,7 +29,7 @@ const Login = () => {
 			})
 			.then((data) => {
 				localStorage.setItem('token', data.token);
-				navigate('/');
+				navigate('/admin');
 			}).catch((error) => {
 			setErrorMessage(error.message);
 		});
