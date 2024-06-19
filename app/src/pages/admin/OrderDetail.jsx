@@ -103,7 +103,7 @@ const OrderDetail = () => {
                         </span>
                         <span
                             className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
-                            {order.createdAt}
+                            {order.orderDate}
                         </span>
                     </div>
                     <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
