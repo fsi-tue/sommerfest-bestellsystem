@@ -29,4 +29,4 @@ COPY --from=prerelease /usr/src/app/vite.config.js .
 # run the app
 USER bun
 EXPOSE 3000
-ENTRYPOINT [ "bun", "run", "preview"]
+ENTRYPOINT [ "bunx" "--bun" "serve" "-l tcp://0.0.0.0:3000" "dist"]
