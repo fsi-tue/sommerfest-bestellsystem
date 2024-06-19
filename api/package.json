@@ -34,6 +34,7 @@
     "express-rate-limit": "^7.3.0",
     "express-validator": "^7.1.0",
     "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
     "mongoose": "^8.4.1",
     "pg": "^8.11.5",
     "uuid": "^9.0.1"

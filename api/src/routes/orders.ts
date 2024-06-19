@@ -1,7 +1,9 @@
+import moment from "moment-timezone";
 import { MAX_PIZZAS, Order } from "../../model/order";
 import { Pizza } from "../../model/pizza";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
+import { constants } from "../../config/config";
 
 
 /**
@@ -64,8 +66,20 @@ async function getById(req: Request, res: Response, next: NextFunction) {
         .find({ _id: { $in: order.pizzas } })
         .select('name price');
 
+    function transformDateKeysToMoment(order: Order) {
+        return {
+            name:order.name,
+            pizzas:order.pizzas,
+            orderDate:moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format("YYYY-MM-DD HH:mm:ss"),
+            totalPrice:order.totalPrice,
+            finishedAt:moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format("YYYY-MM-DD HH:mm:ss"),
+            status: order.status,
+        };
+    }
+
+    const transformedObject = transformDateKeysToMoment(order);
     // Send the order
-    res.send(order);
+    res.send(transformedObject);
 }
 
 /**
