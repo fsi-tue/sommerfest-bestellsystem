@@ -20,7 +20,7 @@ async function checkAuth(req: Request, res:Response) {
         const tokenlist = (req.app.get("tokenlist") || []);
         const tokens = tokenlist.map(tokenEntry => tokenEntry.token);
         
-        // console.log(token, tokenlist, tokens, (tokens.indexOf(token) != -1));
+        console.log((tokens.indexOf(token) != -1), token, tokens);
         if (!(tokens.indexOf(token) != -1)) {
             return res.status(401).json([{ message: 'No token provided' }]);
         }
@@ -29,6 +29,7 @@ async function checkAuth(req: Request, res:Response) {
         console.error(error);
         return res.status(500).json([{ message: 'Server error' }]);
     }
+    console.log("Auth success");
     return null;
 }
 
