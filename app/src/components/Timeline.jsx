@@ -47,7 +47,7 @@ const Timeline = ({startDate, stopDate, API_ENDPOINT, every_x_seconds}) => {
 								key={`cell-${index}`}
 								fill={entry.color}
 								stroke={entry.border}
-								strokeWidth={entry.width}/>
+								strokeWidth={entry.borderwidth}/>
 						))
 					}
 				</Bar>
