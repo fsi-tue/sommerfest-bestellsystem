@@ -40,7 +40,7 @@ const Login = () => {
 		<div className="content">
 			<form onSubmit={handleSubmit}>
 				<label htmlFor="token">Token</label>
-				<input type="text" id="token" name="token"/>
+				<input type="password" id="token" name="token"/>
 				<button type="submit">Login</button>
 				{errorMessage && <p>{errorMessage}</p>}
 			</form>
