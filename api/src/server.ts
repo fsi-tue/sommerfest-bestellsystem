@@ -9,6 +9,7 @@ import timeline from "./routes/timeline";
 import ordersRouter from "./routes/orders";
 import pizzaRouter from "./routes/pizza";
 import { fillDb } from "./fillDb.mongo";
+import { constants } from "../config/config";
 
 
 mongodb();
@@ -63,8 +64,16 @@ app.put('/orders', ordersRouter.update);
 // Pizzas routes
 app.get('^/pizzas', pizzaRouter.getAll);
 
-// Database filling
-app.get('^/fill', async (req, res) => {
-    await fillDb();
-    res.send('Database filled');
-});
+if(constants.ENABLE_DB_FILLING) {
+    // Database filling
+    app.get('^/fill', async (req, res) => {
+        await fillDb();
+        res.send('Database filled');
+    });
+}
+else{
+    // Database filling
+    app.get('^/fill', async (req, res) => {
+        res.send('disabled');
+    });
+}
