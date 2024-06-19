@@ -21,8 +21,6 @@ services:
       - "3000:3000"
     depends_on:
       - mongodb
-    volumes:
-      - ./api:/usr/src/app
     networks:
       - db
       - app
@@ -35,8 +33,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "6000:3000"
-    volumes:
-      - ./app:/usr/src/app
     networks:
       - app
     restart: unless-stopped
