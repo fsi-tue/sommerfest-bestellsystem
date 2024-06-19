@@ -38,7 +38,7 @@ async function checkAuth(req: Request, res:Response) {
  * Get all orders
  */
 async function getAll(req: Request, res: Response) {
-    const check_auth = checkAuth(req, res);
+    const check_auth = await checkAuth(req, res);
     const orders = await Order.find();
 
     // Add the pizzas to the orders
@@ -179,7 +179,7 @@ async function create(req: Request, res: Response) {
  * @param res
  */
 async function update(req: Request, res: Response) {
-    const check_auth = checkAuth(req, res);
+    const check_auth = await checkAuth(req, res);
     if(check_auth)
         return check_auth;
     // Get the order details from the request body
