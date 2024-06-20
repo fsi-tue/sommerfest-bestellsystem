@@ -117,7 +117,7 @@ const Orders = () => {
                                     </span>
                                 </div>
                                 <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
-                                    {order.pizzas.map(pizza => (
+                                    {(order.pizzas || []).map(pizza => (
                                         <li key={pizza.name}>{pizza.name}: {pizza.price}€</li>
                                     ))}
                                 </ul>
