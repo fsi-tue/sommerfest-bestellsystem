@@ -11,14 +11,16 @@ import Status from "./pages/order/Status.jsx";
 
 // Admin
 import Login from "./pages/Login.jsx";
+import Logout from "./pages/Logout.jsx";
 import AdminOrders from "./pages/admin/Orders.jsx";
 import AdminOrderDetail from "./pages/admin/OrderDetail.jsx";
+import AdminManagePizzas from "./pages/admin/ManagePizzas.jsx";
 
 // Redux
 import {Provider} from 'react-redux'
 
 // React Router
-import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider,} from "react-router-dom";
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider, useNavigate,} from "react-router-dom";
 import {store} from './store'
 
 // Create a router with the routes
@@ -34,8 +36,10 @@ const router = createBrowserRouter(
 			<Route path="login" element={<Login/>}/>
 			<Route path="admin">
 				<Route path="" element={<AdminOrders/>} />
+				<Route path="pizzas" element={<AdminManagePizzas/>}/>
 				<Route path=":orderNumber" element={<AdminOrderDetail/>}/>
 			</Route>
+			<Route path="logout" element={<Logout/>}/>
 			<Route path="*" element={<h1>Not Found</h1>}/>
 		</Route>
 	)

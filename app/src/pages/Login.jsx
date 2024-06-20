@@ -29,6 +29,7 @@ const Login = () => {
 			})
 			.then((data) => {
 				localStorage.setItem('token', data.token);
+				window.dispatchEvent(new CustomEvent("loginSuccessEvent"))
 				navigate('/admin');
 			}).catch((error) => {
 			setErrorMessage(error.message);
