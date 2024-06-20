@@ -41,7 +41,7 @@ const Timeline = ({startDate, stopDate, API_ENDPOINT, every_x_seconds}) => {
 				<XAxis dataKey="time"/>
 				<YAxis/>
 				<Tooltip/>
-				<Bar dataKey="height" fill="#007bff">
+				<Bar dataKey="Orders" fill="#007bff">
 					{
 						data.map((entry, index) => (
 							<Cell

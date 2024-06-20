@@ -33,15 +33,15 @@ async function timeline(req: Request, res: Response) {
         },
     });
 
-    const heights = timeSlots.map((timeSlot, index) => 
+    const orderTimeslots = timeSlots.map((timeSlot, index) => 
         orders.filter(
             order => order.orderDate >= timeSlot.startTime && order.orderDate <= timeSlot.stopTime
         ).map(order => order.pizzas.length).reduce( (a,b) => a+b, 0));
 
     res.send(timeSlots.map((timeSlot, index) => ({
         time: timeSlot.time,
-        height: heights[index],
-        color: heights[index] > AMOUNT_CRITICAL ? COLOR_CRIT : (heights[index] > AMOUNT_WARNING ? COLOR_WARN : COLOR_OK),
+        Orders: orderTimeslots[index],
+        color: orderTimeslots[index] > AMOUNT_CRITICAL ? COLOR_CRIT : (orderTimeslots[index] > AMOUNT_WARNING ? COLOR_WARN : COLOR_OK),
         border: index === 5 ? '#000' : '#FFF',
         borderwidth: index === 5 ? 4 : 0,
     })));
