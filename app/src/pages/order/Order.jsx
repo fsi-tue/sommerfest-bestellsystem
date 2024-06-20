@@ -69,10 +69,11 @@ const Order = () => {
 
 	return (
 		<div className="content">
-			<h2 className="text-2xl">Order your favorite pizza</h2>
+			<h2 className="text-2xl">Order your pizza at Sommerfest 2024!</h2>
 			<p className="mb-3 text-lg font-light text-gray-600 leading-7">
-				Welcome to our pizza ordering service. Please select the pizzas you would like to order from the menu
-				below.
+			Hey hey, welcome to Sommerfest 2024! This is the official ordering system for pizzas, so feel free to choose your pizza(-s) below and pay when collecting at the counter (cash!) . You can then choose your pick-up time (please note: some slots may be overfilled).
+All of our pizzas can be ordered as whole or halved; see the irgedients list below for details on each pizza.
+Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening!
 			</p>
 
 			<div className="flex justify-between gap-4 content-start pizza-menu-container">
