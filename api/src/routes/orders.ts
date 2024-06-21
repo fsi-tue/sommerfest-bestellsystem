@@ -41,7 +41,24 @@ async function getAll(req: Request, res: Response) {
 
     // Add the pizzas to the orders
     for (const order of orders) {
-        order.pizzas = await Pizza.find({ _id: { $in: order.pizzas } });
+
+        if (order.pizzas) {
+            // Get the pizzas for the order
+            const pizzaDetails = await Pizza
+                .find({ _id: { $in: order.pizzas } })
+                .select('name price');
+
+            // Create a map of pizza details
+            const pizzaDetailsMap = pizzaDetails.reduce((map: {
+                [id: string]: PizzaDocument
+            }, pizza: PizzaDocument) => {
+                map[pizza._id.toString()] = pizza;
+                return map;
+            }, {});
+
+            // Map the pizza details to the order.pizzas array
+            order.pizzas = order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]);
+        }
     }
 
     res.send(orders);
