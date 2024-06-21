@@ -20,7 +20,7 @@ import AdminManagePizzas from "./pages/admin/ManagePizzas.jsx";
 import {Provider} from 'react-redux'
 
 // React Router
-import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider, useNavigate,} from "react-router-dom";
+import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider,} from "react-router-dom";
 import {store} from './store'
 
 // Create a router with the routes
@@ -35,7 +35,7 @@ const router = createBrowserRouter(
 			</Route>
 			<Route path="login" element={<Login/>}/>
 			<Route path="admin">
-				<Route path="" element={<AdminOrders/>} />
+				<Route path="" element={<AdminOrders/>}/>
 				<Route path="pizzas" element={<AdminManagePizzas/>}/>
 				<Route path=":orderNumber" element={<AdminOrderDetail/>}/>
 			</Route>
