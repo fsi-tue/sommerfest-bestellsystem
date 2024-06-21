@@ -70,11 +70,23 @@ const Order = () => {
 	return (
 		<div className="content">
 			<h2 className="text-2xl">Order your pizza at Sommerfest 2024!</h2>
-			<p className="mb-3 text-lg font-light text-gray-600 leading-7">
-			Hey hey, welcome to Sommerfest 2024! This is the official ordering system for pizzas, so feel free to choose your pizza(-s) below and pay when collecting at the counter (cash!) . You can then choose your pick-up time (please note: some slots may be overfilled).
+			<div className="mb-3 text-lg font-light text-gray-600 leading-7">
+				{/*Hey hey, welcome to Sommerfest 2024! This is the official ordering system for pizzas, so feel free to choose your pizza(-s) below and pay when collecting at the counter (cash!) . You can then choose your pick-up time (please note: some slots may be overfilled).
 All of our pizzas can be ordered as whole or halved; see the irgedients list below for details on each pizza.
-Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening!
-			</p>
+Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening! */}
+
+				<ul className="list-disc list-inside space-y-2">
+					<li><strong>Choose Pizza:</strong> Select whole or halved from the list below.</li>
+					<li><strong>Pick-Up Time:</strong> Choose a time (some slots may be full).</li>
+					<li><strong>Pay in Cash:</strong> Pay when collecting at the counter.</li>
+				</ul>
+				<div className="mt-4">
+					<p><strong>Order Times:</strong></p>
+					<p>Earliest pick-up: 17:25</p>
+					<p>Latest order: 23:40</p>
+				</div>
+				<p className="mt-6 text-center">Enjoy your evening!</p>
+			</div>
 
 			<div className="flex justify-between gap-4 content-start pizza-menu-container">
 				<div>
@@ -87,7 +99,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 							<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza"
 							       onClick={() => addToOrder(pizza)}/>
 						))}
-						<p style={pizzas.length!=0?{display:"none"}:{color:"red"}}>Error: could not fetch pizzas</p>
+						<p style={pizzas.length !== 0 ? {display: "none"} : {color: "red"}}>Error: could not fetch pizzas</p>
 					</ul>
 				</div>
 				<div>
@@ -111,8 +123,8 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						</p>}
 					</div>
 					<div className='mb-3'>
-						<input name="name" type='text' placeholder="Your name if you like (or anon)" className="p-2 border border-gray-300 rounded-lg shadow-md mb-4"
-                		onChange={setName} />
+						<input name="name" type="text" placeholder="Enter your name (optional)"
+						       className="p-2 border border-gray-300 rounded-lg shadow-md mb-4" onChange={setName}/>
 					</div>
 					<OrderButton order={order}/>
 				</div>
