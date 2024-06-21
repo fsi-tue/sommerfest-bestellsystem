@@ -45,7 +45,7 @@ const orderSchema = new Schema<OrderDocument>({
     timestamps: true,
 });
 
-// Custom validator for the length of the pizzas array
+// Custom validator for the length of the pizza array
 orderSchema.path('pizzas').validate({
     validator: function (value) {
         return value.length > 0 && value.length <= MAX_PIZZAS;
