@@ -3,8 +3,6 @@ import { Request, Response } from 'express';
 
 /**
  * Get all pizzas
- *
- * @returns An object containing the rows and the count
  * @param req
  * @param res
  */

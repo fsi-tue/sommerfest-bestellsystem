@@ -181,7 +181,7 @@ async function create(req: Request, res: Response) {
 }
 
 /**
- * Not supported!
+ * Update an order
  *
  * @returns An object containing the rows and the count
  * @param req
