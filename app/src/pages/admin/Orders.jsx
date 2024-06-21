@@ -57,7 +57,7 @@ const Orders = () => {
 		} else {
 			setFilteredOrders(orders);
 		}
-	}, [filter]);
+	}, [filter, orders]);
 
 	/**
 	 * Function to update the order status
@@ -120,6 +120,7 @@ const Orders = () => {
 					<div className="w-24 h-24">
 						<Scanner
 							className="w-full h-full border border-gray-300 rounded-md"
+							allowMultiple={true} scanDelay={250} paused={false}
 							onScan={(result) => barcodeToOrder(result)}
 						/>
 					</div>
