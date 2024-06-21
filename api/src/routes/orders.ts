@@ -1,25 +1,25 @@
 import moment from "moment-timezone";
 import { MAX_PIZZAS, Order } from "../../model/order";
-import { Pizza } from "../../model/pizza";
+import { Pizza, PizzaDocument } from "../../model/pizza";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { constants } from "../../config/config";
 
 
-async function checkAuth(req: Request, res:Response) {
+async function checkAuth(req: Request, res: Response) {
     // check auth bearer
     try {
         // Extract the token from the request header
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1];
-    
+
         if (!token) {
-          return res.status(401).json([{ message: 'No token provided' }]);
+            return res.status(401).json([{ message: 'No token provided' }]);
         }
         // check token
         const tokenlist = (req.app.get("tokenlist") || []);
         const tokens = tokenlist.map(tokenEntry => tokenEntry.token);
-        
+
         console.log((tokens.indexOf(token) != -1), token, tokens);
         if (!(tokens.indexOf(token) != -1)) {
             return res.status(401).json([{ message: 'No token provided' }]);
@@ -91,18 +91,27 @@ async function getById(req: Request, res: Response, next: NextFunction) {
     }
 
     // Get the pizzas for the order
-    order.pizzas = await Pizza
+    const pizzaDetails = await Pizza
         .find({ _id: { $in: order.pizzas } })
         .select('name price');
+
+    // Create a map of pizza details
+    const pizzaDetailsMap = pizzaDetails.reduce((map: { [id: string]: PizzaDocument }, pizza: PizzaDocument) => {
+        map[pizza._id.toString()] = pizza;
+        return map;
+    }, {});
+
+    // Map the pizza details to the order.pizzas array
+    order.pizzas = order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]);
 
     function transformDateKeysToMoment(order: Order) {
         return {
             _id: order._id,
-            name:order.name,
-            pizzas:order.pizzas,
-            orderDate:moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
-            totalPrice:order.totalPrice,
-            finishedAt:moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
+            name: order.name,
+            pizzas: order.pizzas,
+            orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
+            totalPrice: order.totalPrice,
+            finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
             status: order.status,
         };
     }
@@ -180,8 +189,9 @@ async function create(req: Request, res: Response) {
  */
 async function update(req: Request, res: Response) {
     const check_auth = await checkAuth(req, res);
-    if(check_auth)
+    if (check_auth) {
         return check_auth;
+    }
     // Get the order details from the request body
     const body = req.body;
 
