@@ -7,30 +7,28 @@ import { constants } from "../../config/config";
 
 
 async function checkAuth(req: Request, res: Response) {
-    // check auth bearer
-    try {
-        // Extract the token from the request header
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json([{ message: 'No token provided' }]);
-        }
-        // check token
-        const tokenlist = (req.app.get("tokenlist") || []);
-        const tokens = tokenlist.map(tokenEntry => tokenEntry.token);
-
-        console.log((tokens.indexOf(token) != -1), token, tokens);
-        if (!(tokens.indexOf(token) != -1)) {
-            return res.status(401).json([{ message: 'No token provided' }]);
-        }
-    } catch (error) {
-        // Handle any errors that occur during token verification or update logic
-        console.error(error);
-        return res.status(500).json([{ message: 'Server error' }]);
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Authorization header missing' });
     }
-    console.log("Auth success");
-    return null;
+
+    const token = authHeader.replace('Bearer ', '');
+    if (!token) {
+        return res.status(401).json({ message: 'Bearer token missing' });
+    }
+
+    // Retrieve the token list from the app context
+    const tokenlist = req.app.get("tokenlist") || [];
+    const tokenEntry = tokenlist.find((entry: any) => entry.token === token);
+
+    if (!tokenEntry) {
+        return res.status(403).json({ message: 'Invalid token' });
+    }
+
+    // Check if the token has expired
+    if (moment().isAfter(tokenEntry.expiresAt)) {
+        return res.status(403).json({ message: 'Token has expired' });
+    }
 }
 
 
@@ -38,7 +36,7 @@ async function checkAuth(req: Request, res: Response) {
  * Get all orders
  */
 async function getAll(req: Request, res: Response) {
-    const check_auth = await checkAuth(req, res);
+    await checkAuth(req, res);
     const orders = await Order.find();
 
     // Add the pizzas to the orders
