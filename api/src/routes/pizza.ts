@@ -1,5 +1,6 @@
 import { Pizza } from '../../model/pizza';
 import { Request, Response } from 'express';
+import { checkAuth } from "./index";
 
 /**
  * Get all pizzas
@@ -18,24 +19,47 @@ async function getAll(req: Request, res: Response) {
 }
 
 /**
- * Not supported!
- *
- * @param body - Object containing the pizza details
- * @returns An object containing the rows and the count
+ * Create a new pizza
+ * @param req
+ * @param res
  */
-async function create<T>(body: T) {
-    throw new Error('Not supported!');
+async function create(req: Request, res: Response) {
+    await checkAuth(req, res);
+
+    const body = req.body;
+    try {
+        const pizza = new Pizza(body);
+        await pizza.save();
+        res.send(pizza);
+    } catch (error) {
+        console.error('Error creating pizza:', error);
+        res.status(500).send('Error creating pizza');
+    }
 }
 
 /**
- * Not supported!
- *
- * @param id - ID of the pizza to update
- * @param body - Object containing the updated pizza details
- * @returns An object containing the rows and the count
+ * Update a pizza
+ * @param req
+ * @param res
  */
-async function update(id: number, body: Body) {
-    throw new Error('Not supported!');
+async function update(req: Request, res: Response) {
+    await checkAuth(req, res);
+
+    const body = req.body;
+    const id = body._id;
+    try {
+        const pizza = await Pizza.findById(id);
+        if (!pizza) {
+            return res.status(404).send('Pizza not found');
+        }
+
+        pizza.set(body);
+        await pizza.save();
+        res.send(pizza);
+    } catch (error) {
+        console.error('Error updating pizza:', error);
+        res.status(500).send('Error updating pizza');
+    }
 }
 
 /**

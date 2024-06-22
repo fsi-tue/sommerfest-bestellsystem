@@ -55,23 +55,24 @@ app.get('^/api/logout$', logout);
 // Timeline
 app.get('^/timeline', timeline.timeline);
 
-// Orders routes
-app.get('/orders', ordersRouter.getAll);
-app.use('/orders/:id', ordersRouter.getById);
-app.post('/orders', ordersRouter.create);
-app.put('/orders', ordersRouter.update);
+// Order routes
+app.get('^/orders', ordersRouter.getAll);
+app.use('^/orders/:id', ordersRouter.getById);
+app.post('^/orders', ordersRouter.create);
+app.put('^/orders', ordersRouter.update);
 
-// Pizzas routes
+// Pizza routes
 app.get('^/pizzas', pizzaRouter.getAll);
+app.post('^/pizzas', pizzaRouter.create);
+app.put('^/pizzas/', pizzaRouter.update);
 
-if(constants.ENABLE_DB_FILLING) {
+if (constants.ENABLE_DB_FILLING) {
     // Database filling
     app.get('^/fill', async (req, res) => {
         await fillDb();
         res.send('Database filled');
     });
-}
-else{
+} else {
     // Database filling
     app.get('^/fill', async (req, res) => {
         res.send('disabled');
