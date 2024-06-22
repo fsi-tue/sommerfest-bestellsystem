@@ -18,8 +18,8 @@ const pizzaSchema = new Schema<PizzaDocument>({
         min: 0,
         max: 100,
         default: 0,
-        get: (v: number) => Math.round(v),
-        set: (v: number) => Math.round(v)
+        get: (v: number) => v,
+        set: (v: number) => v
     },
     enabled: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
