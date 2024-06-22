@@ -3,7 +3,7 @@ import {API_ENDPOINT, THIS_ENDPOINT} from "../../globals.js";
 import {useNavigate} from "react-router-dom";
 import {Scanner} from "@yudiel/react-qr-scanner";
 
-const Orders = () => {
+const ManageOrders = () => {
 	// If there is some script kiddie trying to access this page,
 	// and they manage to get here with an invalid token,
 	// they should have a cookie or something.
@@ -35,7 +35,7 @@ const Orders = () => {
 		})
 			.then(response => response.json())
 			.then(data => setOrders(data))
-			.catch(error => setError('Error fetching orders'));
+			.catch(error => setError('ErrorMessage fetching orders'));
 	}, []);
 
 	// Update the filtered orders when the orders change
@@ -84,7 +84,7 @@ const Orders = () => {
 				});
 				setOrders(newOrders);
 			})
-			.catch(error => setError('Error updating order status'));
+			.catch(error => setError('ErrorMessage updating order status'));
 	}
 
 	/**
@@ -112,10 +112,10 @@ const Orders = () => {
 	return (
 		<div className="content">
 			<div className="p-4">
-				<h2 className="text-2xl mb-4">Order Status</h2>
+				<h2 className="text-2xl mb-4">Manage Orders 💸</h2>
 				<div className="flex items-center justify-between">
 					<div className="w-1/2">
-						<p className="text-lg">Your order status will be displayed here.</p>
+						<p className="text-lg">Scan the barcode to search for an order</p>
 					</div>
 					<div className="w-24 h-24">
 						<Scanner
@@ -134,18 +134,6 @@ const Orders = () => {
 			<div className="flex flex-col space-y-4">
 				{filteredOrders && filteredOrders.length > 0 && filteredOrders
 					.toSorted((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by date
-					.toSorted((a, b) => {
-						if (a.status === b.status) return 0;
-						if (a.status === 'pending') return -1;
-						if (b.status === 'pending') return 1;
-						if (a.status === 'paid') return -1;
-						if (b.status === 'paid') return 1;
-						if (a.status === 'ready') return -1;
-						if (b.status === 'ready') return 1;
-						if (a.status === 'delivered') return -1;
-						if (b.status === 'delivered') return 1;
-						return 0;
-					})
 					.map((order, index) => ( // Map the orders
 						<div key={order._id + index} className="w-full px-2 py-2">
 							<div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
@@ -192,4 +180,4 @@ const Orders = () => {
 }
 
 
-export default Orders;
+export default ManageOrders;

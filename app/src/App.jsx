@@ -12,7 +12,7 @@ import Status from "./pages/order/Status.jsx";
 // Admin
 import Login from "./pages/Login.jsx";
 import Logout from "./pages/Logout.jsx";
-import AdminOrders from "./pages/admin/Orders.jsx";
+import AdminOrders from "./pages/admin/ManageOrders.jsx";
 import AdminOrderDetail from "./pages/admin/OrderDetail.jsx";
 import AdminManagePizzas from "./pages/admin/ManagePizzas.jsx";
 
