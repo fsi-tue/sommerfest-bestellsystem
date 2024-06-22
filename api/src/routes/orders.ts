@@ -4,39 +4,16 @@ import { Pizza, PizzaDocument } from "../../model/pizza";
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import { constants } from "../../config/config";
+import { checkAuth } from "./index";
 
-
-async function checkAuth(req: Request, res: Response) {
-    const authHeader = req.header('Authorization');
-    if (!authHeader) {
-        return res.status(401).json({ message: 'Authorization header missing' });
-    }
-
-    const token = authHeader.replace('Bearer ', '');
-    if (!token) {
-        return res.status(401).json({ message: 'Bearer token missing' });
-    }
-
-    // Retrieve the token list from the app context
-    const tokenlist = req.app.get("tokenlist") || [];
-    const tokenEntry = tokenlist.find((entry: any) => entry.token === token);
-
-    if (!tokenEntry) {
-        return res.status(403).json({ message: 'Invalid token' });
-    }
-
-    // Check if the token has expired
-    if (moment().isAfter(tokenEntry.expiresAt)) {
-        return res.status(403).json({ message: 'Token has expired' });
-    }
-}
 
 
 /**
  * Get all orders
  */
 async function getAll(req: Request, res: Response) {
-    await checkAuth(req, res);
+    checkAuth(req, res);
+
     const orders = await Order.find();
 
     // Add the pizzas to the orders
@@ -203,10 +180,8 @@ async function create(req: Request, res: Response) {
  * @param res
  */
 async function update(req: Request, res: Response) {
-    const check_auth = await checkAuth(req, res);
-    if (check_auth) {
-        return check_auth;
-    }
+    await checkAuth(req, res);
+
     // Get the order details from the request body
     const body = req.body;
 

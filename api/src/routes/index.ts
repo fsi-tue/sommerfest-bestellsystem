@@ -6,12 +6,43 @@ import rateLimit from 'express-rate-limit';
 import crypto from 'crypto';
 
 /**
+ * Check if the request is authenticated
+ * @param req
+ * @param res
+ */
+export async function checkAuth(req: Request, res: Response) {
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Authorization header missing' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    if (!token) {
+        return res.status(401).json({ message: 'Bearer token missing' });
+    }
+
+    // Retrieve the token list from the app context
+    const tokenlist = req.app.get("tokenlist") || [];
+    const tokenEntry = tokenlist.find((entry: any) => entry.token === token);
+
+    if (!tokenEntry) {
+        return res.status(403).json({ message: 'Invalid token' });
+    }
+
+    // Check if the token has expired
+    if (moment().isAfter(tokenEntry.expiresAt)) {
+        return res.status(403).json({ message: 'Token has expired' });
+    }
+}
+
+/**
  * Rate limiter for login requests
  */
 const loginRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     limit: 5, // Limit each IP to 5 login requests per windowMs
-    message: "Too many login attempts from this IP, please try again after 15 minutes"
+    message: "Too many login attempts from this IP, please try again after 15 minutes",
+    validate: false,
 });
 
 /**
@@ -74,7 +105,7 @@ export const login = [
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server ErrorMessage' });
         }
     }
 ];
@@ -97,6 +128,6 @@ export function logout(req: Request, res: Response) {
         res.send("Logout successful");
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ message: 'Internal Server ErrorMessage' });
     }
 }
