@@ -1,11 +1,10 @@
 // Header.jsx
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import './Header.css';
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 const Header = () => {
 	const [authed, setAuthed] = useState(false);
-	//this wont deter anyone
 	useEffect(() => {
 		const token = localStorage.getItem('token');
 		setAuthed(token != null);
@@ -13,15 +12,15 @@ const Header = () => {
 			const token = localStorage.getItem('token');
 			setAuthed(token != null);
 		});
-	},[localStorage.getItem('token')]);
-	
+	}, [localStorage.getItem('token')]);
+
 
 	const adminLinks = [
-		{to: "/admin/", text:"Admin Orders"},
-		{to: "/admin/pizzas", text:"Admin Pizzas"},
-		{to: "/logout", text:"Logout"},
+		{to: "/admin/", text: "Manage Orders"},
+		{to: "/admin/pizzas", text: "Manage Pizzas"},
+		{to: "/logout", text: "Logout"},
 	];
-	
+
 	return (
 		<header className="border-primary border-2 p-4">
 			<h1
@@ -36,12 +35,16 @@ const Header = () => {
 					<li>
 						<Link to="/order/list">Your Orders</Link>
 					</li>
-					{authed && adminLinks.map(({to, text}) => (
-						<li>
-							<Link to={to}>{text}</Link>
-						</li>
-					))}
 				</ul>
+				{authed && (
+					<ul>
+						{adminLinks.map(({to, text}) => (
+							<li key={to}>
+								<Link to={to}>{text}</Link>
+							</li>
+						))}
+					</ul>
+				)}
 			</nav>
 		</header>
 	);
