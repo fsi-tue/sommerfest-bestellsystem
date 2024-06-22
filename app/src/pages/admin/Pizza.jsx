@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {API_ENDPOINT} from "../../globals.js";
 import {ErrorMessage} from "../../components/ErrorMessage.jsx";
 
-const Pizza = ({pizza}) => {
+const Pizza = ({pizza, isNew}) => {
 	const token = localStorage.getItem('token') || "";
 
 	const [error, setError] = useState('');
@@ -24,6 +24,20 @@ const Pizza = ({pizza}) => {
 			.then(response => response.json())
 			.then(data => setLocalPizza(data))
 			.catch(error => setError('Error updating pizza'));
+	}
+
+	const createPizza = (pizza) => {
+		fetch(`${API_ENDPOINT}/pizzas`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: JSON.stringify(pizza)
+		}).then(response => response.json())
+			.then(data => setLocalPizza(data))
+			.catch(error => setError('Error creating pizza'));
+
 	}
 
 	const deletePizza = (_id) => {
@@ -58,41 +72,52 @@ const Pizza = ({pizza}) => {
                                     </span>
 				</div>
 				<div className="flex gap-1 items-center justify-start font-light">
-					<button
-						onClick={() => updatePizza(localPizza)}
-						className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-0.5 px-1 rounded"
-					>
-						Update
-					</button>
-					<button
-						onClick={() => localPizza.enabled ? updatePizza({
-							...localPizza,
-							enabled: false
-						}) : updatePizza({...localPizza, enabled: true})}
-						className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-0.5 px-1 rounded"
-					>
-						{localPizza.enabled ? 'Disable' : 'Enable'}
-					</button>
+					{!isNew ? (
+						<button
+							onClick={() => updatePizza(localPizza)}
+							className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-0.5 px-1 rounded"
+						>
+							Update
+						</button>
+					) : (
+						<button
+							onClick={() => createPizza(localPizza)}
+							className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-0.5 px-1 rounded"
+						>
+							Create
+						</button>
+					)}
+					{!isNew &&
+						<button
+							onClick={() => localPizza.enabled ? updatePizza({
+								...localPizza,
+								enabled: false
+							}) : updatePizza({...localPizza, enabled: true})}
+							className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-0.5 px-1 rounded"
+						>
+							{localPizza.enabled ? 'Disable' : 'Enable'}
+						</button>
+					}
 				</div>
-			</div>
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
-				<input
-					type="text"
-					value={localPizza.name}
-					onChange={(event) => setLocalPizza({...localPizza, name: event.target.value})}
-					className="border px-2 py-1 rounded-md w-full"
-					placeholder="Pizza Name"
-				/>
-				<div className="flex items-center">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
 					<input
-						type="number"
-						value={localPizza.price}
-						onChange={(event) => setLocalPizza({...localPizza, price: event.target.value})}
+						type="text"
+						value={localPizza.name}
+						onChange={(event) => setLocalPizza({...localPizza, name: event.target.value})}
 						className="border px-2 py-1 rounded-md w-full"
-						step="0.10"
-						placeholder="Price (€)"
+						placeholder="Pizza Name"
 					/>
-					<span className="ml-2">€</span>
+					<div className="flex items-center">
+						<input
+							type="number"
+							value={localPizza.price}
+							onChange={(event) => setLocalPizza({...localPizza, price: event.target.value})}
+							className="border px-2 py-1 rounded-md w-full"
+							step="0.10"
+							placeholder="Price (€)"
+						/>
+						<span className="ml-2">€</span>
+					</div>
 				</div>
 			</div>
 		</div>

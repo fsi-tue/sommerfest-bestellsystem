@@ -109,6 +109,21 @@ const ManageOrders = () => {
 		return THIS_ENDPOINT + `/order/${id}`;
 	}
 
+	const formatDateTime = date => {
+		const options = {
+			weekday: 'long', // "Monday"
+			year: 'numeric', // "2024"
+			month: 'long', // "June"
+			day: 'numeric', // "22"
+			hour: 'numeric', // "10"
+			minute: 'numeric', // "30"
+			second: 'numeric', // "15"
+			hour12: false // "AM/PM"
+		};
+
+		return date.toLocaleDateString('en-US', options)
+	};
+
 	return (
 		<div className="content">
 			<div className="p-4">
@@ -150,7 +165,12 @@ const ManageOrders = () => {
                                     </span>
 									<span
 										className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
-                                        {order.createdAt}
+																			{(order.pizzas || []).length} pizzas
+															</span>
+
+									<span
+										className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
+                                        {formatDateTime(new Date(order.createdAt))}
                                     </span>
 								</div>
 								<ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">

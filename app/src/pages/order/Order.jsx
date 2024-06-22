@@ -5,16 +5,7 @@ import {API_ENDPOINT} from "../../globals.js";
 import OrderButton from "../../components/order/OrderButton.jsx";
 import Timeline from "../../components/Timeline.jsx";
 
-
-const every_x_seconds = 60;
-
-// Toy data
-const toyPizzas = [
-	// {name: "Margherita", price: 5},
-	// {name: "Pepperoni", price: 7},
-	// {name: "Vegetarian", price: 6},
-	// {name: "Four Cheese", price: 8},
-];
+const EVERY_X_SECONDS = 60;
 
 const Pizza = ({name, price, className, onClick}) => {
 	return (
@@ -28,12 +19,7 @@ const Pizza = ({name, price, className, onClick}) => {
 const Order = () => {
 	// State to hold the order
 	const [order, setOrder] = useState({name: '', pizzas: []})
-	const [pizzas, setPizzas] = useState(toyPizzas);
-	const setName = (e) => {
-        const name = e.target.value;
-		const pizzas = [...order.pizzas];
-		setOrder({name: name, pizzas: pizzas});
-	};
+	const [pizzas, setPizzas] = useState([]);
 
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
@@ -52,14 +38,30 @@ const Order = () => {
 			})
 	}, []);
 
-	// Function to add a pizza to the order
+	/**
+	 * Set the name of the order
+	 * @param e
+	 */
+	const setName = (e) => {
+		const name = e.target.value;
+		const pizzas = [...order.pizzas];
+		setOrder({name: name, pizzas: pizzas});
+	};
+
+	/**
+	 * Add a pizza to the order
+	 * @param pizza
+	 */
 	const addToOrder = (pizza) => {
 		const newOrder = [...order.pizzas];
 		newOrder.push(pizza);
 		setOrder({name: order.name, pizzas: newOrder});
 	}
 
-	// Function to remove a pizza from the order
+	/**
+	 * Remove a pizza from the order
+	 * @param index
+	 */
 	const removeFromOrder = (index) => {
 		const newOrder = [...order.pizzas];
 		newOrder.splice(index, 1);
@@ -95,11 +97,13 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 					</h3>
 
 					<ul className="pizza-list">
-						{pizzas.map((pizza, index) => (
-							<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza"
-							       onClick={() => addToOrder(pizza)}/>
-						))}
-						<p style={pizzas.length !== 0 ? {display: "none"} : {color: "red"}}>Error: could not fetch pizzas</p>
+						{pizzas
+							.filter(pizza => pizza.enabled)
+							.map((pizza, index) => (
+								<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza"
+								       onClick={() => addToOrder(pizza)}/>
+							))}
+						{!pizzas.length && <p>Loading...</p>}
 					</ul>
 				</div>
 				<div>
@@ -136,7 +140,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 				</p>
 
 				<Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT}
-				          every_x_seconds={every_x_seconds}/>
+				          every_x_seconds={EVERY_X_SECONDS}/>
 			</div>
 		</div>
 	);

@@ -43,11 +43,14 @@ const ManagePizzas = () => {
 				<h2 className="text-2xl mb-4">Manage Pizzas 🍕</h2>
 			</div>
 
+			{/* New Pizza */}
+			<Pizza key="new" pizza={{name: 'New Pizza', price: 0, enabled: true}} isNew={true}/>
+
+			{/* Pizzas */}
 			<div className="flex flex-col space-y-4">
 				{pizzas.map(pizza => (
 					<Pizza key={pizza._id} pizza={pizza}/>
-				))
-				}
+				))}
 			</div>
 		</div>
 	);
