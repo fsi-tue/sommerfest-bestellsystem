@@ -17,11 +17,9 @@ import AdminOrderDetail from "./pages/admin/OrderDetail.jsx";
 import AdminManagePizzas from "./pages/admin/ManagePizzas.jsx";
 
 // Redux
-import {Provider} from 'react-redux'
 
 // React Router
 import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider,} from "react-router-dom";
-import {store} from './store'
 
 // Create a router with the routes
 const router = createBrowserRouter(
@@ -49,9 +47,7 @@ const router = createBrowserRouter(
 const App = () => {
 	return (
 		<>
-			<Provider store={store}>
-				<RouterProvider router={router}/>
-			</Provider>
+			<RouterProvider router={router}/>
 		</>
 	);
 };
