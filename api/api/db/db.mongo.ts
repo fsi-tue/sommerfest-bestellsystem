@@ -1,4 +1,4 @@
-import { mongodb } from "../config/config";
+import { mongodb } from "../config";
 import mongoose from "mongoose";
 
 const mongoUri = mongodb.mongoUri
@@ -10,9 +10,4 @@ const connectDb = async () => {
     console.log('Pinged pizza deployment!')
 }
 
-export default async function () {
-    await connectDb()
-    return {
-        connectDb
-    }
-}
+module.exports = connectDb;

@@ -2,12 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-import { constants } from "../config/config";
 import { Request, Response } from "express";
 
 // Database
-import mongodb from '../db/db.mongo';
-import { fillDb } from "../db/fillDb.mongo";
+import mongodb from './db/db.mongo';
+import { fillDb } from "./db/fillDb.mongo";
+import { constants } from "./config";
 
 // Routes
 import { login, logout } from "./auth";

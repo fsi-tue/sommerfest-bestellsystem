@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pizza } from "../model/pizza";
+import { Pizza } from "./model/pizza";
 import { checkAuth } from "./auth";
 
 

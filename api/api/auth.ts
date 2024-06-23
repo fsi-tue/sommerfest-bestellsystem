@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, validationResult } from "express-validator";
-import { constants, tokens } from "../config/config";
+import { constants, tokens } from "./config";
 import rateLimit from "express-rate-limit";
 const moment = require('moment-timezone');
 const crypto = require('crypto');

@@ -1,10 +1,10 @@
 const moment = require('moment-timezone');
 import { checkAuth } from "./auth";
-import { MAX_PIZZAS, Order } from "../model/order";
+import { MAX_PIZZAS, Order } from "./model/order";
 import { NextFunction, Request, Response } from "express";
-import { Pizza, PizzaDocument } from "../model/pizza";
+import { Pizza, PizzaDocument } from "./model/pizza";
 import mongoose from "mongoose";
-import { constants } from "../config/config";
+import { constants } from "./config";
 
 /**
  * Get all orders

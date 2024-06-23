@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 const moment = require('moment-timezone');
-import { Order } from "../model/order";
-import { constants } from "../config/config";
+import { Order } from "./model/order";
+import { constants } from "./config";
 
 export const getTimeline = async (req: Request, res: Response) => {
 
