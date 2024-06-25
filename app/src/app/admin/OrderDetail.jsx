@@ -39,7 +39,7 @@ const OrderDetail = () => {
 
 	const getOrder = () => {
 		// Get the order status from the server
-		fetch('api/orders/' + orderNumber)
+		fetch('/api/orders/' + orderNumber)
 			.then(response => response.json())
 			.then(data => {
 				// console.log(data);
@@ -61,7 +61,7 @@ const OrderDetail = () => {
 	};
 
 	const updateOrderStatus = (_id, status) => {
-		fetch('api/orders', {
+		fetch('/api/orders', {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',

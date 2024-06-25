@@ -1,9 +1,8 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import {API_ENDPOINT} from "../../../globals.js";
 import Pizza from "./Pizza.jsx";
-import {ErrorMessage} from "../../../components/ErrorMessage.jsx";
+import {ErrorMessage} from "@/app/components/ErrorMessage.jsx";
 
 const ManagePizzas = () => {
 	const token = localStorage.getItem('token') || "";
@@ -11,7 +10,7 @@ const ManagePizzas = () => {
 
 	const navigate = useNavigate();
 	if (!authed) {
-		navigate("/");
+		// navigate("/");
 	}
 
 	const [pizzas, setPizzas] = useState([]);
@@ -19,7 +18,7 @@ const ManagePizzas = () => {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch('api/pizzas/', {
+		fetch('/api/pizzas/', {
 			headers: {
 				'Authorization': `Bearer ${token}`,
 			}

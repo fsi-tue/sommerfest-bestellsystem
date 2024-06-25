@@ -3,7 +3,6 @@ import { constants } from '@/config';
 import { Order } from '@/model/order';
 
 export async function GET() {
-
     const AMOUNT_WARNING = 8;
     const AMOUNT_CRITICAL = 10;
     const COLOR_OK = '#0ce504';

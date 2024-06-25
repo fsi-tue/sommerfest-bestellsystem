@@ -2,7 +2,6 @@
 
 import './order/Order.css';
 import {useEffect, useState} from "react";
-import {API_ENDPOINT} from "./globals.js";
 import OrderButton from "./components/order/OrderButton.jsx";
 import Timeline from "./components/Timeline.jsx";
 
@@ -19,8 +18,10 @@ const Pizza = ({name, price, className, onClick}) => {
 // Order component
 const Page = () => {
 	// State to hold the order
-	const [order, setOrder] = useState({name: '', pizzas: []})
+	const [error, setError] = useState('');
+	const [order, setOrder] = useState({name: '', pizzas: [], timeslot: ''});
 	const [pizzas, setPizzas] = useState([]);
+	const [timeslot, _setTimeslot] = useState('');
 
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
@@ -46,8 +47,27 @@ const Page = () => {
 	const setName = (e) => {
 		const name = e.target.value;
 		const pizzas = [...order.pizzas];
-		setOrder({name: name, pizzas: pizzas});
+		setOrder({name: name, pizzas: pizzas, timeslot: order.timeslot});
 	};
+
+	/**
+	 * Set the timeslot of the order
+	 * @param timeslot the timeslot as string in the format HH:MM
+	 */
+	const setTimeslot = (timeslot) => {
+		// Check if the timeslot is not in the past
+		const currentTime = new Date();
+		const time = new Date();
+		time.setHours(timeslot.split(':')[0]);
+		time.setMinutes(timeslot.split(':')[1]);
+		if (time < currentTime) {
+			setError('You cannot choose a timeslot in the past.');
+			return;
+		}
+
+		_setTimeslot(timeslot);
+		setOrder({name: order.name, pizzas: order.pizzas, timeslot: timeslot.time});
+	}
 
 	/**
 	 * Add a pizza to the order
@@ -56,7 +76,7 @@ const Page = () => {
 	const addToOrder = (pizza) => {
 		const newOrder = [...order.pizzas];
 		newOrder.push(pizza);
-		setOrder({name: order.name, pizzas: newOrder});
+		setOrder({name: order.name, pizzas: newOrder, timeslot: order.timeslot});
 	}
 
 	/**
@@ -66,7 +86,7 @@ const Page = () => {
 	const removeFromOrder = (index) => {
 		const newOrder = [...order.pizzas];
 		newOrder.splice(index, 1);
-		setOrder({name: order.name, pizzas: newOrder});
+		setOrder({name: order.name, pizzas: newOrder, timeslot: order.timeslot});
 	}
 
 
@@ -123,9 +143,10 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						<p>
 							Total: {order.pizzas.reduce((total, pizza) => total + pizza.price, 0)}€
 						</p>
-						{order.length > 0 && <p className="font-light text-xs">
-							Your order will be ready in {order.length * 10} minutes
-						</p>}
+						{timeslot && <p className="font-light text-xs">
+							Your order will be ready at {timeslot}
+						</p>
+						}
 					</div>
 					<div className='mb-3'>
 						<input name="name" type="text" placeholder="Enter your name (optional)"
@@ -140,7 +161,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 					Here is the timeline of the orders.
 				</p>
 
-				<Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT}
+				<Timeline startDate={start} stopDate={end} setTimeslot={(entry) => setTimeslot(entry)}
 				          every_x_seconds={EVERY_X_SECONDS}/>
 			</div>
 		</div>

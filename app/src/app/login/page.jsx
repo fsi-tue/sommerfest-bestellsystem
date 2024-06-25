@@ -2,7 +2,7 @@
 
 import './Login.css';
 import {useState} from "react";
-import {API_ENDPOINT} from "../../globals.js";
+import {API_ENDPOINT} from "../globals.js";
 import {useRouter} from "next/navigation";
 
 const Page = () => {

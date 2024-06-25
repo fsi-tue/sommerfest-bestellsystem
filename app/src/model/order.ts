@@ -7,6 +7,7 @@ export interface OrderDocument extends Document {
     name: string;
     pizzas: PizzaDocument[];
     orderDate: Date;
+    timeslot: string;
     totalPrice: number;
     finishedAt?: Date;
     status: 'pending' | 'paid' | 'ready' | 'delivered' | 'cancelled';
@@ -27,6 +28,10 @@ const orderSchema = new Schema<OrderDocument>({
     orderDate: {
         type: Date,
         default: Date.now,
+    },
+    timeslot: {
+        type: String,
+        required: true,
     },
     totalPrice: {
         type: Number,

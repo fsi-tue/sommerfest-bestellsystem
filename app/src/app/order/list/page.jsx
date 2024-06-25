@@ -2,8 +2,6 @@
 
 import Timeline from "../../components/Timeline.jsx";
 
-import {API_ENDPOINT} from "../../globals.js";
-
 const EVERY_X_SECONDS = 60;
 
 const Page = () => {
@@ -46,7 +44,7 @@ const Page = () => {
 					Here is the timeline of the orders.
 				</p>
 
-				<Timeline startDate={start} stopDate={end} API_ENDPOINT={API_ENDPOINT}
+				<Timeline startDate={start} stopDate={end}
 				          every_x_seconds={EVERY_X_SECONDS}/>
 			</div>
 		</div>

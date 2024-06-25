@@ -3,15 +3,15 @@
 import {useEffect, useState} from 'react';
 import PropTypes from "prop-types";
 import {Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import { API_ENDPOINT } from '../globals';
+import {API_ENDPOINT} from '../globals';
 
-const Timeline = ({startDate, stopDate, API_ENDPOINT, every_x_seconds}) => {
+const Timeline = ({startDate, stopDate, every_x_seconds, setTimeslot}) => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await fetch(API_ENDPOINT + "/timeline");
+				const response = await fetch('/api/timeline');
 				const jsonData = await response.json();
 				setData(jsonData);
 			} catch (error) {
@@ -31,14 +31,14 @@ const Timeline = ({startDate, stopDate, API_ENDPOINT, every_x_seconds}) => {
 			}
 		};
 
-		const interval = setInterval(fetchData, every_x_seconds * 1000); // Fetch data every minute
+		const interval = setInterval(fetchData, every_x_seconds * 1000); // Fetch data every x seconds
 		fetchData(); // Fetch data initially
 		return () => clearInterval(interval); // Clear interval on unmount
 	}, []); // Run effect only once on mount
 
 	return (
 		<ResponsiveContainer width="80%" height={300}>
-			<BarChart data={data}>
+			<BarChart data={data} onClick={(event) => setTimeslot(event.activeLabel)}>
 				<XAxis dataKey="time"/>
 				<YAxis/>
 				<Tooltip/>

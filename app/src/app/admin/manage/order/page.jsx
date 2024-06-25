@@ -30,7 +30,7 @@ const Page = () => {
 	// Fetch the order status from the server
 	useEffect(() => {
 		// Get the order status from the server
-		fetch('api/orders/', {
+		fetch('/api/orders/', {
 			headers: {
 				'Authorization': `Bearer ${token}`,
 			}
@@ -67,7 +67,7 @@ const Page = () => {
 	 * @param status
 	 */
 	const updateOrderStatus = (_id, status) => {
-		fetch('api/orders', {
+		fetch('/api/orders', {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
