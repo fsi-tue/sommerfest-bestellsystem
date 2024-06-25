@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
-import { THIS_ENDPOINT } from "../../globals";
+import { THIS_ENDPOINT } from "@/app/globals";
 
 const OrderQR = (orderId) => {
     const canvasRef = useRef(null);

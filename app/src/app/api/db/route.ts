@@ -1,10 +1,17 @@
 // Fill the database
 import { Pizza } from "@/model/pizza";
-import { Order } from "@/model/order";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import dbConnect from "@/lib/dbConnect";
+
+// Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 
 export async function POST() {
+    await dbConnect()
+
     // Authenticate the user
     const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
@@ -35,36 +42,5 @@ export async function POST() {
         console.error('Error fetching pizzas:', error);
     }
 
-    // Add orders
-    const orders = [
-        {
-            name: 'John Doe',
-            pizzas: [1, 2, 3].map(index => Object.keys(pizzas_by_id)[index - 1]),
-            totalPrice: 18,
-            status: 'pending'
-        },
-        {
-            name: 'Jane Doe',
-            pizzas: [4, 5].map(index => Object.keys(pizzas_by_id)[index - 1]),
-            totalPrice: 17,
-            status: 'paid'
-        },
-        {
-            name: 'Alice',
-            pizzas: [6].map(index => Object.keys(pizzas_by_id)[index - 1]),
-            totalPrice: 10,
-            status: 'ready'
-        },
-        {
-            name: 'Bob',
-            pizzas: [7].map(index => Object.keys(pizzas_by_id)[index - 1]),
-            totalPrice: 11,
-            status: 'delivered'
-        },
-    ];
-    for (const order of orders) {
-        await new Order(order).save();
-    }
-
-    console.log('Database filled');
+    return Response.json({ message: 'Successfully filled database' })
 }

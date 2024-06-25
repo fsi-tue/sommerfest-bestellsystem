@@ -78,7 +78,7 @@ const Page = () => {
 		}
 
 		_setTimeslot(timeslot);
-		setOrder({name: order.name, pizzas: order.pizzas, timeslot: timeslot.time});
+		setOrder({name: order.name, pizzas: order.pizzas, timeslot: timeslot});
 	}
 
 	/**

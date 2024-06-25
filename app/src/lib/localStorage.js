@@ -6,6 +6,12 @@ export const getFromLocalStorage = (key, defaultValue) => {
 	return value;
 }
 
+export const addToLocalStorage = (key, value) => {
+	if (typeof window !== "undefined") {
+		localStorage.setItem(key, value)
+	}
+}
+
 export const removeFromLocalStorage = (key) => {
 	if (typeof window !== "undefined") {
 		localStorage.removeItem(key)

@@ -1,13 +1,14 @@
 // Button to order the pizzas
 import PropTypes from "prop-types";
-import {API_ENDPOINT} from "../../globals.js";
 import {useRouter} from "next/navigation";
+import {addToLocalStorage, getFromLocalStorage} from "../../../lib/localStorage";
 
 const OrderButton = ({order}) => {
 	const router = useRouter()
 
 	const pizzas = order.pizzas;
 	const name = order.name;
+	const timeslot = order.timeslot
 
 	if (pizzas.length === 0) {
 		return;
@@ -15,7 +16,8 @@ const OrderButton = ({order}) => {
 
 	const body = {
 		name: name,
-		pizzas: pizzas
+		pizzas: pizzas,
+		timeslot: timeslot
 	}
 
 	// Function to order the pizzas
@@ -35,7 +37,7 @@ const OrderButton = ({order}) => {
 					// Add order ID to local storage
 					const orderIds = JSON.parse(getFromLocalStorage('orderIds')) || [];
 					orderIds.push(data.orderId);
-					localStorage.setItem('orderIds', JSON.stringify(orderIds));
+					addToLocalStorage('orderIds', JSON.stringify(orderIds));
 
 					// Redirect to thank you page
 					router.push(`/order/thank-you/${data.orderId}`)
@@ -45,7 +47,8 @@ const OrderButton = ({order}) => {
 
 	return (
 		<>
-			<button onClick={() => orderPizza()} className="bg-primary-950 text-white px-4 py-2 rounded-lg mt-4 w-full md:w-auto hover:bg-primary-800">
+			<button onClick={() => orderPizza()}
+			        className="bg-primary-950 text-white px-4 py-2 rounded-lg mt-4 w-full md:w-auto hover:bg-primary-800">
 				Order now
 			</button>
 		</>

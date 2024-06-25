@@ -31,7 +31,7 @@ const orderSchema = new Schema<OrderDocument>({
     },
     timeslot: {
         type: String,
-        required: true,
+        required: false,
     },
     totalPrice: {
         type: Number,

@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
 
-export async function GET() {
+export async function GET(req: Request) {
     await dbConnect();
     console.log('GET pizzas')
 

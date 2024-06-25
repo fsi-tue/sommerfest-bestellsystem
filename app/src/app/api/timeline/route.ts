@@ -4,7 +4,11 @@ import { Order } from '@/model/order';
 
 import moment from 'moment-timezone';
 
-export async function GET() {
+// Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
+export async function GET(request: Request) {
     await dbConnect();
 
     const AMOUNT_WARNING = 8;

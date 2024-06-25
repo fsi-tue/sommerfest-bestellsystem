@@ -1,5 +1,3 @@
-'use client'
-
 export const ErrorMessage = ({error}) => {
 	return (
 		<div className="text-red-500">
