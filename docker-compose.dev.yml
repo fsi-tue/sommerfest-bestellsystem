@@ -1,6 +1,6 @@
 services:
   api:
-    container_name: api
+    container_name: src
     build:
       context: ./api
       dockerfile: Dockerfile # on move to prod, update this

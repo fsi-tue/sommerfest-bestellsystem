@@ -23,9 +23,7 @@ const tokens = {
     PAYMENT_ADMIN_TOKEN: process.env.PAYMENT_ADMIN_TOKEN || "asdf",
 }
 
-module.exports = {
-    database,
-    mongodb,
-    constants,
-    tokens
-}
+exports.database = database;
+exports.mongodb = mongodb;
+exports.constants = constants;
+exports.tokens = tokens;

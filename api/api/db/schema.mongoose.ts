@@ -81,4 +81,4 @@ const authBearerTokensSchema = new Schema({
 
 const AuthBearerTokens = model('AuthBearerTokens', authBearerTokensSchema);
 
-export { User, Pizza, Payment, PizzaOrderMap, CollectedOrder, WaitingOrder, PaidOrder, OpenOrder, AuthBearerTokens };
+{ User, Pizza, Payment, PizzaOrderMap, CollectedOrder, WaitingOrder, PaidOrder, OpenOrder, AuthBearerTokens };

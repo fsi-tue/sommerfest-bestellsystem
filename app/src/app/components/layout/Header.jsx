@@ -4,14 +4,15 @@ import Link from 'next/link'
 
 import './Header.css';
 import {useEffect, useState} from "react";
+import {getFromLocalStorage} from "@/lib/localStorage.js";
 
 const Header = () => {
 	const [authed, setAuthed] = useState(false);
 	useEffect(() => {
-		const token = localStorage.getItem('token');
+		const token = getFromLocalStorage('token')
 		setAuthed(token != null);
 		window.addEventListener("loginSuccessEvent", (e) => {
-			const token = localStorage.getItem('token');
+			const token = getFromLocalStorage('token');
 			setAuthed(token != null);
 		});
 	}, []);

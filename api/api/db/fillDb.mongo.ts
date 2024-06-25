@@ -1,8 +1,8 @@
 // Fill the database
-import { Pizza } from "../model/pizza";
-import { Order } from "../model/order";
+const { Pizza } = require("../model/pizza")
+const { Order } = require("../model/order")
 
-export const fillDb = async () => {
+const fillDb = async () => {
     // Add pizzas
     const pizzas = [
         { name: 'Margherita', price: 5 },
@@ -60,3 +60,5 @@ export const fillDb = async () => {
 
     console.log('Database filled');
 }
+
+module.exports = fillDb;

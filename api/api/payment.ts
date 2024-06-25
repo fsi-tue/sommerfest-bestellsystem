@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { Order } from "../../model/order";
-import { Request, Response } from "express";
+const { Order } = require("../../model/order")
+const { Request, Response } = require("express")
 
-export async function create(req: Request, res: Response) {
+async function create(req: Request, res: Response) {
     // Get the order details from the request body
     const body = req.body;
 
@@ -55,7 +55,7 @@ async function destroy(id: number) {
     throw new Error('Not supported!');
 }
 
-export default {
+default {
     create,
     update,
     destroy,

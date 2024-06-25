@@ -33,7 +33,7 @@ const OrderButton = ({order}) => {
 					// console.log(`Order ID: ${data.orderId}`)
 
 					// Add order ID to local storage
-					const orderIds = JSON.parse(localStorage.getItem('orderIds')) || [];
+					const orderIds = JSON.parse(getFromLocalStorage('orderIds')) || [];
 					orderIds.push(data.orderId);
 					localStorage.setItem('orderIds', JSON.stringify(orderIds));
 

@@ -1,6 +1,7 @@
 'use client'
 
-import Timeline from "../../components/Timeline.jsx";
+import Timeline from "@/app/components/Timeline.jsx";
+import {getFromLocalStorage} from "@/lib/localStorage.js";
 
 const EVERY_X_SECONDS = 60;
 
@@ -14,7 +15,7 @@ const Page = () => {
 	end.setMinutes(59, 59, 999);
 
 	// Get the order IDs from local storage
-	const orderIds = JSON.parse(localStorage.getItem('orderIds')) || [];
+	const orderIds = JSON.parse(getFromLocalStorage('orderIds')) || [];
 
 	return (
 		<div className="content">

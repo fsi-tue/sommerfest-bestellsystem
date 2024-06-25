@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { Pizza } from "./model/pizza";
-import { checkAuth } from "./auth";
+const { Request, Response } = require('express')
+const { Pizza } = require("./model/pizza")
+const { checkAuth } = require("./auth")
 
 
 /**
@@ -8,7 +8,7 @@ import { checkAuth } from "./auth";
  * @param req
  * @param res
  */
-export async function getAllPizzas(req: Request, res: Response) {
+async function getAllPizzas(req: Request, res: Response) {
     try {
         const pizzas = await Pizza.find()
         return res.send(pizzas);
@@ -24,7 +24,7 @@ export async function getAllPizzas(req: Request, res: Response) {
  * @param req
  * @param res
  */
-export async function createPizza(req: Request, res: Response) {
+async function createPizza(req: Request, res: Response) {
     await checkAuth(req, res);
 
     const body = req.body;
@@ -43,7 +43,7 @@ export async function createPizza(req: Request, res: Response) {
  * @param req
  * @param res
  */
-export async function updatePizza(req: Request, res: Response) {
+async function updatePizza(req: Request, res: Response) {
     await checkAuth(req, res);
 
     const body = req.body;
@@ -61,4 +61,10 @@ export async function updatePizza(req: Request, res: Response) {
         console.error('Error updating pizza:', error);
         res.status(500).send('Error updating pizza');
     }
+}
+
+module.exports = {
+    getAllPizzas,
+    createPizza,
+    updatePizza
 }

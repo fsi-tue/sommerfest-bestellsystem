@@ -1,14 +1,11 @@
 import { constants, tokens } from "@/config";
 import dbConnect from "@/lib/dbConnect";
 import { Session } from "@/model/session";
-import { rateLimit } from "@/lib/rateLimit";
 
-const moment = require('moment-timezone');
-const crypto = require('crypto');
+import moment from 'moment-timezone';
+import crypto from 'crypto';
 
-const rateLimiter = rateLimit(5, 15 * 60 * 1000);
-
-export async function POST(req: Request, res: Response, next: () => void): Promise<Response> {
+export async function POST(req: Request): Promise<Response> {
     await dbConnect()
 
     const { token } = await req.json();

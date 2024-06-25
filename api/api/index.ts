@@ -1,24 +1,25 @@
+import { Request, Response } from "express";
+
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-import { Request, Response } from "express";
-
 // Database
-import mongodb from './db/db.mongo';
-import { fillDb } from "./db/fillDb.mongo";
-import { constants } from "./config";
+const { connectDb } = require("./db/db.mongo")
+
+const { fillDb } = require("./db/fillDb.mongo")
+const { constants } = require("./config")
 
 // Routes
-import { login, logout } from "./auth";
-import { getTimeline } from "./getTimeline";
-import { createOrder, getAllOrders, getOrderById, updateOrder } from "./order";
-import { createPizza, getAllPizzas, updatePizza } from "./pizza";
+const { login, logout } = require('./auth');
+const { getTimeline } = require("./getTimeline")
+const { createOrder, getAllOrders, getOrderById, updateOrder } = require("./order")
+const { createPizza, getAllPizzas, updatePizza } = require("./pizza")
 
-mongodb();
+connectDb();
 
 const app = express();
-export const appPort = process.env.PORT || 3000;
+const appPort = process.env.PORT || 3000;
 
 ////////////////////////
 // Middleware
@@ -69,4 +70,4 @@ app.listen(appPort, () => {
     console.log(`Listening: http://localhost:${appPort}`);
 });
 
-export default app;
+module.exports = app;

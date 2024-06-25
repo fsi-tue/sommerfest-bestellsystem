@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { body, validationResult } from "express-validator";
-import { constants, tokens } from "./config";
+const { Request, Response } = require('express')
+const { body, validationResult } = require("express-validator")
+const { constants, tokens } = require("./config")
 import rateLimit from "express-rate-limit";
 const moment = require('moment-timezone');
 const crypto = require('crypto');
@@ -10,7 +10,7 @@ const crypto = require('crypto');
  * @param req
  * @param res
  */
-export async function checkAuth(req: Request, res: Response) {
+async function checkAuth(req: Request, res: Response) {
     const authHeader = req.header('Authorization');
     if (!authHeader) {
         return res.status(401).json({ message: 'Authorization header missing' });
@@ -49,7 +49,7 @@ const loginRateLimiter = rateLimit({
  * POST /login
  * Login endpoint
  */
-export const login = [
+const login = [
     loginRateLimiter,
     body('token').isString().notEmpty().withMessage('Token is required'),
     async (req: Request, res: Response) => {
@@ -106,7 +106,7 @@ export const login = [
  * POST /logout
  * Logout endpoint
  */
-export const logout = (req: Request, res: Response) => {
+const logout = (req: Request, res: Response) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');
         if (!token) {
@@ -123,3 +123,9 @@ export const logout = (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal Server ErrorMessage' });
     }
 };
+
+module.exports = {
+    login,
+    logout,
+    checkAuth,
+}

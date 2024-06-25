@@ -1,4 +1,4 @@
-import { mongodb } from "../config";
+const { mongodb } = require("../config")
 import mongoose from "mongoose";
 
 const mongoUri = mongodb.mongoUri

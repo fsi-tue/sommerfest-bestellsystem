@@ -1,15 +1,15 @@
-const moment = require('moment-timezone');
+import moment = require('moment-timezone');
 import { checkAuth } from "./auth";
 import { MAX_PIZZAS, Order } from "./model/order";
 import { NextFunction, Request, Response } from "express";
-import { Pizza, PizzaDocument } from "./model/pizza";
+const { Pizza, PizzaDocument } = require("./model/pizza")
 import mongoose from "mongoose";
-import { constants } from "./config";
+const { constants } = require("./config")
 
 /**
  * Get all orders
  */
-export async function getAllOrders(req: Request, res: Response) {
+async function getAllOrders(req: Request, res: Response) {
     await checkAuth(req, res);
 
     const orders = await Order.find();
@@ -47,7 +47,7 @@ export async function getAllOrders(req: Request, res: Response) {
  * @param res
  * @param next
  */
-export async function getOrderById(req: Request, res: Response, next: NextFunction) {
+async function getOrderById(req: Request, res: Response, next: NextFunction) {
     // Check if the request was GET
     if (req.method !== 'GET') {
         next();
@@ -118,7 +118,7 @@ export async function getOrderById(req: Request, res: Response, next: NextFuncti
  * @param req
  * @param res
  */
-export async function createOrder(req: Request, res: Response) {
+async function createOrder(req: Request, res: Response) {
     // Get the body of the request
     const body = req.body;
     // console.log('Creating a new order', body);
@@ -178,7 +178,7 @@ export async function createOrder(req: Request, res: Response) {
  * @param req
  * @param res
  */
-export async function updateOrder(req: Request, res: Response) {
+async function updateOrder(req: Request, res: Response) {
     await checkAuth(req, res);
 
     // Get the order details from the request body

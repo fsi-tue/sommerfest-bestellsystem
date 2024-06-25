@@ -4,7 +4,7 @@ import {useEffect, useState} from "react";
 import Pizza from "./Pizza.jsx";
 import {ErrorMessage} from "@/app/components/ErrorMessage.jsx";
 import {useRouter} from "next/navigation";
-import {getFromLocalStorage} from "@/lib/localStorage.js";
+import {getFromLocalStorage} from "@/lib/localStorage";
 
 const ManagePizzas = () => {
 	// If there is some script kiddie trying to access this page,
@@ -14,9 +14,11 @@ const ManagePizzas = () => {
 	const token = getFromLocalStorage('token', '');
 	const authed = token !== "";
 	const router = useRouter();
-	if (!authed) {
-		router.push('/');
-	}
+	useEffect(() => {
+		if (!authed) {
+			router.push('/');
+		}
+	}, [])
 
 	const [pizzas, setPizzas] = useState([]);
 	const [error, setError] = useState('');

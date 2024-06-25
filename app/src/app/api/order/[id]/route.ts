@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 
-const moment = require('moment-timezone');
+import moment from 'moment-timezone';
 import mongoose from "mongoose";
 import { Order } from "@/model/order";
 import { Pizza, PizzaDocument } from "@/model/pizza";
@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
 
-export async function GET(req: Request) {
+export async function GET(req: Request, { params }: { params: { id: string } }) {
     await dbConnect();
 
     // Authenticate the user
@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     }
 
     // Get the ID from the URL
-    const id = req.params.id;
+    const id = params.id
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {

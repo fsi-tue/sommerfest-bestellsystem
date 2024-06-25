@@ -1,7 +1,8 @@
 // Pizza model
-import { type Document, model, Schema } from "mongoose";
+const { model, Schema } = require("mongoose")
+import { Document } from "mongoose"
 
-export interface PizzaDocument extends Document {
+interface PizzaDocument extends Document {
     id: number;
     name: string;
     price: number;
@@ -25,4 +26,7 @@ const pizzaSchema = new Schema<PizzaDocument>({
     createdAt: { type: Date, default: Date.now }
 });
 
-export const Pizza = model('Pizza', pizzaSchema);
+const Pizza = model('Pizza', pizzaSchema);
+
+exports.Pizza = Pizza;
+exports.PizzaDocument = PizzaDocument;

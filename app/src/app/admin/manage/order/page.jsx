@@ -13,9 +13,11 @@ const Page = () => {
 	const token = getFromLocalStorage('token', '');
 	const authed = token !== "";
 	const router = useRouter();
-	if (!authed) {
-		router.push('/');
-	}
+	useEffect(() => {
+		if (!authed) {
+			router.push('/');
+		}
+	}, [])
 
 	const [orders, setOrders] = useState([]); // state to hold order status
 	const [filter, setFilter] = useState(''); // state to hold order status

@@ -2,7 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import { constants } from '@/config';
 import { Order } from '@/model/order';
 
-const moment = require('moment-timezone');
+import moment from 'moment-timezone';
 
 export async function GET() {
     await dbConnect();

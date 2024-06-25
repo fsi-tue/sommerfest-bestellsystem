@@ -1,9 +1,9 @@
-import { type Document, model, Schema } from "mongoose";
-import { PizzaDocument } from "./pizza";
+const { type Document, model, Schema } = require("mongoose")
+const { PizzaDocument } = require("./pizza")
 
-export const MAX_PIZZAS = 12;
+const MAX_PIZZAS = 12;
 
-export interface OrderDocument extends Document {
+interface OrderDocument extends Document {
     name: string;
     pizzas: PizzaDocument[];
     orderDate: Date;
@@ -62,4 +62,7 @@ orderSchema.pre('save', function (next) {
     next();
 });
 
-export const Order = model('Order', orderSchema);
+const Order = model('Order', orderSchema);
+
+exports.Order = Order;
+exports.OrderDocument = OrderDocument;

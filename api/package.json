@@ -11,7 +11,7 @@
   ],
   "version": "1.0.0",
   "description": "API for pizza system",
-  "type": "module",
+  "type":"commonjs",
   "main": "index.ts",
   "scripts": {
     "bun:dev": "bun run --hot api/index.ts",

@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+const { Request, Response } = require('express')
 const moment = require('moment-timezone');
-import { Order } from "./model/order";
-import { constants } from "./config";
+const { constants } = require('./config');
+const { Order } = require('./model/order');
 
-export const getTimeline = async (req: Request, res: Response) => {
+const getTimeline = async (req: Request, res: Response) => {
 
     const AMOUNT_WARNING = 8;
     const AMOUNT_CRITICAL = 10;
