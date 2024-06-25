@@ -83,6 +83,7 @@ export async function POST(req: Request) {
     order.name = name || "anonymous";
     order.pizzas = pizzas
     order.totalPrice = totalPrice;
+    order.comment = "No comment";
     await order.save()
 
     // Get the order ID

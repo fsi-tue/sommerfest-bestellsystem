@@ -5,6 +5,7 @@ export const MAX_PIZZAS = 12;
 
 export interface OrderDocument extends Document {
     name: string;
+    comment?: string;
     pizzas: PizzaDocument[];
     orderDate: Date;
     timeslot: string;
@@ -17,6 +18,10 @@ const orderSchema = new Schema<OrderDocument>({
     name: {
         type: String,
         required: true,
+    },
+    comment: {
+        type: String,
+        required: false,
     },
     pizzas: [
         {

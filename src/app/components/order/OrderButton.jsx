@@ -9,6 +9,7 @@ const OrderButton = ({order}) => {
 	const pizzas = order.pizzas;
 	const name = order.name;
 	const timeslot = order.timeslot
+	const comment = order.comment
 
 	if (pizzas.length === 0) {
 		return;
@@ -18,6 +19,7 @@ const OrderButton = ({order}) => {
 		name: name,
 		pizzas: pizzas,
 		timeslot: timeslot
+		comment: comment
 	}
 
 	// Function to order the pizzas

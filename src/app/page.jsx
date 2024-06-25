@@ -20,9 +20,9 @@ const Pizza = ({name, price, className, onClick}) => {
 const Page = () => {
 	// State to hold the order
 	const [error, setError] = useState('');
-	const [order, setOrder] = useState({name: '', pizzas: [], timeslot: ''});
 	const [pizzas, setPizzas] = useState([]);
 	const [timeslot, _setTimeslot] = useState('');
+	const [order, setOrder] = useState({name: '', pizzas: [], timeslot: '', comment: ''});
 
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
@@ -50,6 +50,14 @@ const Page = () => {
 		const pizzas = [...order.pizzas];
 		setOrder({name: name, pizzas: pizzas, timeslot: order.timeslot});
 	};
+
+	/**
+	 * Set the comment of the order
+	 */
+	const setComment = (e) => {
+		const comment = e.target.value;
+		setOrder({name: order.name, pizzas: order.pizzas, timeslot: order.timeslot, comment: comment});
+	}
 
 	/**
 	 * Set the timeslot of the order
@@ -111,7 +119,9 @@ All of our pizzas can be ordered as whole or halved; see the irgedients list bel
 Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening! */}
 
 				<ol className="list-decimal list-inside space-y-2">
-					<li><strong>Choose Pizza:</strong> Select whole or halved from the list below (a whole pizza has a diameter of 12 inches / 30 cm).</li>
+					<li><strong>Choose Pizza:</strong> Select whole or halved from the list below (a whole pizza has a diameter of
+						12 inches / 30 cm).
+					</li>
 					<li><strong>Pick-Up Time:</strong> Choose a time (some slots may be full).</li>
 					<li><strong>Pay in Cash:</strong> Pay when collecting at the counter.</li>
 				</ol>
@@ -175,6 +185,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 							id="comment"
 							name="comment"
 							placeholder="Enter your comment (optional)"
+							onChange={setComment}
 							className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
 						/>
 					</div>
