@@ -1,8 +1,12 @@
-const moment = require('moment-timezone');
+import dbConnect from "@/lib/dbConnect";
 import { constants } from '@/config';
 import { Order } from '@/model/order';
 
+const moment = require('moment-timezone');
+
 export async function GET() {
+    await dbConnect();
+
     const AMOUNT_WARNING = 8;
     const AMOUNT_CRITICAL = 10;
     const COLOR_OK = '#0ce504';

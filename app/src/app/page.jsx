@@ -4,6 +4,7 @@ import './order/Order.css';
 import {useEffect, useState} from "react";
 import OrderButton from "./components/order/OrderButton.jsx";
 import Timeline from "./components/Timeline.jsx";
+import {ErrorMessage} from "./components/ErrorMessage.jsx";
 
 const EVERY_X_SECONDS = 60;
 
@@ -55,13 +56,24 @@ const Page = () => {
 	 * @param timeslot the timeslot as string in the format HH:MM
 	 */
 	const setTimeslot = (timeslot) => {
+		setError('');
+
 		// Check if the timeslot is not in the past
-		const currentTime = new Date();
 		const time = new Date();
 		time.setHours(timeslot.split(':')[0]);
 		time.setMinutes(timeslot.split(':')[1]);
+
+		const currentTime = new Date();
 		if (time < currentTime) {
 			setError('You cannot choose a timeslot in the past.');
+			return;
+		}
+
+		// Minimum time per pizza is 5 minutes
+		const minTime = new Date();
+		minTime.setMinutes(minTime.getMinutes() + order.pizzas.length * 5);
+		if (time < minTime) {
+			setError('Minimum time for the order is ' + minTime.toLocaleTimeString());
 			return;
 		}
 
@@ -152,7 +164,8 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						<input name="name" type="text" placeholder="Enter your name (optional)"
 						       className="p-2 border border-gray-300 rounded-lg shadow-md mb-4" onChange={setName}/>
 					</div>
-					<OrderButton order={order}/>
+					{error && <ErrorMessage error={error}/>}
+					{error === '' && <OrderButton order={order}/>}
 				</div>
 			</div>
 			<div className="timeline-container">

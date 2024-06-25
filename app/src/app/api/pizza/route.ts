@@ -1,5 +1,7 @@
 import { Pizza } from "@/model/pizza";
-import dbConnect from "@/db/dbConnect";
+import dbConnect from "@/lib/dbConnect";
+import { headers } from "next/headers";
+import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
 
 export async function GET() {
@@ -17,13 +19,18 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-    // await checkAuth(req);
     await dbConnect();
 
-    const { body } = await req.json()
+    // Authenticate the user
+    const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    }
+
+    const newPizza = await req.json()
 
     try {
-        const pizza = new Pizza(body);
+        const pizza = new Pizza(newPizza);
         await pizza.save();
         return Response.json(pizza);
     } catch (error) {
@@ -33,10 +40,15 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-    // await checkAuth(req);
     await dbConnect();
 
-    const { pizza } = await req.json()
+    // Authenticate the user
+    const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    }
+
+    const pizza = await req.json()
 
     try {
         const updatedPizza = await Pizza.findById(pizza._id);

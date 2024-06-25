@@ -1,16 +1,16 @@
 import {useEffect, useState} from "react";
-import {API_ENDPOINT} from "../globals.js";
+import {useRouter} from "next/navigation.js";
 
 const OrderDetail = () => {
 	// If there is some script kiddie trying to access this page,
 	// and they manage to get here with an invalid token,
 	// they should have a cookie or something.
+	// Keep it simple, just check if the token is present.
 	const token = localStorage.getItem('token') || "";
 	const authed = token !== "";
-
-	const navigate = useNavigate();
+	const router = useRouter();
 	if (!authed) {
-		navigate("/");
+		router.push('/');
 	}
 
 	const {orderNumber} = useParams();

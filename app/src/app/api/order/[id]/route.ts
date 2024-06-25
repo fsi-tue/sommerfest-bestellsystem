@@ -1,14 +1,22 @@
-import dbConnect from "@/db/dbConnect";
+import dbConnect from "@/lib/dbConnect";
 
 const moment = require('moment-timezone');
 import mongoose from "mongoose";
 import { Order } from "@/model/order";
 import { Pizza, PizzaDocument } from "@/model/pizza";
 import { constants } from "@/config";
+import { headers } from "next/headers";
+import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
 
 export async function GET(req: Request) {
     await dbConnect();
+
+    // Authenticate the user
+    const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    }
 
     // Get the ID from the URL
     const id = req.params.id;

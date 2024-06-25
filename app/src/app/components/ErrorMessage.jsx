@@ -2,10 +2,10 @@
 
 export const ErrorMessage = ({error}) => {
 	return (
-		<div className="text-red-500 text-center">
+		<div className="text-red-500">
 			{error}
 			<p className="text-sm text-gray-500">
-				Please reload the page and try again.
+				Please try again.
 			</p>
 		</div>
 	);

@@ -1,8 +1,16 @@
 // Fill the database
 import { Pizza } from "@/model/pizza";
 import { Order } from "@/model/order";
+import { headers } from "next/headers";
+import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
-export const fillDb = async () => {
+export async function POST() {
+    // Authenticate the user
+    const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    }
+
     // Add pizzas
     const pizzas = [
         { name: 'Margherita', price: 5 },

@@ -1,3 +1,5 @@
+'use client'
+
 import {useEffect, useState} from "react";
 import {API_ENDPOINT} from "../../../globals.js";
 import {ErrorMessage} from "../../../components/ErrorMessage.jsx";
@@ -13,7 +15,7 @@ const Pizza = ({pizza, isNew}) => {
 	}, [pizza]);
 
 	const updatePizza = (pizza) => {
-		fetch(`${API_ENDPOINT}/pizzas`, {
+		fetch(`/api/pizza`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',

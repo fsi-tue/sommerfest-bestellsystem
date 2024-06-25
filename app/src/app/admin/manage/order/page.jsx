@@ -1,16 +1,16 @@
 'use client'
 
 import {useEffect, useRef, useState} from "react";
-import {API_ENDPOINT, THIS_ENDPOINT} from "../../../globals.js";
 import {Scanner} from "@yudiel/react-qr-scanner";
 import {useRouter} from "next/navigation";
+import {getFromLocalStorage} from "@/lib/localStorage";
 
 const Page = () => {
 	// If there is some script kiddie trying to access this page,
 	// and they manage to get here with an invalid token,
 	// they should have a cookie or something.
 	// Keep it simple, just check if the token is present.
-	const token = localStorage.getItem('token') || "";
+	const token = getFromLocalStorage('token', '');
 	const authed = token !== "";
 	const router = useRouter();
 	if (!authed) {
@@ -30,7 +30,7 @@ const Page = () => {
 	// Fetch the order status from the server
 	useEffect(() => {
 		// Get the order status from the server
-		fetch('/api/orders/', {
+		fetch('/api/order/', {
 			headers: {
 				'Authorization': `Bearer ${token}`,
 			}
@@ -108,7 +108,7 @@ const Page = () => {
 	}
 
 	const order_url = function (id) {
-		return THIS_ENDPOINT + `/order/${id}`;
+		return `/api/order/${id}`;
 	}
 
 	const formatDateTime = date => {

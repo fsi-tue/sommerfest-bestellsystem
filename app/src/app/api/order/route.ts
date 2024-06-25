@@ -1,43 +1,34 @@
 import mongoose from "mongoose";
 import { Pizza, PizzaDocument } from "@/model/pizza";
 import { MAX_PIZZAS, Order } from "@/model/order";
-import dbConnect from "@/db/dbConnect";
-
-const moment = require('moment-timezone');
-
+import dbConnect from "@/lib/dbConnect";
+import { constants } from "@/config";
+import moment from "moment";
 
 export async function GET() {
     await dbConnect();
 
+    // Authenticate the user
+    /* const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    } */
+
     const orders = await Order.find();
 
-    // Add the pizzas to the orders
-    for (const order of orders) {
-
-        if (order.pizzas) {
-            // Get the pizzas for the order
-            const pizzaDetails = await Pizza
-                .find({ _id: { $in: order.pizzas } })
-                .select('name price');
-
-            // Create a map of pizza details
-            const pizzaDetailsMap = pizzaDetails.reduce((map: {
-                [id: string]: PizzaDocument
-            }, pizza: any) => {
-                map[pizza._id.toString()] = pizza;
-                return map;
-            }, {});
-
-            // Map the pizza details to the order.pizzas array
-            order.pizzas = order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]);
-        }
-    }
+    // TODO: Add the pizzas to the orders
 
     return Response.json(orders);
 }
 
 export async function POST(req: Request) {
     await dbConnect();
+
+    // Authenticate the user
+    /* const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    } */
 
     // Get the body of the request
     const { pizzas, name } = await req.json();
@@ -103,7 +94,7 @@ export async function PUT(req: Request) {
         const foundOrder = await Order.findById(id);
 
         if (!foundOrder) {
-            return { rows: [], count: 0 };
+            return new Response('Order not found', { status: 404 });
         }
 
         // Update the order status

@@ -1,6 +1,16 @@
 import { constants, tokens } from "@/config";
+import dbConnect from "@/lib/dbConnect";
+import { Session } from "@/model/session";
+import { rateLimit } from "@/lib/rateLimit";
 
-export async function POST(req: Request) {
+const moment = require('moment-timezone');
+const crypto = require('crypto');
+
+const rateLimiter = rateLimit(5, 15 * 60 * 1000);
+
+export async function POST(req: Request, res: Response, next: () => void): Promise<Response> {
+    await dbConnect()
+
     const { token } = await req.json();
     if (!token) {
         return new Response('Token missing', { status: 400 });
@@ -15,23 +25,19 @@ export async function POST(req: Request) {
         }
 
         if (token === correct_token) {
-            const expires: Date = moment().add(constants.LIFETIME_BEARER_HOURS, "hours").toDate();
             const newToken = crypto.randomBytes(64).toString('hex');
 
-            const inserted = [{
-                expiresAt: expires,
-                token: newToken,
-                userId: 1, // admin
-            }];
+            // Add the new token to the database
+            const session = new Session();
+            session.userId = 'admin';
+            session.token = newToken;
+            session.expiresAt = moment().add(constants.LIFETIME_BEARER_HOURS, "hours").toDate();
+            await session.save();
+            console.log('New token created', newToken, session.expiresAt.toISOString());
 
-            const tokenlist_orig = req.app.get("tokenlist") || [];
-            req.app.set("tokenlist", tokenlist_orig.concat(inserted));
-
-            if (inserted.length === 1) {
-                // Create a new bearer
-                bearer.token = inserted[0].token;
-                bearer.expires = moment(inserted[0].expiresAt).unix();
-            }
+            // Create a new bearer
+            bearer.token = newToken;
+            bearer.expires = moment(session.expiresAt).unix();
         } else {
             return new Response('Invalid token', { status: 403 });
         }
