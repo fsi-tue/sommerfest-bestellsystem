@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
-import { Pizza, PizzaDocument } from "@/model/pizza";
+import { Pizza } from "@/model/pizza";
 import { MAX_PIZZAS, Order } from "@/model/order";
 import dbConnect from "@/lib/dbConnect";
-import { constants } from "@/config";
-import moment from "moment";
+import { headers } from "next/headers";
+import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
 export async function GET() {
     await dbConnect();
 
     // Authenticate the user
-    /* const headersList = headers()
+    const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return new Response('Unauthorized', { status: 401 });
-    } */
+    }
 
     const orders = await Order.find();
 
@@ -25,10 +25,10 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // Authenticate the user
-    /* const headersList = headers()
+    const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return new Response('Unauthorized', { status: 401 });
-    } */
+    }
 
     // Get the body of the request
     const { pizzas, name } = await req.json();
