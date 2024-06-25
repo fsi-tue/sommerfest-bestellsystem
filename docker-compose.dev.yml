@@ -2,7 +2,7 @@ services:
   api:
     container_name: src
     build:
-      context: ./api
+      context: api.deprecated
       dockerfile: Dockerfile # on move to prod, update this
     ports:
       - "3000:3000"

@@ -1,3 +1,22 @@
+# macOS
+.DS_Store
+
+# IntelliJ
+.idea
+*/.idea
+
+# Node.js
+node_modules
+.next
+next-env.d.ts
+dist
+
+# Vercel
+.vercel
+
+# env
+.env
+
 # vscode
 .dccache
 */.dccache
@@ -7,10 +26,6 @@
 .eslintcache
 */.eslintcache
 **/*/.eslintcache
-
-# idea
-.idea
-*/.idea
 
 #database
 data
