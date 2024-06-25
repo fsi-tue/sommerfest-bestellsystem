@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Pizza } from "@/model/pizza";
+import { Pizza, PizzaDocument } from "@/model/pizza";
 import { MAX_PIZZAS, Order } from "@/model/order";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
@@ -15,10 +15,31 @@ export async function GET(req: Request) {
     }
 
     const orders = await Order.find();
+    const pizzas = await Pizza.find();
 
-    // TODO: Add the pizzas to the orders
+    const transformedOrders = await Promise.all(orders.map(async order => {
+        // Get the pizzas for the order
+        const pizzasForOrder = pizzas.filter((pizza: PizzaDocument) => order.pizzas.includes(pizza._id));
 
-    return Response.json(orders);
+        // Create a map of pizza details
+        const pizzaDetailsMap = pizzasForOrder
+            .reduce((map: { [id: string]: PizzaDocument }, pizza: PizzaDocument) => {
+                map[pizza._id.toString()] = pizza;
+                return map;
+            }, {});
+
+        return {
+            _id: order._id,
+            name: order.name,
+            pizzas: order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+            orderDate: order.orderDate,
+            totalPrice: order.totalPrice,
+            finishedAt: order.finishedAt,
+            status: order.status
+        }
+    }))
+
+    return Response.json(transformedOrders);
 }
 
 export async function POST(req: Request) {

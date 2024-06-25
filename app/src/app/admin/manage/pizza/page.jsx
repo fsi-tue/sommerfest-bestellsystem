@@ -2,33 +2,25 @@
 
 import {useEffect, useState} from "react";
 import Pizza from "./Pizza.jsx";
-import {ErrorMessage} from "@/app/components/ErrorMessage.jsx";
-import {useRouter} from "next/navigation";
 import {getFromLocalStorage} from "@/lib/localStorage";
+import {ErrorMessage} from "@/app/components/ErrorMessage.jsx";
+import WithAuth from "../../WithAuth.jsx";
 
 const ManagePizzas = () => {
-	// If there is some script kiddie trying to access this page,
-	// and they manage to get here with an invalid token,
-	// they should have a cookie or something.
-	// Keep it simple, just check if the token is present.
 	const token = getFromLocalStorage('token', '');
-	const authed = token !== "";
-	const router = useRouter();
-	useEffect(() => {
-		if (!authed) {
-			router.push('/');
-		}
-	}, [])
 
 	const [pizzas, setPizzas] = useState([]);
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(true);
 
+	const headers = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${token}`,
+	}
+
 	useEffect(() => {
 		fetch('/api/pizza/', {
-			headers: {
-				'Authorization': `Bearer ${token}`,
-			}
+			headers: headers,
 		})
 			.then(response => response.json())
 			.then(data => {
@@ -63,4 +55,4 @@ const ManagePizzas = () => {
 	);
 }
 
-export default ManagePizzas;
+export default WithAuth(ManagePizzas);

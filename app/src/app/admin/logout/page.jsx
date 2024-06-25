@@ -9,6 +9,7 @@ const Page = () => {
 	removeFromLocalStorage('token')
 	useEffect(() => {
 		router.push('/');
+		window.dispatchEvent(new CustomEvent("loginSuccessEvent"));
 	}, []);
 
 	return (

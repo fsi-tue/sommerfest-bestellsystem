@@ -5,18 +5,10 @@ import mongoose from "mongoose";
 import { Order } from "@/model/order";
 import { Pizza, PizzaDocument } from "@/model/pizza";
 import { constants } from "@/config";
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
     await dbConnect();
-
-    // Authenticate the user
-    const headersList = headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return new Response('Unauthorized', { status: 401 });
-    }
 
     // Get the ID from the URL
     const id = params.id
@@ -54,23 +46,17 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
             return map;
         }, {});
 
-    // Map the pizza details to the order.pizzas array
-    order.pizzas = order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]);
-
-    function transformDateKeysToMoment(order: any) {
-        return {
-            _id: order._id,
-            name: order.name,
-            pizzas: order.pizzas,
-            orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
-            totalPrice: order.totalPrice,
-            finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
-            status: order.status,
-        };
+    // Transform the order
+    const transformedOrder = {
+        _id: order._id,
+        name: order.name,
+        pizzas: order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+        orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
+        totalPrice: order.totalPrice,
+        finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
+        status: order.status,
     }
 
-    const transformedObject = transformDateKeysToMoment(order);
-
     // Send the order
-    return Response.json(transformedObject);
+    return Response.json(transformedOrder);
 }

@@ -9,6 +9,10 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 
+/**
+ * Fill the database
+ * @constructor
+ */
 export async function POST() {
     await dbConnect()
 
@@ -20,13 +24,22 @@ export async function POST() {
 
     // Add pizzas
     const pizzas = [
-        { name: 'Margherita', price: 5 },
-        { name: 'Marinara', price: 6 },
-        { name: 'Quattro Stagioni', price: 7 },
-        { name: 'Carbonara', price: 8 },
-        { name: 'Frutti di Mare', price: 9 },
-        { name: 'Quattro Formaggi', price: 10 },
-        { name: 'Crudo', price: 11 }
+        { name: 'NON-VEG-Pepperoni half', price: 3 },
+        { name: 'NON-VEG-Pepperoni whole', price: 6 },
+        { name: 'NON-VEG-Meat half', price: 4 },
+        { name: 'NON-VEG-Meat whole', price: 8 },
+        { name: 'NON-VEG-Capriccosa half', price: 4 },
+        { name: 'NON-VEG-Capriccosa whole', price: 8 },
+        { name: 'VEGE-Margherita half', price: 3 },
+        { name: 'VEGE-Margherita whole', price: 6 },
+        { name: 'VEGE-Capriccosa half', price: 3 },
+        { name: 'VEGE-Capriccosa whole', price: 6 },
+        { name: 'VEGE-Veggies half', price: 3 },
+        { name: 'VEGE-Veggies whole', price: 6 },
+        { name: 'VEGAN-Margherita half', price: 3 },
+        { name: 'VEGAN-Margherita whole', price: 6 },
+        { name: 'VEGAN-Capriccosa half', price: 4 },
+        { name: 'VEGAN-Capriccosa whole', price: 8 }
     ];
     for (const pizza of pizzas) {
         await new Pizza(pizza).save();

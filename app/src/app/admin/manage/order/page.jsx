@@ -2,22 +2,11 @@
 
 import {useEffect, useRef, useState} from "react";
 import {Scanner} from "@yudiel/react-qr-scanner";
-import {useRouter} from "next/navigation";
-import {getFromLocalStorage} from "@/lib/localStorage";
+import WithAuth from "../../WithAuth.jsx";
+import {getFromLocalStorage} from "../../../../lib/localStorage.js";
 
 const Page = () => {
-	// If there is some script kiddie trying to access this page,
-	// and they manage to get here with an invalid token,
-	// they should have a cookie or something.
-	// Keep it simple, just check if the token is present.
 	const token = getFromLocalStorage('token', '');
-	const authed = token !== "";
-	const router = useRouter();
-	useEffect(() => {
-		if (!authed) {
-			router.push('/');
-		}
-	}, [])
 
 	const [orders, setOrders] = useState([]); // state to hold order status
 	const [filter, setFilter] = useState(''); // state to hold order status
@@ -28,14 +17,16 @@ const Page = () => {
 	// Order states
 	const states = ["pending", "paid", "ready", "delivered", "cancelled"];
 
+	const headers = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${token}`,
+	}
 
 	// Fetch the order status from the server
 	useEffect(() => {
 		// Get the order status from the server
 		fetch('/api/order/', {
-			headers: {
-				'Authorization': `Bearer ${token}`,
-			}
+			headers: headers,
 		})
 			.then(response => response.json())
 			.then(data => setOrders(data))
@@ -69,12 +60,9 @@ const Page = () => {
 	 * @param status
 	 */
 	const updateOrderStatus = (_id, status) => {
-		fetch('/api/orders', {
+		fetch('/api/order', {
 			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
+			headers: headers,
 			body: JSON.stringify({id: _id, status})
 		})
 			.then(response => response.json())
@@ -204,4 +192,4 @@ const Page = () => {
 }
 
 
-export default Page;
+export default WithAuth(Page);
