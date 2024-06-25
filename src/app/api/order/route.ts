@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { Pizza, PizzaDocument } from "@/model/pizza";
 import { MAX_PIZZAS, Order } from "@/model/order";
 import dbConnect from "@/lib/dbConnect";
@@ -19,11 +19,11 @@ export async function GET(req: Request) {
 
     const transformedOrders = await Promise.all(orders.map(async order => {
         // Get the pizzas for the order
-        const pizzasForOrder = pizzas.filter((pizza: PizzaDocument) => order.pizzas.includes(pizza._id));
+        const pizzasForOrder = pizzas.filter((pizza: any) => order.pizzas.includes(pizza._id));
 
         // Create a map of pizza details
         const pizzaDetailsMap = pizzasForOrder
-            .reduce((map: { [id: string]: PizzaDocument }, pizza: PizzaDocument) => {
+            .reduce((map: { [id: string]: PizzaDocument }, pizza: any) => {
                 map[pizza._id.toString()] = pizza;
                 return map;
             }, {});

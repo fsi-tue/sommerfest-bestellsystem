@@ -2,6 +2,7 @@
 
 import {getFromLocalStorage} from "@/lib/localStorage";
 import {useRouter} from "next/navigation";
+import {useEffect} from "react";
 
 const WithAuth = (WrappedComponent) => {
 	return (props) => {
@@ -9,9 +10,11 @@ const WithAuth = (WrappedComponent) => {
 		const router = useRouter();
 
 		if (!token) {
-			setTimeout(() => {
-				router.push('/');
-			}, 0);
+			useEffect(() => {
+				setTimeout(() => {
+					router.push('/');
+				}, 0);
+			})
 			return (<></>)
 		}
 
