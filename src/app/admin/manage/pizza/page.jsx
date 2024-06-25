@@ -3,10 +3,10 @@
 import {useEffect, useState} from "react";
 import Pizza from "./Pizza.jsx";
 import {getFromLocalStorage} from "@/lib/localStorage";
-import {ErrorMessage} from "@/app/components/ErrorMessage.jsx";
+import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import WithAuth from "../../WithAuth.jsx";
 
-const ManagePizzas = () => {
+const Page = () => {
 	const token = getFromLocalStorage('token', '');
 
 	const [pizzas, setPizzas] = useState([]);
@@ -55,4 +55,4 @@ const ManagePizzas = () => {
 	);
 }
 
-export default WithAuth(ManagePizzas);
+export default WithAuth(Page);

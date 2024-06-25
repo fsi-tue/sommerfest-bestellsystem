@@ -3,7 +3,7 @@
 import {useEffect, useRef, useState} from "react";
 import {Scanner} from "@yudiel/react-qr-scanner";
 import WithAuth from "../../WithAuth.jsx";
-import {getFromLocalStorage} from "../../../../lib/localStorage.js";
+import {getFromLocalStorage} from "@/lib/localStorage";
 
 const Page = () => {
 	const token = getFromLocalStorage('token', '');
@@ -122,7 +122,7 @@ const Page = () => {
 				<h2 className="text-2xl mb-4">Manage Orders 💸</h2>
 				<div className="flex items-center justify-between">
 					<div className="w-1/2">
-						<p className="text-lg">Scan the barcode to search for an order</p>
+						<p className="text-lg">Scan the QR Code to search for an order</p>
 					</div>
 					<div className="w-24 h-24">
 						<Scanner
@@ -162,7 +162,7 @@ const Page = () => {
 
 									<span
 										className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
-                                        {formatDateTime(new Date(order.createdAt))}
+                                        {formatDateTime(new Date(order.orderDate))}
                                     </span>
 								</div>
 								<ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">

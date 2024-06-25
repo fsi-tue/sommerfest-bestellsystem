@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 import {API_ENDPOINT} from "../../../globals.js";
-import {ErrorMessage} from "../../../components/ErrorMessage.jsx";
+import ErrorMessage from "../../../components/ErrorMessage.jsx";
 import {getFromLocalStorage} from "../../../../lib/localStorage.js";
 
 const Pizza = ({pizza, isNew}) => {

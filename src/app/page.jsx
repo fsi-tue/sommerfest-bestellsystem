@@ -2,9 +2,9 @@
 
 import './order/Order.css';
 import {useEffect, useState} from "react";
-import OrderButton from "./components/order/OrderButton.jsx";
-import Timeline from "./components/Timeline.jsx";
-import {ErrorMessage} from "./components/ErrorMessage.jsx";
+import OrderButton from "@/app/components/order/OrderButton.jsx";
+import Timeline from "@/app/components/Timeline.jsx";
+import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 
 const EVERY_X_SECONDS = 60;
 
@@ -110,11 +110,11 @@ const Page = () => {
 All of our pizzas can be ordered as whole or halved; see the irgedients list below for details on each pizza.
 Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening! */}
 
-				<ul className="list-disc list-inside space-y-2">
-					<li><strong>Choose Pizza:</strong> Select whole or halved from the list below.</li>
+				<ol className="list-decimal list-inside space-y-2">
+					<li><strong>Choose Pizza:</strong> Select whole or halved from the list below (a whole pizza has a diameter of 12 inches / 30 cm).</li>
 					<li><strong>Pick-Up Time:</strong> Choose a time (some slots may be full).</li>
 					<li><strong>Pay in Cash:</strong> Pay when collecting at the counter.</li>
-				</ul>
+				</ol>
 				<div className="mt-4">
 					<p><strong>Order Times:</strong></p>
 					<p>Earliest pick-up: 17:25</p>
@@ -160,9 +160,23 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						</p>
 						}
 					</div>
-					<div className='mb-3'>
-						<input name="name" type="text" placeholder="Enter your name (optional)"
-						       className="p-2 border border-gray-300 rounded-lg shadow-md mb-4" onChange={setName}/>
+					<div className="mb-6">
+						<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+						<input
+							id="name"
+							name="name"
+							type="text"
+							placeholder="Enter your name (optional)"
+							className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
+							onChange={setName}
+						/>
+						<label htmlFor="comment" className="block text-sm font-medium text-gray-700">Comment</label>
+						<textarea
+							id="comment"
+							name="comment"
+							placeholder="Enter your comment (optional)"
+							className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
+						/>
 					</div>
 					{error && <ErrorMessage error={error}/>}
 					{error === '' && <OrderButton order={order}/>}

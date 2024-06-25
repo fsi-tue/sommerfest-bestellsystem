@@ -2,14 +2,13 @@
 
 import './Login.css';
 import {useState} from "react";
-import {API_ENDPOINT} from "../globals.js";
 import {useRouter} from "next/navigation";
+import {addToLocalStorage} from "@/lib/localStorage";
 
 const Page = () => {
 	const [errorMessage, setErrorMessage] = useState('')
 
 	const router = useRouter();
-
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -30,7 +29,7 @@ const Page = () => {
 				}
 			})
 			.then((data) => {
-				localStorage.setItem('token', data.token);
+				addToLocalStorage('token', data.token);
 				window.dispatchEvent(new CustomEvent("loginSuccessEvent"))
 				router.push('/admin/manage/order');
 			}).catch((error) => {
@@ -42,8 +41,8 @@ const Page = () => {
 	return (
 		<div className="content">
 			<form onSubmit={handleSubmit}>
-				<label htmlFor="token">Token</label>
-				<input type="password" id="token" name="token"/>
+				<label htmlFor="token">FSI Token</label>
+				<input type="password" id="token" name="token" autocomplete="current-password" required/>
 				<button type="submit">Login</button>
 				{errorMessage && <p>{errorMessage}</p>}
 			</form>

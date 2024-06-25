@@ -6,43 +6,23 @@
 :root {
     /* Colors */
     --background-color: #f5f5f5;
-    --background-color-light: #ffffff;
 
     /* Primary Color */
     --primary-color: #000080;
     --primary-color-rgb: 0, 0, 128;
-
-    /* Success Color */
-    --success-color: #008000;
-    --success-color-rgb: 0, 128, 0;
-    --success-color-light: #cce5cc;
 
     /* Danger Color */
     --danger-color: #800000;
     --danger-color-rgb: 128, 0, 0;
     --danger-color-light: #f5c6cb;
 
-    /* Text Color */
     --text-color: #202020;
-    --text-color-light: #ffffff;
-    --text-hover-color: var(--primary-color);
-    --text-inactive-color: #606060;
-
-    /* Box Color */
     --box-color: #ffffff;
     --box-hover-color: #dddddd;
-    --box-inactive-color: #cccccc;
-
-    /* Border */
-    --border: 1px solid #999;
     --border-radius: 10px;
 
     /* Shadow */
     --box-shadow: 6px 6px 12px 0 rgba(0, 0, 0, 0.2), -6px -6px 12px 0 rgba(255, 255, 255, 0.5);
-    --box-shadow-hover: 9px 9px 15px 0 rgba(var(--primary-color-rgb), 0.2), -9px -9px 15px 0 rgba(255, 255, 255, 0.5);
-
-    /* Transition */
-    --transition: all .5s cubic-bezier(.14, .71, .78, .96);
 
     /* Font */
     --font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -71,12 +51,19 @@ body {
 main {
     /* Default */
     margin: 10px auto;
-    width: 80%;
+    width: 90%;
     max-width: 1200px;
     padding: 15px;
 
     /* Colors */
-    background-color: var(--background-color-light);
+    background-color: var(--background-color);
+
+    /* Flexbox */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 main > .content {
@@ -89,16 +76,7 @@ main > .content {
 
 header, footer {
     width: 100%;
-    border-radius: 10px;
-}
-
-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
+    border-radius: var(--border-radius);
 }
 
 ul {

@@ -12,10 +12,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <meta charSet="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>🍕</title>
-        <meta name="description" content="Order your pizza for the FSI Sommerfest 2024"/>
+        <head>
+            <meta charSet="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>🍕 Sommerfest Pizza</title>
+            <meta name="description" content="Order your pizza for the FSI Sommerfest 2024"/>
+        </head>
         <body>
         <main className="max-h-full">
             <Header/>

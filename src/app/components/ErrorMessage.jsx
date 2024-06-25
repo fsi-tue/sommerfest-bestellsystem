@@ -1,4 +1,4 @@
-export const ErrorMessage = ({error}) => {
+const ErrorMessage = ({error}) => {
 	return (
 		<div className="text-red-500">
 			{error}
@@ -8,3 +8,5 @@ export const ErrorMessage = ({error}) => {
 		</div>
 	);
 }
+
+export default ErrorMessage;

@@ -1,10 +1,10 @@
 'use client'
 
 import {useState} from "react";
-import {getFromLocalStorage} from "../../../lib/localStorage.js";
+import {getFromLocalStorage} from "@/lib/localStorage.js";
 import WithAuth from "../WithAuth.jsx";
 
-const Manage = () => {
+const Page = () => {
 	const token = getFromLocalStorage('token', '');
 
 	const [message, setMessage] = useState('');
@@ -80,4 +80,4 @@ const Manage = () => {
 	);
 }
 
-export default WithAuth(Manage);
+export default WithAuth(Page);
