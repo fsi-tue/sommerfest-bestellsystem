@@ -1,0 +1,15 @@
+/* Timeline.css */
+.timeline-container {
+    margin: 0 auto;
+    text-align: center;
+    /* Center the SVG */
+    max-height: 3em;
+    /* Set maximum height */
+    overflow: hidden;
+    /* Hide overflow if SVG exceeds max height */
+}
+
+.timeline {
+    display: inline-block;
+    /* Ensure SVG is treated as inline block */
+}
