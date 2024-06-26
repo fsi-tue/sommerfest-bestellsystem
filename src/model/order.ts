@@ -3,6 +3,7 @@ import { FoodDocument } from "./food";
 import { ORDER } from "@/config";
 
 export interface OrderDocument extends Document {
+    _id: string;
     name: string;
     comment?: string;
     items: FoodDocument[];

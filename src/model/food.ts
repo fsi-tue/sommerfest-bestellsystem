@@ -2,7 +2,7 @@
 import { type Document, Model, model, Schema } from "mongoose"
 
 export interface FoodDocument extends Document {
-    id: number;
+    _id: string;
     name: string;
     price: number;
     type: 'pizza' | 'drink' | 'dessert';
@@ -12,7 +12,6 @@ export interface FoodDocument extends Document {
 }
 
 const foodSchema = new Schema<FoodDocument>({
-    id: { type: Number, autoIncrement: true, primaryKey: true },
     name: { type: String, required: true },
     price: {
         type: Number,

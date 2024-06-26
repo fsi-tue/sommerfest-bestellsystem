@@ -16,23 +16,23 @@ export async function GET(req: Request) {
     }
 
     const orders = await Order.find();
-    const pizzas = await Food.find();
+    const foods = await Food.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
-        // Get the pizzas for the order
-        const pizzasForOrder = pizzas.filter((pizza: any) => order.items.includes(pizza._id));
+        // Get the foods for the order
+        const foodsForOrder = foods.filter((food: any) => order.items.includes(food._id));
 
-        // Create a map of pizza details
-        const pizzaDetailsMap = pizzasForOrder
-            .reduce((map: { [id: string]: FoodDocument }, pizza: any) => {
-                map[pizza._id.toString()] = pizza;
+        // Create a map of food details
+        const foodDetailsMap = foodsForOrder
+            .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+                map[food._id.toString()] = food;
                 return map;
             }, {});
 
         return {
             _id: order._id,
             name: order.name,
-            pizzas: order.items.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+            items: order.items.map(pizzaId => foodDetailsMap[pizzaId.toString()]),
             orderDate: order.orderDate,
             totalPrice: order.totalPrice,
             finishedAt: order.finishedAt,
