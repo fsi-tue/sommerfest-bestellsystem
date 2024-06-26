@@ -122,7 +122,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     }
 
     const order_url = function (id: string) {
-        return `/api/order/${id}`;
+        return `/admin/order/${id}`;
     }
 
 	const hasComment = (order: OrderDocument) => {
