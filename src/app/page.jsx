@@ -6,18 +6,21 @@ import OrderButton from "@/app/components/order/OrderButton.jsx";
 import Timeline from "@/app/components/Timeline.jsx";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import {ORDER} from "@/config";
+import WithSystemCheck from "./WithSystemCheck.jsx";
 
 const EVERY_X_SECONDS = 60;
 
 const Food = ({ food, className, onClick }) => {
 	return (
-		<li className={`${className} flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-md mb-4`} onClick={onClick}>
+		<li
+			className={`${className} flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4`}
+			onClick={onClick}>
 			<div>
-				<span className="font-bold">{food.price}€ {food.name}</span>
+				<span className="text-lg font-semibold text-gray-900">{food.price}€ {food.name}</span>
 			</div>
 			<div className="flex space-x-2">
-				<span className="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>
-				<span className="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
+				<span className="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-200 rounded-full">{food.dietary}</span>
+				<span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-200 rounded-full">{food.type}</span>
 			</div>
 		</li>
 	);
@@ -91,18 +94,14 @@ const Page = () => {
 		setError('');
 		const newOrder = [...order.items];
 		newOrder.splice(index, 1);
-		updateOrder({ pizzas: newOrder });
+		updateOrder({ items: newOrder });
 	}
 
 
 	return (
-		<div className="content">
-			<h2 className="text-2xl">Order your pizza at Sommerfest 2024!</h2>
-			<div className="mb-3 text-lg font-light text-gray-600 leading-7">
-				{/*Hey hey, welcome to Sommerfest 2024! This is the official ordering system for food, so feel free to choose your pizza(-s) below and pay when collecting at the counter (cash!) . You can then choose your pick-up time (please note: some slots may be overfilled).
-All of our food can be ordered as whole or halved; see the irgedients list below for details on each pizza.
-Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening! */}
-
+		<div>
+			<h2 className="text-3xl font-semibold mb-4 text-center">Order your pizza at Sommerfest 2024!</h2>
+			<div className="mb-6 text-gray-700 font-light leading-7">
 				<ol className="list-decimal list-inside space-y-2">
 					<li><strong>Choose Pizza:</strong> Select whole or halved from the list below (a whole pizza has a diameter of
 						12 inches / 30 cm).
@@ -115,42 +114,35 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 					<p>Earliest pick-up: 17:25</p>
 					<p>Latest order: 23:40</p>
 				</div>
-				<p className="mt-6 text-center">Enjoy your evening!</p>
+				<p className="mt-6 text-center text-xl">Enjoy your evening!</p>
 			</div>
 
-			<div className="flex justify-between gap-4 content-start pizza-menu-container">
-				<div>
-					<h3 className="text-xl">
-						Menu:
-					</h3>
-
-					<ul className="pizza-list">
+			<div className="flex flex-col-reverse md:flex-row justify-between gap-6">
+				<div className="md:w-1/2 w-full">
+					<h3 className="text-2xl font-semibold mb-4">Menu:</h3>
+					<ul className="space-y-4">
 						{foods
 							.filter(food => food.enabled)
 							.map((food, index) => (
-								<Food key={index} food={food} className="pizza"
-								       onClick={() => addToOrder(food)}/>
+								<Food key={index} food={food} className="pizza" onClick={() => addToOrder(food)}/>
 							))}
 						{!foods.length && <p>Loading...</p>}
 					</ul>
 				</div>
-				<div>
-					<h3 className="text-xl">
-						Your current order:
-					</h3>
 
-					<ul className="pizza-list">
+				<div className="md:w-1/2 w-full">
+					<h3 className="text-2xl font-semibold mb-4">Your current order:</h3>
+					<ul className="space-y-4 mb-6">
 						{order.items.map((item, index) => (
-							<Food key={index} food={item} className="pizza order"
-							       onClick={() => removeFromOrder(index)}/>
+							<Food key={index} food={item} className="pizza order" onClick={() => removeFromOrder(index)}/>
 						))}
 					</ul>
 
-					<div className="mb-3">
-						<p>
-							Total: {order.items.reduce((total, pizza) => total + pizza.price, 0)}€
-						</p>
+					<div className="mb-6">
+						<p
+							className="text-lg font-semibold">Total: {order.items.reduce((total, pizza) => total + pizza.price, 0)}€</p>
 					</div>
+
 					<div className="mb-6">
 						<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
 						<input
@@ -170,21 +162,13 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 							className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
 						/>
 					</div>
-					{error && <ErrorMessage error={error}/>}
-					<OrderButton order={order}/>
-				</div>
-			</div>
-			<div className="timeline-container">
-				<h2 className="text-2xl">Timeline</h2>
-				<p className="mb-3 text-lg font-light text-gray-600 leading-7">
-					Here is the timeline of the orders.
-				</p>
 
-				<Timeline startDate={start} stopDate={end} setTimeslot={(entry) => {}}
-				          every_x_seconds={EVERY_X_SECONDS}/>
+					{error && <ErrorMessage error={error}/>}
+					<OrderButton order={order} setError={setError}/>
+				</div>
 			</div>
 		</div>
 	);
 };
 
-export default Page;
+export default WithSystemCheck(Page);

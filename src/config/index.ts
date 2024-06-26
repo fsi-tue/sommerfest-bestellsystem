@@ -3,6 +3,7 @@ export const mongodb = {
 }
 
 export const constants = {
+    SYSTEM_NAME: process.env.SYSTEM_NAME || "fsi",
     LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS || "8"),
     TIMEZONE_ORDERS: 'Europe/Berlin'
 }

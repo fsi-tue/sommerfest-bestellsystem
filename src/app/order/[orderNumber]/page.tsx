@@ -53,7 +53,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
 
 
     return (
-        <div className="content">
+        <div>
 
             <h2 className="text-2xl">Order Status</h2>
 

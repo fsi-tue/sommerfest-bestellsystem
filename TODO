@@ -1,13 +1,12 @@
 1. In den Order-Details sollte auch noch eine Uhrzeit rein, die sich ggf. bei Verzögerung aktualisiert.
 Damit auch eine Funktion um zu delayen oder Bestellungen für einen Zeitslot zu verbieten oder generell abzuschalten
 
-2. Der Hash muss kürzer sein um ihn auch schnell abtippen zu können, dazu braucht es auch ein Eingabefeld. Displays spiegeln
+BACKLOG Der Hash muss kürzer sein um ihn auch schnell abtippen zu können, dazu braucht es auch ein Eingabefeld. Displays spiegeln
 
 3. wie wird over-ordering verhindert?
 
 4. wie wird verhindert, dass eine bestellung aufgenommen wird die noch nicht bezahlt ist
 
-5. Man kann auf den Bestellbutton doppel klicken und dann aus versehen 2 mal die gleiche Bestellung abgeben
-  14m
+DONE Man kann auf den Bestellbutton doppel klicken und dann aus versehen 2 mal die gleiche Bestellung abgeben
 
-6. Was passiert, wenn ich nach hause gehe und die bestellung noch offen ist? Momentan kann man nicht storniren
+DONE Was passiert, wenn ich nach hause gehe und die bestellung noch offen ist? Momentan kann man nicht storniren

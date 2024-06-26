@@ -4,7 +4,8 @@ import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import { Order } from "@/model/order";
-import { ORDER } from "@/config";
+import { constants, ORDER } from "@/config";
+import { System } from "@/model/system";
 
 export async function GET(req: Request) {
     await dbConnect();
@@ -53,6 +54,13 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     await dbConnect();
+
+    // Check system status
+    const system = await System.findOne({ name: constants.SYSTEM_NAME });
+    if (system && system.status !== 'active') {
+        console.error('System is not active', system.status);
+        return new Response('System is not active', { status: 400 });
+    }
 
     // Get the body of the request
     const { pizzas: items, name, comment } = await req.json();

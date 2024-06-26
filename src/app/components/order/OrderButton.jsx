@@ -9,6 +9,7 @@ const OrderButton = ({order}) => {
 
 	const items = order.items;
 	const name = order.name;
+	const timeslot = order.timeslot;
 	const comment = order.comment;
 
 	if (items.length === 0) {
@@ -18,11 +19,13 @@ const OrderButton = ({order}) => {
 	const body = {
 		name: name,
 		pizzas: items,
+		timeslot: timeslot,
 		comment: comment
 	};
 
 	// Function to order the pizzas
 	const orderPizza = () => {
+		if (isButtonDisabled) return; // Early return if button is already disabled
 		setIsButtonDisabled(true);
 
 		fetch('/api/order', {
@@ -44,14 +47,15 @@ const OrderButton = ({order}) => {
 					router.push(`/order/thank-you/${data.orderId}`);
 				}
 			})
-			.finally(() => {
-				setIsButtonDisabled(false);
+			.catch(error => {
+				console.error('Error ordering pizza:', error);
+				setIsButtonDisabled(false); // Re-enable the button in case of error
 			});
 	};
 
 	return (
 		<button
-			onClick={() => orderPizza()}
+			onClick={orderPizza}
 			className={`bg-primary-950 text-white px-4 py-2 rounded-lg mt-4 w-full md:w-auto hover:bg-primary-800 ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
 			disabled={isButtonDisabled}
 		>
