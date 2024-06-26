@@ -3,7 +3,6 @@
 import {useEffect, useState} from 'react';
 import PropTypes from "prop-types";
 import {Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import {API_ENDPOINT} from '../globals';
 
 const Timeline = ({startDate, stopDate, every_x_seconds, setTimeslot}) => {
 	const [data, setData] = useState([]);
@@ -61,15 +60,15 @@ const Timeline = ({startDate, stopDate, every_x_seconds, setTimeslot}) => {
 Timeline.propTypes = {
 	startDate: PropTypes.instanceOf(Date),
 	stopDate: PropTypes.instanceOf(Date),
-	API_ENDPOINT: PropTypes.string,
 	every_x_seconds: PropTypes.number,
+	setTimeslot: PropTypes.func
 };
 
 Timeline.parameters = {
 	startDate: new Date(),
 	stopDate: new Date(),
-	API_ENDPOINT: API_ENDPOINT,
 	every_x_seconds: 60,
+	setTimeslot: () => {}
 };
 
 export default Timeline;

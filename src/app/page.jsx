@@ -21,7 +21,6 @@ const Page = () => {
 	// State to hold the order
 	const [error, setError] = useState('');
 	const [pizzas, setPizzas] = useState([]);
-	const [timeslot, _setTimeslot] = useState('');
 	const [order, setOrder] = useState({name: '', pizzas: [], timeslot: '', comment: ''});
 
 	const start = new Date();
@@ -86,7 +85,7 @@ const Page = () => {
 		}
 
 		_setTimeslot(timeslot);
-		setOrder({name: order.name, pizzas: order.pizzas, timeslot: timeslot});
+		// setOrder({name: order.name, pizzas: order.pizzas, timeslot: timeslot});
 	}
 
 	/**
@@ -167,8 +166,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						</p>
 						{timeslot && <p className="font-light text-xs">
 							Your order will be ready at {timeslot}
-						</p>
-						}
+						</p>}
 					</div>
 					<div className="mb-6">
 						<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
@@ -199,7 +197,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 					Here is the timeline of the orders.
 				</p>
 
-				<Timeline startDate={start} stopDate={end} setTimeslot={(entry) => setTimeslot(entry)}
+				<Timeline startDate={start} stopDate={end} setTimeslot={(entry) => {}}
 				          every_x_seconds={EVERY_X_SECONDS}/>
 			</div>
 		</div>

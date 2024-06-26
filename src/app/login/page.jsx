@@ -41,7 +41,7 @@ const Page = () => {
 	return (
 		<div className="content">
 			<form onSubmit={handleSubmit}>
-				<label htmlFor="token">FSI Token</label>
+				<label htmlFor="token">FSI/K Token</label>
 				<input type="password" id="token" name="token" autocomplete="current-password" required/>
 				<button type="submit">Login</button>
 				{errorMessage && <p>{errorMessage}</p>}

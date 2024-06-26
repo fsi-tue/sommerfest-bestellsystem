@@ -18,7 +18,7 @@ const OrderButton = ({order}) => {
 	const body = {
 		name: name,
 		pizzas: pizzas,
-		timeslot: timeslot
+		timeslot: timeslot,
 		comment: comment
 	}
 

@@ -1,7 +1,6 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import {API_ENDPOINT} from "../../../globals.js";
 import ErrorMessage from "../../../components/ErrorMessage.jsx";
 import {getFromLocalStorage} from "../../../../lib/localStorage.js";
 
@@ -15,13 +14,15 @@ const Pizza = ({pizza, isNew}) => {
 		setLocalPizza(pizza);
 	}, [pizza]);
 
+	const headers = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${token}`,
+	}
+
 	const updatePizza = (pizza) => {
 		fetch(`/api/pizza`, {
 			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
+			headers: headers,
 			body: JSON.stringify(pizza)
 		})
 			.then(response => response.json())
@@ -30,12 +31,9 @@ const Pizza = ({pizza, isNew}) => {
 	}
 
 	const createPizza = (pizza) => {
-		fetch(`${API_ENDPOINT}/pizzas`, {
+		fetch(`/api/pizza`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
+			headers: headers,
 			body: JSON.stringify(pizza)
 		}).then(response => response.json())
 			.then(data => setLocalPizza(data))
@@ -44,11 +42,9 @@ const Pizza = ({pizza, isNew}) => {
 	}
 
 	const deletePizza = (_id) => {
-		fetch(`${API_ENDPOINT}/pizzas/${_id}`, {
+		fetch(`/pizza/${_id}`, {
 			method: 'DELETE',
-			headers: {
-				'Authorization': `Bearer ${token}`,
-			}
+			headers: headers,
 		})
 			.then(() => setLocalPizza(null))
 			.catch(error => setError('Error deleting pizza'));
