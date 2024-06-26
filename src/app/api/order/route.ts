@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Food, FoodDocument } from "@/model/food";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
@@ -10,15 +10,21 @@ export async function GET(req: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    /* const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return new Response('Unauthorized', { status: 401 });
-    }
+    } */
 
     const orders = await Order.find();
     const foods = await Food.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
+        // Get all orders that were ordered before this order and are not finished
+        const ordersBefore = orders.filter(orderBefore => orderBefore.orderDate < order.orderDate && (!['delivered', 'cancelled'].includes(orderBefore.status)));
+        const orderBeforeItemsTotal = ordersBefore.map(order => order.items).flat();
+        const totalTime = orderBeforeItemsTotal.length * ORDER.TIME_PER_ORDER + // Time for the pizzas BEFORE THIS order
+            order.items.length * ORDER.TIME_PER_ORDER; // Time for the pizzas IN THIS order
+
         // Get the foods for the order
         const foodsForOrder = foods.filter((food: any) => order.items.includes(food._id));
 
@@ -34,6 +40,7 @@ export async function GET(req: Request) {
             name: order.name,
             items: order.items.map(pizzaId => foodDetailsMap[pizzaId.toString()]),
             orderDate: order.orderDate,
+            timeslot: new Date(order.orderDate.getTime() + totalTime),
             totalPrice: order.totalPrice,
             finishedAt: order.finishedAt,
             status: order.status
@@ -47,42 +54,42 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // Get the body of the request
-    const { pizzas, name } = await req.json();
+    const { pizzas: items, name } = await req.json();
 
     // Check if there are too many pizzas
-    if (pizzas.length > ORDER.MAX_ITEMS || pizzas.length < 1) {
-        console.error('Too many or too few pizzas', pizzas.length);
-        return new Response(`Too many or too few pizzas.
+    if (items.length > ORDER.MAX_ITEMS_PER_ORDER || items.length < 1) {
+        console.error('Too many or too few items', items.length);
+        return new Response(`Too many or too few items.
                                         We don't know what to do with that.
-                                        Can't you just order a normal amount of pizzas?`
+                                        Can't you just order a normal amount of food?`
         );
     }
 
     // Check if the pizzas are valid
-    const pizzaIds: string[] = pizzas.map((pizza: { _id: string }) => pizza._id);
-    if (!pizzaIds.every(async (pizzaId: string) => await Food.exists({ _id: pizzaId }))) {
-        console.error('Some pizzas are missing', pizzas);
-        return new Response(`Some of the pizzas you ordered seem to have vanished into thin crust.
-                            Are you trying to order ghost pizzas?
+    const foodIds: string[] = items.map((pizza: { _id: string }) => pizza._id);
+    if (!foodIds.every(async (pizzaId: string) => await Food.exists({ _id: pizzaId }))) {
+        console.error('Some pizzas are missing', items);
+        return new Response(`Some of the food you ordered seem to have vanished into the abyss.
+                            Are you trying to order ghost food?
                             Let's try ordering real ones this time!`, { status: 400 });
     }
 
     // Calculate the total price.
     // Don't trust the price from the request body
-    const totalPrice: number = await pizzaIds
-        .reduce(async (total: Promise<number>, pizzaId: string) => {
-            const pizza = await Food.findOne({ _id: pizzaId });
-            if (!pizza) {
-                console.error('Pizza not found', pizzaId)
+    const totalPrice: number = await foodIds
+        .reduce(async (total: Promise<number>, foodId: string) => {
+            const food = await Food.findOne({ _id: foodId });
+            if (!food) {
+                console.error('Pizza not found', foodId)
                 return total;
             }
-            return await total + pizza.price;
+            return await total + food.price;
         }, Promise.resolve(0));
 
     // Create the order
     const order = new Order();
     order.name = name || "anonymous";
-    order.items = pizzas
+    order.items = items
     order.totalPrice = totalPrice;
     order.comment = "No comment";
     await order.save()
@@ -96,6 +103,12 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
     await dbConnect();
+
+    // Authenticate the user
+    const headersList = headers()
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return new Response('Unauthorized', { status: 401 });
+    }
 
     // Get the order details from the request body
     const { id, status } = await req.json()
@@ -123,7 +136,7 @@ export async function PUT(req: Request) {
         // console.log('Order updated:', foundOrder)
         return Response.json(foundOrder);
     } catch (error) {
-        console.error('Error setting order as paid:', error);
-        return new Response('Error setting order as paid', { status: 500 });
+        console.error(`Error setting order as ${status}:`, error);
+        return new Response(`Error setting order as ${status}:`, { status: 500 });
     }
 }

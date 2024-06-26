@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import WithAuth from "@/app/admin/WithAuth";
-import { OrderDocument } from "@/model/order";
+import { ORDER_STATES, OrderDocument, OrderStatus } from "@/model/order";
 import { FoodDocument } from "@/model/food";
+import { formatDateTime } from "@/lib/time";
 
 const Page = ({ params }: { params: { orderId: string } }) => {
     const token = getFromLocalStorage('token', '');
@@ -14,10 +15,10 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     const [orders, setOrders] = useState([] as OrderDocument[]); // state to hold order status
     const [filter, setFilter] = useState(''); // state to hold order status
     const [filteredOrders, setFilteredOrders] = useState([] as OrderDocument[]); // state to hold order status]
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     // Order states
-    const states = ["pending", "paid", "ready", "delivered", "cancelled"];
+    const states = ORDER_STATES
 
     const headers = {
         'Content-Type': 'application/json',
@@ -60,10 +61,13 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 if (order.status.toLowerCase().includes(filter.toLowerCase())) {
                     return true;
                 }
-                return (order.pizzas || []).some((pizza: FoodDocument) => pizza.name.toLowerCase().includes(filter.toLowerCase()));
+                return (order.items || []).some((food: FoodDocument) => food.name.toLowerCase().includes(filter.toLowerCase()));
             }));
+
             // Set input value to filter
-            inputRef.current.value = filter;
+            if (inputRef !== null && inputRef.current) {
+                inputRef.current.value = filter;
+            }
         } else {
             setFilteredOrders(orders);
         }
@@ -74,7 +78,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
      * @param _id
      * @param status
      */
-    const updateOrderStatus = (_id, status) => {
+    const updateOrderStatus = (_id: string, status: OrderStatus) => {
         fetch('/api/order', {
             method: 'PUT',
             headers: headers,
@@ -121,21 +125,6 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         return `/api/order/${id}`;
     }
 
-    const formatDateTime = (date: Date) => {
-        const options = {
-            weekday: 'long', // "Monday"
-            year: 'numeric', // "2024"
-            month: 'long', // "June"
-            day: 'numeric', // "22"
-            hour: 'numeric', // "10"
-            minute: 'numeric', // "30"
-            second: 'numeric', // "15"
-            hour12: false // "AM/PM"
-        };
-
-        return date.toLocaleDateString('en-US', options as any);
-    };
-
     return (
         <div className="content">
             <div className="p-4">
@@ -146,7 +135,6 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                     </div>
                     <div className="w-24 h-24">
                         <Scanner
-                            className="w-full h-full border border-gray-300 rounded-md"
                             allowMultiple={true} scanDelay={250} paused={false}
                             onScan={(result) => barcodeToOrder(result)}
                         />
@@ -160,7 +148,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
             <div className="flex flex-col space-y-4">
                 {filteredOrders && filteredOrders.length > 0 && filteredOrders
-                    .toSorted((a, b) => new Date(b.orderDate) - new Date(a.orderDate)) // Sort by date
+                    .toSorted((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()) // Sort by date
                     .map((order, index) => ( // Map the orders
                         <div key={order._id + index} className="w-full px-2 py-2">
                             <div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
@@ -180,7 +168,6 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                         className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
 																			{(order.items || []).length} pizzas
 															</span>
-
                                     <span
                                         className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
                                         {formatDateTime(new Date(order.orderDate))}
