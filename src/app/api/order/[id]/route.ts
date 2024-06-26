@@ -34,15 +34,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         `, { status: 404 });
     }
 
-    // Get the pizzas for the order
-    const pizzaDetails = await Food
+    // Get the foods for the order
+    const foodsDetails = await Food
         .find({ _id: { $in: order.items } })
         .select('name price');
 
-    // Create a map of pizza details
-    const pizzaDetailsMap = pizzaDetails
-        .reduce((map: { [id: string]: FoodDocument }, pizza: any) => {
-            map[pizza._id.toString()] = pizza;
+    // Create a map of food details
+    const foodDetailsMap = foodsDetails
+        .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+            map[food._id.toString()] = food;
             return map;
         }, {});
 
@@ -51,7 +51,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         _id: order._id,
         name: order.name,
         comment: order.comment || "",
-        pizzas: order.items.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+        items: order.items.map(foodId => foodDetailsMap[foodId.toString()]),
         orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
         totalPrice: order.totalPrice,
         finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),

@@ -1,9 +1,10 @@
 import mongoose, { ObjectId } from "mongoose";
 import { Food, FoodDocument } from "@/model/food";
-import { MAX_ITEMS, Order } from "@/model/order";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { Order } from "@/model/order";
+import { ORDER } from "@/config";
 
 export async function GET(req: Request) {
     await dbConnect();
@@ -15,16 +16,16 @@ export async function GET(req: Request) {
     }
 
     const orders = await Order.find();
-    const pizzas = await Food.find();
+    const foods = await Food.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
-        // Get the pizzas for the order
-        const pizzasForOrder = pizzas.filter((pizza: any) => order.items.includes(pizza._id));
+        // Get the foods for the order
+        const foodsForOrder = foods.filter((food: any) => order.items.includes(food._id));
 
-        // Create a map of pizza details
-        const pizzaDetailsMap = pizzasForOrder
-            .reduce((map: { [id: string]: FoodDocument }, pizza: any) => {
-                map[pizza._id.toString()] = pizza;
+        // Create a map of food details
+        const foodDetailsMap = foodsForOrder
+            .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+                map[food._id.toString()] = food;
                 return map;
             }, {});
 
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
             _id: order._id,
             name: order.name,
             comment: order.comment || "",
-            pizzas: order.items.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+            items: order.items.map(pizzaId => foodDetailsMap[pizzaId.toString()]),
             orderDate: order.orderDate,
             totalPrice: order.totalPrice,
             finishedAt: order.finishedAt,
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
 
 
     // Check if there are too many pizzas
-    if (pizzas.length > MAX_ITEMS || pizzas.length < 1) {
+    if (pizzas.length > ORDER.MAX_ITEMS || pizzas.length < 1) {
         console.error('Too many or too few pizzas', pizzas.length);
         return new Response(`Too many or too few pizzas.
                                         We don't know what to do with that.

@@ -5,23 +5,30 @@ import {useEffect, useState} from "react";
 import OrderButton from "@/app/components/order/OrderButton.jsx";
 import Timeline from "@/app/components/Timeline.jsx";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
+import {ORDER} from "@/config";
 
 const EVERY_X_SECONDS = 60;
 
-const Pizza = ({name, price, className, onClick}) => {
+const Food = ({ food, className, onClick }) => {
 	return (
-		<li className={className} onClick={onClick}>
-			{price}€ {name}
+		<li className={`${className} flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-md mb-4`} onClick={onClick}>
+			<div>
+				<span className="font-bold">{food.price}€ {food.name}</span>
+			</div>
+			<div className="flex space-x-2">
+				<span className="px-2 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>
+				<span className="px-2 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
+			</div>
 		</li>
 	);
-}
+};
 
 // Order component
 const Page = () => {
 	// State to hold the order
 	const [error, setError] = useState('');
-	const [pizzas, setPizzas] = useState([]);
-	const [order, setOrder] = useState({name: '', pizzas: [], comment: ''});
+	const [foods, setFoods] = useState([]);
+	const [order, setOrder] = useState({name: '', items: [], comment: ''});
 
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
@@ -36,7 +43,7 @@ const Page = () => {
 		fetch("/api/pizza")
 			.then(response => response.json())
 			.then(data => {
-				setPizzas(data);
+				setFoods(data);
 			})
 	}, []);
 
@@ -60,21 +67,27 @@ const Page = () => {
 	}
 
 	/**
-	 * Add a pizza to the order
-	 * @param pizza
+	 * Add food to the order
+	 * @param food
 	 */
-	const addToOrder = (pizza) => {
-		const newOrder = [...order.pizzas];
-		newOrder.push(pizza);
-		updateOrder({ pizzas: newOrder });
+	const addToOrder = (food) => {
+		setError('');
+		if (order.items.length >= ORDER.MAX_ITEMS) {
+			setError('You can only order a maximum of 5 pizzas');
+			return;
+		}
+
+		const newOrder = [...order.items];
+		newOrder.push(food);
+		updateOrder({ items: newOrder, comment: order.comment });
 	}
 
 	/**
-	 * Remove a pizza from the order
+	 * Remove food from the order
 	 * @param index
 	 */
 	const removeFromOrder = (index) => {
-		const newOrder = [...order.pizzas];
+		const newOrder = [...order.items];
 		newOrder.splice(index, 1);
 		updateOrder({ pizzas: newOrder });
 	}
@@ -84,8 +97,8 @@ const Page = () => {
 		<div className="content">
 			<h2 className="text-2xl">Order your pizza at Sommerfest 2024!</h2>
 			<div className="mb-3 text-lg font-light text-gray-600 leading-7">
-				{/*Hey hey, welcome to Sommerfest 2024! This is the official ordering system for pizzas, so feel free to choose your pizza(-s) below and pay when collecting at the counter (cash!) . You can then choose your pick-up time (please note: some slots may be overfilled).
-All of our pizzas can be ordered as whole or halved; see the irgedients list below for details on each pizza.
+				{/*Hey hey, welcome to Sommerfest 2024! This is the official ordering system for food, so feel free to choose your pizza(-s) below and pay when collecting at the counter (cash!) . You can then choose your pick-up time (please note: some slots may be overfilled).
+All of our food can be ordered as whole or halved; see the irgedients list below for details on each pizza.
 Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order and enjoy your evening! */}
 
 				<ol className="list-decimal list-inside space-y-2">
@@ -110,13 +123,13 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 					</h3>
 
 					<ul className="pizza-list">
-						{pizzas
-							.filter(pizza => pizza.enabled)
-							.map((pizza, index) => (
-								<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza"
-								       onClick={() => addToOrder(pizza)}/>
+						{foods
+							.filter(food => food.enabled)
+							.map((food, index) => (
+								<Food key={index} food={food} className="pizza"
+								       onClick={() => addToOrder(food)}/>
 							))}
-						{!pizzas.length && <p>Loading...</p>}
+						{!foods.length && <p>Loading...</p>}
 					</ul>
 				</div>
 				<div>
@@ -125,15 +138,15 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 					</h3>
 
 					<ul className="pizza-list">
-						{order.pizzas.map((pizza, index) => (
-							<Pizza key={index} name={pizza.name} price={pizza.price} className="pizza order"
+						{order.items.map((item, index) => (
+							<Food key={index} food={item} className="pizza order"
 							       onClick={() => removeFromOrder(index)}/>
 						))}
 					</ul>
 
 					<div className="mb-3">
 						<p>
-							Total: {order.pizzas.reduce((total, pizza) => total + pizza.price, 0)}€
+							Total: {order.items.reduce((total, pizza) => total + pizza.price, 0)}€
 						</p>
 					</div>
 					<div className="mb-6">
