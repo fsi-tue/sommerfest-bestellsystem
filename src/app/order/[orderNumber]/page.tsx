@@ -5,6 +5,7 @@ import OrderQR from "@/app/components/order/OrderQR.jsx";
 import { useRouter } from "next/navigation";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import { formatDateTime } from "@/lib/time";
+import { statusToText } from "@/model/order";
 
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
@@ -40,22 +41,6 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                 setOrder({ ...order, status: 'cancelled' });
             }
         });
-    }
-
-    const statusToText = (status: string) => {
-        if (status === 'ready') {
-            return 'Your order is ready for pickup!';
-        } else if (status === 'pending') {
-            return 'Please pay at the counter.';
-        } else if (status === 'paid') {
-            return 'Your order is being prepared...';
-        } else if (status === 'delivered') {
-            return 'Your order has been delivered!';
-        } else if (status === 'cancelled') {
-            return 'Your order has been cancelled.';
-        } else {
-            return 'Unknown status';
-        }
     }
 
 	const hasComment = () => {

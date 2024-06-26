@@ -2,8 +2,27 @@ import { type Document, Model, model, Schema } from "mongoose";
 import { FoodDocument } from "./food";
 import { ORDER } from "@/config";
 
-export type OrderStatus = 'pending' | 'paid' | 'ready' | 'delivered' | 'cancelled';
-export const ORDER_STATES: OrderStatus[] = ['pending', 'paid', 'ready', 'delivered', 'cancelled'];
+export type OrderStatus = 'pending' | 'paid' | 'baking' | 'ready' | 'delivered' | 'cancelled';
+export const ORDER_STATES: OrderStatus[] = ['pending', 'paid', 'baking', 'ready', 'delivered', 'cancelled'];
+
+
+export const statusToText = (status: string) => {
+    if (status === 'ready') {
+        return 'Your order is ready for pickup!';
+    } else if (status === 'pending') {
+        return 'Please pay at the counter.';
+    } else if (status === 'baking') {
+        return 'Its getting hot 🔥:)';
+    } else if (status === 'paid') {
+        return 'Your order is being prepared...';
+    } else if (status === 'delivered') {
+        return 'Your order has been delivered!';
+    } else if (status === 'cancelled') {
+        return 'Your order has been cancelled.';
+    } else {
+        return 'Unknown status';
+    }
+}
 
 export interface OrderDocument extends Document {
     _id: string;
@@ -51,8 +70,8 @@ const orderSchema = new Schema<OrderDocument>({
     },
     status: {
         type: String,
-        enum: ['pending', 'paid', 'ready', 'delivered', 'cancelled'],
-        default: 'pending',
+        enum: ORDER_STATES,
+        default: ORDER_STATES[0],
     },
 }, {
     timestamps: true,
