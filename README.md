@@ -51,9 +51,7 @@ To connect to the MongoDB database, use the following configuration in your Mong
 
 - Docker
 - MongoDB
-- Express JS
-- React
-- Node JS
+- Next.js
 
 ## Authors
 
