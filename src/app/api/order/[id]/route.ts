@@ -50,6 +50,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const transformedOrder = {
         _id: order._id,
         name: order.name,
+        comment: order.comment || "",
         pizzas: order.items.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
         orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
         totalPrice: order.totalPrice,

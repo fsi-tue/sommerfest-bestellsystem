@@ -40,22 +40,23 @@ const Page = () => {
 			})
 	}, []);
 
+	const updateOrder = (updatedOrder) => {
+		setOrder({ ...order, ...updatedOrder });
+	  };
+
 	/**
 	 * Set the name of the order
 	 * @param e
 	 */
 	const setName = (e) => {
-		const name = e.target.value;
-		const pizzas = [...order.pizzas];
-		setOrder({name: name, pizzas: pizzas});
+		updateOrder({ name: e.target.value });
 	};
 
 	/**
 	 * Set the comment of the order
 	 */
 	const setComment = (e) => {
-		const comment = e.target.value;
-		setOrder({name: order.name, pizzas: order.pizzas, comment: comment});
+		updateOrder({comment: e.target.value});
 	}
 
 	/**
@@ -65,7 +66,7 @@ const Page = () => {
 	const addToOrder = (pizza) => {
 		const newOrder = [...order.pizzas];
 		newOrder.push(pizza);
-		setOrder({name: order.name, pizzas: newOrder});
+		updateOrder({ pizzas: newOrder });
 	}
 
 	/**
@@ -75,7 +76,7 @@ const Page = () => {
 	const removeFromOrder = (index) => {
 		const newOrder = [...order.pizzas];
 		newOrder.splice(index, 1);
-		setOrder({name: order.name, pizzas: newOrder});
+		updateOrder({ pizzas: newOrder });
 	}
 
 
