@@ -49,7 +49,7 @@ const WithSystemCheck = (WrappedComponent) => {
 		return (
 			<div>
 				<div className="flex items-center justify-center">
-					<div className="text-center p-6 bg-white rounded-lg shadow-md">
+					<div className="text-center p-6">
 						<h2 className="text-2xl font-semibold text-gray-800 mb-4">System Inactive</h2>
 						<p className="text-gray-600 mb-4">
 							Our system is currently undergoing maintenance. We apologize for any

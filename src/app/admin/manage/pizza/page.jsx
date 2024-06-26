@@ -40,7 +40,7 @@ const Page = () => {
 	return (
 		<div>
 			<div className="p-4">
-				<h2 className="text-2xl mb-4">Manage Pizzas 🍕</h2>
+				<h2 className="text-2xl mb-4">Manage Foods 🍕</h2>
 			</div>
 
 			{/* New Food */}

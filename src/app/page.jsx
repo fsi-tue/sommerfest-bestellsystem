@@ -13,14 +13,14 @@ const EVERY_X_SECONDS = 60;
 const Food = ({ food, className, onClick }) => {
 	return (
 		<li
-			className={`${className} flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4`}
+			className={`${className} flex items-center justify-between p-3 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 mb-3`}
 			onClick={onClick}>
 			<div>
-				<span className="text-lg font-semibold text-gray-900">{food.price}€ {food.name}</span>
+				<span className="text-base font-semibold text-gray-900">{food.price}€ {food.name}</span>
 			</div>
 			<div className="flex space-x-2">
-				<span className="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-200 rounded-full">{food.dietary}</span>
-				<span className="px-2 py-1 text-xs font-medium text-green-700 bg-green-200 rounded-full">{food.type}</span>
+				<span className="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">{food.dietary}</span>
+				<span className="px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">{food.type}</span>
 			</div>
 		</li>
 	);
@@ -165,6 +165,16 @@ const Page = () => {
 
 					{error && <ErrorMessage error={error}/>}
 					<OrderButton order={order} setError={setError}/>
+
+					<div className="timeline-container">
+						<h2 className="text-2xl">Timeline</h2>
+						<p className="mb-3 text-lg font-light text-gray-600 leading-7">
+							Here is the timeline of the orders.
+						</p>
+
+						<Timeline startDate={start} stopDate={end}
+						          every_x_seconds={EVERY_X_SECONDS}/>
+					</div>
 				</div>
 			</div>
 		</div>
