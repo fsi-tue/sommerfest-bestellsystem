@@ -1,12 +1,11 @@
 import { type Document, Model, model, Schema } from "mongoose";
-import { PizzaDocument } from "./pizza";
-
-export const MAX_PIZZAS = 12;
+import { FoodDocument } from "./food";
+import { order } from "@/config";
 
 export interface OrderDocument extends Document {
     name: string;
     comment?: string;
-    pizzas: PizzaDocument[];
+    items: FoodDocument[];
     orderDate: Date;
     timeslot: string;
     totalPrice: number;
@@ -23,10 +22,10 @@ const orderSchema = new Schema<OrderDocument>({
         type: String,
         required: false,
     },
-    pizzas: [
+    items: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Pizza',
+            ref: 'Food',
             required: true
         }
     ],
@@ -55,12 +54,12 @@ const orderSchema = new Schema<OrderDocument>({
     timestamps: true,
 });
 
-// Custom validator for the length of the pizza array
-orderSchema.path('pizzas').validate({
+// Custom validator for the length of the food array
+orderSchema.path('items').validate({
     validator: function (value) {
-        return value.length > 0 && value.length <= MAX_PIZZAS;
+        return value.length > 0 && value.length <= order.MAX_ITEMS;
     },
-    message: props => `An order must have between 1 and ${MAX_PIZZAS} pizzas. Currently, it has ${props.value.length}.`
+    message: props => `An order must have between 1 and ${order.MAX_ITEMS} items. Currently, it has ${props.value.length}.`
 });
 
 // Middleware to set finishedAt when the order is marked as finished

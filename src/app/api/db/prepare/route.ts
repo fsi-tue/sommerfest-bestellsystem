@@ -1,5 +1,5 @@
 // Fill the database
-import { Pizza } from "@/model/pizza";
+import { Food } from "@/model/food";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
@@ -24,35 +24,25 @@ export async function POST() {
 
     // Add pizzas
     const pizzas = [
-        { name: 'NON-VEG-Pepperoni half', price: 3 },
-        { name: 'NON-VEG-Pepperoni whole', price: 6 },
-        { name: 'NON-VEG-Meat half', price: 4 },
-        { name: 'NON-VEG-Meat whole', price: 8 },
-        { name: 'NON-VEG-Capriccosa half', price: 4 },
-        { name: 'NON-VEG-Capriccosa whole', price: 8 },
-        { name: 'VEGE-Margherita half', price: 3 },
-        { name: 'VEGE-Margherita whole', price: 6 },
-        { name: 'VEGE-Capriccosa half', price: 3 },
-        { name: 'VEGE-Capriccosa whole', price: 6 },
-        { name: 'VEGE-Veggies half', price: 3 },
-        { name: 'VEGE-Veggies whole', price: 6 },
-        { name: 'VEGAN-Margherita half', price: 3 },
-        { name: 'VEGAN-Margherita whole', price: 6 },
-        { name: 'VEGAN-Capriccosa half', price: 4 },
-        { name: 'VEGAN-Capriccosa whole', price: 8 }
+        { name: 'Pepperoni half', price: 3, dietary: 'halal', type: 'pizza' },
+        { name: 'Pepperoni whole', price: 6, dietary: 'halal', type: 'pizza' },
+        { name: 'Meat half', price: 4, dietary: 'halal', type: 'pizza' },
+        { name: 'Meat whole', price: 8, dietary: 'halal', type: 'pizza' },
+        { name: 'Capriccosa half', price: 4, dietary: 'halal', type: 'pizza' },
+        { name: 'Capriccosa whole', price: 8, dietary: 'halal', type: 'pizza' },
+        { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Margherita whole', price: 6, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Capriccosa half', price: 3, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Capriccosa whole', price: 6, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Veggies half', price: 3, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Veggies whole', price: 6, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Margherita half', price: 3, dietary: 'vegan', type: 'pizza' },
+        { name: 'Margherita whole', price: 6, dietary: 'vegan', type: 'pizza' },
+        { name: 'Capriccosa half', price: 4, dietary: 'vegan', type: 'pizza' },
+        { name: 'Capriccosa whole', price: 8, dietary: 'vegan', type: 'pizza' },
     ];
     for (const pizza of pizzas) {
-        await new Pizza(pizza).save();
-    }
-
-    const pizzas_by_id: { [key: string]: any } = {};
-    try {
-        const pizzas = await Pizza.find()
-        pizzas.forEach((pizza: any) => {
-            pizzas_by_id[pizza._id.toString()] = pizza;
-        });
-    } catch (error) {
-        console.error('Error fetching pizzas:', error);
+        await new Food(pizza).save();
     }
 
     return Response.json({ message: 'Successfully filled database' })

@@ -1,6 +1,6 @@
 import mongoose, { ObjectId } from "mongoose";
-import { Pizza, PizzaDocument } from "@/model/pizza";
-import { MAX_PIZZAS, Order } from "@/model/order";
+import { Food, FoodDocument } from "@/model/food";
+import { MAX_ITEMS, Order } from "@/model/order";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
@@ -15,15 +15,15 @@ export async function GET(req: Request) {
     }
 
     const orders = await Order.find();
-    const pizzas = await Pizza.find();
+    const pizzas = await Food.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
         // Get the pizzas for the order
-        const pizzasForOrder = pizzas.filter((pizza: any) => order.pizzas.includes(pizza._id));
+        const pizzasForOrder = pizzas.filter((pizza: any) => order.items.includes(pizza._id));
 
         // Create a map of pizza details
         const pizzaDetailsMap = pizzasForOrder
-            .reduce((map: { [id: string]: PizzaDocument }, pizza: any) => {
+            .reduce((map: { [id: string]: FoodDocument }, pizza: any) => {
                 map[pizza._id.toString()] = pizza;
                 return map;
             }, {});
@@ -31,7 +31,7 @@ export async function GET(req: Request) {
         return {
             _id: order._id,
             name: order.name,
-            pizzas: order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+            pizzas: order.items.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
             orderDate: order.orderDate,
             totalPrice: order.totalPrice,
             finishedAt: order.finishedAt,
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     const { pizzas, name } = await req.json();
 
     // Check if there are too many pizzas
-    if (pizzas.length > MAX_PIZZAS || pizzas.length < 1) {
+    if (pizzas.length > MAX_ITEMS || pizzas.length < 1) {
         console.error('Too many or too few pizzas', pizzas.length);
         return new Response(`Too many or too few pizzas.
                                         We don't know what to do with that.
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     // Check if the pizzas are valid
     const pizzaIds: string[] = pizzas.map((pizza: { _id: string }) => pizza._id);
-    if (!pizzaIds.every(async (pizzaId: string) => await Pizza.exists({ _id: pizzaId }))) {
+    if (!pizzaIds.every(async (pizzaId: string) => await Food.exists({ _id: pizzaId }))) {
         console.error('Some pizzas are missing', pizzas);
         return new Response(`Some of the pizzas you ordered seem to have vanished into thin crust.
                             Are you trying to order ghost pizzas?
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     // Don't trust the price from the request body
     const totalPrice: number = await pizzaIds
         .reduce(async (total: Promise<number>, pizzaId: string) => {
-            const pizza = await Pizza.findOne({ _id: pizzaId });
+            const pizza = await Food.findOne({ _id: pizzaId });
             if (!pizza) {
                 console.error('Pizza not found', pizzaId)
                 return total;
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     // Create the order
     const order = new Order();
     order.name = name || "anonymous";
-    order.pizzas = pizzas
+    order.items = pizzas
     order.totalPrice = totalPrice;
     order.comment = "No comment";
     await order.save()

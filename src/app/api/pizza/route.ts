@@ -1,4 +1,4 @@
-import { Pizza } from "@/model/pizza";
+import { Food } from "@/model/food";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     console.log('GET pizzas')
 
     try {
-        const pizzas = await Pizza.find()
+        const pizzas = await Food.find()
         return Response.json(pizzas)
     } catch (error) {
         console.error('Error fetching pizzas:', error);
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const newPizza = await req.json()
 
     try {
-        const pizza = new Pizza(newPizza);
+        const pizza = new Food(newPizza);
         await pizza.save();
         return Response.json(pizza);
     } catch (error) {
@@ -51,7 +51,7 @@ export async function PUT(req: Request) {
     const pizza = await req.json()
 
     try {
-        const updatedPizza = await Pizza.findById(pizza._id);
+        const updatedPizza = await Food.findById(pizza._id);
         if (!updatedPizza) {
             return new Response('Pizza not found', { status: 404 });
         }

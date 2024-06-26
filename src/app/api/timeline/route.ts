@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     const orderTimeslots = timeSlots.map((timeSlot, index) =>
         orders.filter(
             order => order.orderDate >= timeSlot.startTime && order.orderDate <= timeSlot.stopTime
-        ).map(order => order.pizzas.length).reduce((a, b) => a + b, 0));
+        ).map(order => order.items.length).reduce((a, b) => a + b, 0));
 
     return Response.json(timeSlots.map((timeSlot, index) => ({
         time: timeSlot.time,

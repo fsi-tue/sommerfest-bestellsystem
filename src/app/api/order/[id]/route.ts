@@ -3,7 +3,7 @@ import dbConnect from "@/lib/dbConnect";
 import moment from 'moment-timezone';
 import mongoose from "mongoose";
 import { Order } from "@/model/order";
-import { Pizza, PizzaDocument } from "@/model/pizza";
+import { Food, FoodDocument } from "@/model/food";
 import { constants } from "@/config";
 
 
@@ -35,13 +35,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     // Get the pizzas for the order
-    const pizzaDetails = await Pizza
-        .find({ _id: { $in: order.pizzas } })
+    const pizzaDetails = await Food
+        .find({ _id: { $in: order.items } })
         .select('name price');
 
     // Create a map of pizza details
     const pizzaDetailsMap = pizzaDetails
-        .reduce((map: { [id: string]: PizzaDocument }, pizza: any) => {
+        .reduce((map: { [id: string]: FoodDocument }, pizza: any) => {
             map[pizza._id.toString()] = pizza;
             return map;
         }, {});
@@ -50,7 +50,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const transformedOrder = {
         _id: order._id,
         name: order.name,
-        pizzas: order.pizzas.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
+        pizzas: order.items.map(pizzaId => pizzaDetailsMap[pizzaId.toString()]),
         orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
         totalPrice: order.totalPrice,
         finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),

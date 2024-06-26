@@ -21,7 +21,7 @@ const Page = () => {
 	// State to hold the order
 	const [error, setError] = useState('');
 	const [pizzas, setPizzas] = useState([]);
-	const [order, setOrder] = useState({name: '', pizzas: [], timeslot: '', comment: ''});
+	const [order, setOrder] = useState({name: '', pizzas: [], comment: ''});
 
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
@@ -47,7 +47,7 @@ const Page = () => {
 	const setName = (e) => {
 		const name = e.target.value;
 		const pizzas = [...order.pizzas];
-		setOrder({name: name, pizzas: pizzas, timeslot: order.timeslot});
+		setOrder({name: name, pizzas: pizzas});
 	};
 
 	/**
@@ -55,37 +55,7 @@ const Page = () => {
 	 */
 	const setComment = (e) => {
 		const comment = e.target.value;
-		setOrder({name: order.name, pizzas: order.pizzas, timeslot: order.timeslot, comment: comment});
-	}
-
-	/**
-	 * Set the timeslot of the order
-	 * @param timeslot the timeslot as string in the format HH:MM
-	 */
-	const setTimeslot = (timeslot) => {
-		setError('');
-
-		// Check if the timeslot is not in the past
-		const time = new Date();
-		time.setHours(timeslot.split(':')[0]);
-		time.setMinutes(timeslot.split(':')[1]);
-
-		const currentTime = new Date();
-		if (time < currentTime) {
-			setError('You cannot choose a timeslot in the past.');
-			return;
-		}
-
-		// Minimum time per pizza is 5 minutes
-		const minTime = new Date();
-		minTime.setMinutes(minTime.getMinutes() + order.pizzas.length * 5);
-		if (time < minTime) {
-			setError('Minimum time for the order is ' + minTime.toLocaleTimeString());
-			return;
-		}
-
-		_setTimeslot(timeslot);
-		// setOrder({name: order.name, pizzas: order.pizzas, timeslot: timeslot});
+		setOrder({name: order.name, pizzas: order.pizzas, comment: comment});
 	}
 
 	/**
@@ -95,7 +65,7 @@ const Page = () => {
 	const addToOrder = (pizza) => {
 		const newOrder = [...order.pizzas];
 		newOrder.push(pizza);
-		setOrder({name: order.name, pizzas: newOrder, timeslot: order.timeslot});
+		setOrder({name: order.name, pizzas: newOrder});
 	}
 
 	/**
@@ -105,7 +75,7 @@ const Page = () => {
 	const removeFromOrder = (index) => {
 		const newOrder = [...order.pizzas];
 		newOrder.splice(index, 1);
-		setOrder({name: order.name, pizzas: newOrder, timeslot: order.timeslot});
+		setOrder({name: order.name, pizzas: newOrder});
 	}
 
 
@@ -164,9 +134,6 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						<p>
 							Total: {order.pizzas.reduce((total, pizza) => total + pizza.price, 0)}€
 						</p>
-						{timeslot && <p className="font-light text-xs">
-							Your order will be ready at {timeslot}
-						</p>}
 					</div>
 					<div className="mb-6">
 						<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>

@@ -1,5 +1,5 @@
 // Fill the database
-import { Pizza } from "@/model/pizza";
+import { Food } from "@/model/food";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
@@ -22,7 +22,7 @@ export async function POST() {
         return new Response('Unauthorized', { status: 401 });
     }
 
-    await Pizza.deleteMany({})
+    await Food.deleteMany({})
     await Order.deleteMany({})
 
     return Response.json({ message: 'Successfully deleted database' })

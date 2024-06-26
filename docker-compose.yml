@@ -11,22 +11,6 @@ services:
       - db
     restart: unless-stopped
 
-  api:
-    container_name: src
-    build:
-      context: api.deprecated
-      dockerfile: Dockerfile
-    env_file:
-      - api.deprecated/.env
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mongodb
-    networks:
-      - db
-      - app
-    restart: unless-stopped
-
   app:
     container_name: app
     build:

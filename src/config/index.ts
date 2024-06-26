@@ -11,3 +11,8 @@ export const constants = {
 export const tokens = {
     PAYMENT_ADMIN_TOKEN: process.env.PAYMENT_ADMIN_TOKEN,
 }
+
+export const order = {
+    MAX_ITEMS: 5,
+
+}

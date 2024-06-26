@@ -2,13 +2,18 @@
 
 import {useEffect, useState} from "react";
 import OrderQR from "@/app/components/order/OrderQR.jsx";
-import {useSearchParams} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getFromLocalStorage } from "@/lib/localStorage";
 
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
-
 	const [status, setStatus] = useState('');
 	const [pizzas, setPizzas] = useState([] as { name: string, price: number }[]);
+
+	// Check if logged in
+	const router = useRouter();
+	const token = getFromLocalStorage('token');
+
 
 	useEffect(() => {
 		// Get the order status from the server
