@@ -60,10 +60,14 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 if (order.status.toLowerCase().includes(filter.toLowerCase())) {
                     return true;
                 }
-                return (order.pizzas || []).some((pizza: FoodDocument) => pizza.name.toLowerCase().includes(filter.toLowerCase()));
+                return (order.items || []).some((food: FoodDocument) => food.name.toLowerCase().includes(filter.toLowerCase()));
             }));
-            // Set input value to filter
-            inputRef.current.value = filter;
+
+            if (inputRef.current) {
+                // Set input value to filter
+                const setInputFilter = (inputField: HTMLInputElement) => inputField.value = filter;
+                setInputFilter(inputRef.current)
+            }
         } else {
             setFilteredOrders(orders);
         }
@@ -74,7 +78,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
      * @param _id
      * @param status
      */
-    const updateOrderStatus = (_id, status) => {
+    const updateOrderStatus = (_id: string, status: OrderStatus) => {
         fetch('/api/order', {
             method: 'PUT',
             headers: headers,
@@ -136,13 +140,13 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         return date.toLocaleDateString('en-US', options as any);
     };
 
-	const hasComment = order => {
-		return (
-			typeof order.comment === "string" &&
-			order.comment != "" && 
-			order.comment.toLowerCase() !== "No comment".toLowerCase()
-		);
-	}
+    const hasComment = (order: OrderDocument) => {
+        return (
+            typeof order.comment === "string" &&
+            order.comment != "" &&
+            order.comment.toLowerCase() !== "No comment".toLowerCase()
+        );
+    };
 
     return (
         <div className="content">
@@ -163,8 +167,8 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             </div>
 
             <input type="text" placeholder="Search by Name, OrderId, State or Pizza"
-                   className="w-full p-2 border border-gray-300 rounded-lg shadow-md mb-4"
-                   onChange={search} ref={inputRef}/>
+                className="w-full p-2 border border-gray-300 rounded-lg shadow-md mb-4"
+                onChange={search} ref={inputRef} />
 
             <div className="flex flex-col space-y-4">
                 {filteredOrders && filteredOrders.length > 0 && filteredOrders
@@ -173,7 +177,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                         <div key={order._id + index} className="w-full px-2 py-2">
                             <div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
                                 <a className="text-xs font-light text-gray-500 mb-0"
-                                   href={order_url(order._id)}>{order._id}</a>
+                                    href={order_url(order._id)}>{order._id}</a>
                                 <div className="text-xl font-semibold mb-2">{order.name}</div>
                                 <div className="flex gap-1 items-center justify-start">
                                     <span
@@ -186,22 +190,22 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     </span>
                                     <span
                                         className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
-																			{(order.items || []).length} pizzas
-															</span>
+                                        {(order.items || []).length} foods
+                                    </span>
 
                                     <span
                                         className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
                                         {formatDateTime(new Date(order.orderDate))}
                                     </span>
                                 </div>
-								{hasComment(order) && (
-								<div class="list-disc list-inside text-sm font-light text-gray-600 mb-4">
-									<div class="flex flex-col">
-										<span class="font-bold">Comment:</span>
-										<span class="pl-4 italic">{comment}</span>
-									</div>
-								</div>
-								)}
+                                {hasComment(order) && (
+                                    <div class="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+                                        <div class="flex flex-col">
+                                            <span class="font-bold">Comment:</span>
+                                            <span class="pl-4 italic">{comment}</span>
+                                        </div>
+                                    </div>
+                                )}
                                 <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
                                     {(order.items || []).map(food => (
                                         <li key={food.name}>{food.name}: {food.price}€ ({food.dietary})</li>
