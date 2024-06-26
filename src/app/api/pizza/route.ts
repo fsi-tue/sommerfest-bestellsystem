@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     console.log('GET pizzas')
 
     try {
-        const pizzas = await Food.find()
+        const pizzas = await Food.find({ type: 'pizza' });
         return Response.json(pizzas)
     } catch (error) {
         console.error('Error fetching pizzas:', error);

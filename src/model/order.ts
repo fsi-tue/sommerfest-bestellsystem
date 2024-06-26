@@ -1,6 +1,6 @@
 import { type Document, Model, model, Schema } from "mongoose";
 import { FoodDocument } from "./food";
-import { order } from "@/config";
+import { ORDER } from "@/config";
 
 export interface OrderDocument extends Document {
     name: string;
@@ -57,9 +57,9 @@ const orderSchema = new Schema<OrderDocument>({
 // Custom validator for the length of the food array
 orderSchema.path('items').validate({
     validator: function (value) {
-        return value.length > 0 && value.length <= order.MAX_ITEMS;
+        return value.length > 0 && value.length <= ORDER.MAX_ITEMS;
     },
-    message: props => `An order must have between 1 and ${order.MAX_ITEMS} items. Currently, it has ${props.value.length}.`
+    message: props => `An order must have between 1 and ${ORDER.MAX_ITEMS} items. Currently, it has ${props.value.length}.`
 });
 
 // Middleware to set finishedAt when the order is marked as finished

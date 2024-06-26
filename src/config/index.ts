@@ -12,7 +12,7 @@ export const tokens = {
     PAYMENT_ADMIN_TOKEN: process.env.PAYMENT_ADMIN_TOKEN,
 }
 
-export const order = {
+export const ORDER = {
     MAX_ITEMS: 5,
-
+    MAX_ORDERS: 100,
 }

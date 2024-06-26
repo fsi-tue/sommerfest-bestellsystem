@@ -6,18 +6,18 @@ import {addToLocalStorage, getFromLocalStorage} from "../../../lib/localStorage"
 const OrderButton = ({order}) => {
 	const router = useRouter()
 
-	const pizzas = order.pizzas;
+	const items = order.items;
 	const name = order.name;
 	const timeslot = order.timeslot
 	const comment = order.comment
 
-	if (pizzas.length === 0) {
+	if (items.length === 0) {
 		return;
 	}
 
 	const body = {
 		name: name,
-		pizzas: pizzas,
+		pizzas: items,
 		timeslot: timeslot,
 		comment: comment
 	}

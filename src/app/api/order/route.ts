@@ -1,9 +1,10 @@
 import mongoose, { ObjectId } from "mongoose";
 import { Food, FoodDocument } from "@/model/food";
-import { MAX_ITEMS, Order } from "@/model/order";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { Order } from "@/model/order";
+import { ORDER } from "@/config";
 
 export async function GET(req: Request) {
     await dbConnect();
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
     const { pizzas, name } = await req.json();
 
     // Check if there are too many pizzas
-    if (pizzas.length > MAX_ITEMS || pizzas.length < 1) {
+    if (pizzas.length > ORDER.MAX_ITEMS || pizzas.length < 1) {
         console.error('Too many or too few pizzas', pizzas.length);
         return new Response(`Too many or too few pizzas.
                                         We don't know what to do with that.
