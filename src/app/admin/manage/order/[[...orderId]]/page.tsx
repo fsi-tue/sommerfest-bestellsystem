@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import WithAuth from "@/app/admin/WithAuth";
-import { OrderDocument } from "@/model/order";
+import { ORDER_STATES, OrderDocument, OrderStatus } from "@/model/order";
 import { FoodDocument } from "@/model/food";
+import { formatDateTime } from "@/lib/time";
 
 const Page = ({ params }: { params: { orderId: string } }) => {
     const token = getFromLocalStorage('token', '');
@@ -14,10 +15,10 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     const [orders, setOrders] = useState([] as OrderDocument[]); // state to hold order status
     const [filter, setFilter] = useState(''); // state to hold order status
     const [filteredOrders, setFilteredOrders] = useState([] as OrderDocument[]); // state to hold order status]
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     // Order states
-    const states = ["pending", "paid", "ready", "delivered", "cancelled"];
+    const states = ORDER_STATES
 
     const headers = {
         'Content-Type': 'application/json',
@@ -63,10 +64,9 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 return (order.items || []).some((food: FoodDocument) => food.name.toLowerCase().includes(filter.toLowerCase()));
             }));
 
-            if (inputRef.current) {
-                // Set input value to filter
-                const setInputFilter = (inputField: HTMLInputElement) => inputField.value = filter;
-                setInputFilter(inputRef.current)
+            // Set input value to filter
+            if (inputRef !== null && inputRef.current) {
+                inputRef.current.value = filter;
             }
         } else {
             setFilteredOrders(orders);
@@ -125,28 +125,13 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         return `/api/order/${id}`;
     }
 
-    const formatDateTime = (date: Date) => {
-        const options = {
-            weekday: 'long', // "Monday"
-            year: 'numeric', // "2024"
-            month: 'long', // "June"
-            day: 'numeric', // "22"
-            hour: 'numeric', // "10"
-            minute: 'numeric', // "30"
-            second: 'numeric', // "15"
-            hour12: false // "AM/PM"
-        };
-
-        return date.toLocaleDateString('en-US', options as any);
-    };
-
-    const hasComment = (order: OrderDocument) => {
-        return (
-            typeof order.comment === "string" &&
-            order.comment != "" &&
-            order.comment.toLowerCase() !== "No comment".toLowerCase()
-        );
-    };
+	const hasComment = (order: OrderDocument) => {
+		return (
+			typeof order.comment === "string" &&
+			order.comment != "" &&
+			order.comment.toLowerCase() !== "No comment".toLowerCase()
+		);
+	};
 
     return (
         <div className="content">
@@ -158,7 +143,6 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                     </div>
                     <div className="w-24 h-24">
                         <Scanner
-                            className="w-full h-full border border-gray-300 rounded-md"
                             allowMultiple={true} scanDelay={250} paused={false}
                             onScan={(result) => barcodeToOrder(result)}
                         />
@@ -172,7 +156,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
             <div className="flex flex-col space-y-4">
                 {filteredOrders && filteredOrders.length > 0 && filteredOrders
-                    .toSorted((a, b) => new Date(b.orderDate) - new Date(a.orderDate)) // Sort by date
+                    .toSorted((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()) // Sort by date
                     .map((order, index) => ( // Map the orders
                         <div key={order._id + index} className="w-full px-2 py-2">
                             <div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
@@ -190,7 +174,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     </span>
                                     <span
                                         className="text-xs text-gray-700 mr-2 uppercase tracking-wider mb-2 rounded px-2 py-0.5 bg-gray-200">
-                                        {(order.items || []).length} foods
+                                        {(order.items || []).length} items
                                     </span>
 
                                     <span
@@ -199,10 +183,10 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     </span>
                                 </div>
                                 {hasComment(order) && (
-                                    <div class="list-disc list-inside text-sm font-light text-gray-600 mb-4">
-                                        <div class="flex flex-col">
-                                            <span class="font-bold">Comment:</span>
-                                            <span class="pl-4 italic">{comment}</span>
+                                    <div className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+                                        <div className="flex flex-col">
+                                            <span className="font-bold">Comment:</span>
+                                            <span className="pl-4 italic">{comment}</span>
                                         </div>
                                     </div>
                                 )}

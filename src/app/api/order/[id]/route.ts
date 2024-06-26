@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 import mongoose from "mongoose";
 import { Order } from "@/model/order";
 import { Food, FoodDocument } from "@/model/food";
-import { constants } from "@/config";
+import { constants, ORDER } from "@/config";
 
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
@@ -34,6 +34,15 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         `, { status: 404 });
     }
 
+    // Get all orders that were ordered before this order and are not finished
+    const ordersBefore = await Order.find({
+        orderDate: { $lt: order.orderDate },
+        finishedAt: { $exists: false },
+    });
+    // Get all foods from the database and calculate how much time it will take
+    const itemsTotal = ordersBefore.map(order => order.items).flat();
+    const totalTime = itemsTotal.length * ORDER.TIME_PER_ORDER;
+
     // Get the foods for the order
     const foodsDetails = await Food
         .find({ _id: { $in: order.items } })
@@ -52,7 +61,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         name: order.name,
         comment: order.comment || "",
         items: order.items.map(foodId => foodDetailsMap[foodId.toString()]),
-        orderDate: moment(order.orderDate).tz(constants.TIMEZONE_ORDERS).format(),
+        orderDate: order.orderDate,
+        timeslot: new Date(order.orderDate.getTime() + totalTime),
         totalPrice: order.totalPrice,
         finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
         status: order.status,

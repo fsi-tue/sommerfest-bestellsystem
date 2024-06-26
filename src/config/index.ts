@@ -4,8 +4,7 @@ export const mongodb = {
 
 export const constants = {
     LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS || "8"),
-    ENABLE_DB_FILLING: process.env.ENABLE_DB_FILLING ?? false,
-    TIMEZONE_ORDERS: process.env.TIMEZONE_ORDERS || 'Europe/Berlin'
+    TIMEZONE_ORDERS: 'Europe/Berlin'
 }
 
 export const tokens = {
@@ -13,6 +12,11 @@ export const tokens = {
 }
 
 export const ORDER = {
-    MAX_ITEMS: 5,
+    MAX_ITEMS_PER_ORDER: 5,
     MAX_ORDERS: 100,
+    TIME_PER_ORDER: 1000 * 60 * 5, // 5 minutes
+}
+
+export const FOOD = {
+    MAX_ITEMS: 40
 }

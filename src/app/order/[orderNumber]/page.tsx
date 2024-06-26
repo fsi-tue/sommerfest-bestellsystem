@@ -4,13 +4,11 @@ import { useEffect, useState } from "react";
 import OrderQR from "@/app/components/order/OrderQR.jsx";
 import { useRouter } from "next/navigation";
 import { getFromLocalStorage } from "@/lib/localStorage";
-import { FoodDocument } from "@/model/food";
+import { formatDateTime } from "@/lib/time";
 
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
-	const [comment, setComment] = useState('');
-    const [status, setStatus] = useState('');
-    const [foods, setFoods] = useState([] as FoodDocument[]);
+    const [order, setOrder] = useState({} as any);
 
     // Check if logged in
     const router = useRouter();
@@ -27,11 +25,22 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
         fetch(`/api/order/${params.orderNumber}`)
             .then(response => response.json())
             .then(data => {
-                setStatus(data.status)
-                setFoods(data.items)
-				setComment(data.comment)
+                setOrder(data)
             });
     }, [params.orderNumber]);
+
+    const cancelOrder = () => {
+        fetch(`/api/order/${params.orderNumber}/cancel`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            if (response.ok) {
+                setOrder({ ...order, status: 'cancelled' });
+            }
+        });
+    }
 
     const statusToText = (status: string) => {
         if (status === 'ready') {
@@ -51,9 +60,9 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
 
 	const hasComment = () => {
 		return (
-			typeof comment === "string" &&
-			comment != "" && 
-			comment.toLowerCase() !== "No comment".toLowerCase()
+			typeof order.comment === "string" &&
+			order.comment != "" &&
+			order.comment.toLowerCase() !== "No comment".toLowerCase()
 		);
 	}
 
@@ -66,34 +75,47 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
             <a className="text-xs font-light text-gray-500 mb-0"
                href={params.orderNumber}>{params.orderNumber}</a>
 
-            <div className="flex flex-row items-start p-4 rounded-lg shadow-md">
+            <div className="p-4 rounded-lg shadow-md flex sm:flex-row flex-col items-start bg-white mt-4">
                 <div>
                     <h3 className="text-lg font-bold">QR Code</h3>
                     <OrderQR orderId={params.orderNumber}/>
 
                     <p className="mb-3 text-lg font-light text-gray-600 leading-7">
-                        {statusToText(status)}
+                        {statusToText(order.status)}
                     </p>
                 </div>
                 <div className="">
                     <div className="ml-4">
                         <h3 className="text-lg font-bold">Order details</h3>
 						{hasComment() && (
-							<div class="list-disc list-inside text-sm font-light text-gray-600 mb-4">
-								<div class="flex flex-col">
-									<span class="font-bold">Comment:</span>
-									<span class="pl-4 italic">{comment}</span>
+							<div className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+								<div className="flex flex-col">
+									<span className="font-bold">Comment:</span>
+									<span className="pl-4 italic">{order.comment}</span>
 								</div>
 							</div>
 						)}
                         <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
-                            {foods.map(pizza => (
-                                <li key={pizza.name}>{pizza.name}: {pizza.price}€</li>
+                            {order && order.items && order.items.map((food: any) => (
+                                <li key={food.name}>{food.name}: {food.price}€</li>
                             ))}
                         </ul>
                         <p className="text-lg font-light text-gray-600">
-                            Total: {foods.reduce((total, pizza) => total + pizza.price, 0)}€
+                            Total: {order && order.items && order.items.reduce((total: number, food: {
+                            price: number
+                        }) => total + food.price, 0)}€
                         </p>
+                        <p className="text-lg font-light text-gray-600">
+                            Order date: {formatDateTime(new Date(order.orderDate))}
+                        </p>
+                        <p className="text-lg font-light text-gray-600">
+                            Timeslot: {formatDateTime(new Date(order.timeslot))}
+                        </p>
+                        {order.status !== 'cancelled' &&
+													<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+													        onClick={cancelOrder}>
+														Cancel order
+													</button>}
                     </div>
                 </div>
             </div>

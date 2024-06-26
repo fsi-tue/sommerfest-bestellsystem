@@ -5,6 +5,7 @@ import Pizza from "./Pizza.jsx";
 import {getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import WithAuth from "../../WithAuth.jsx";
+import {FOOD} from "@/config";
 
 const Page = () => {
 	const token = getFromLocalStorage('token', '');
@@ -43,7 +44,7 @@ const Page = () => {
 			</div>
 
 			{/* New Pizza */}
-			<Pizza key="new" pizza={{name: 'New Pizza', price: 0, enabled: true}} isNew={true}/>
+			<Pizza key="new" pizza={{name: 'New Pizza', price: 0, enabled: true, max: FOOD.MAX_ITEMS}} isNew={true}/>
 
 			{/* Pizzas */}
 			<div className="flex flex-col space-y-4">

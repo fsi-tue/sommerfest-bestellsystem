@@ -73,7 +73,8 @@ const Page = () => {
 	const addToOrder = (food) => {
 		setError('');
 		if (order.items.length >= ORDER.MAX_ITEMS) {
-			setError('You can only order a maximum of 5 pizzas');
+			setError(`You can only order a maximum of ${ORDER.MAX_ITEMS} items.`);
+			setTimeout(() => setError(''), 5000);
 			return;
 		}
 
@@ -87,6 +88,7 @@ const Page = () => {
 	 * @param index
 	 */
 	const removeFromOrder = (index) => {
+		setError('');
 		const newOrder = [...order.items];
 		newOrder.splice(index, 1);
 		updateOrder({ pizzas: newOrder });
@@ -169,7 +171,7 @@ Earliest pick-up time: 17:25, latest order time: 23:40. Thank you for your order
 						/>
 					</div>
 					{error && <ErrorMessage error={error}/>}
-					{error === '' && <OrderButton order={order}/>}
+					<OrderButton order={order}/>
 				</div>
 			</div>
 			<div className="timeline-container">
