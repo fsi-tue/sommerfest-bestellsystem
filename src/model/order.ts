@@ -2,6 +2,7 @@ import { type Document, Model, model, Schema } from "mongoose";
 import { FoodDocument } from "./food";
 import { ORDER } from "@/config";
 
+export type OrderStatus = 'pending' | 'paid' | 'ready' | 'delivered' | 'cancelled';
 export interface OrderDocument extends Document {
     _id: string;
     name: string;
@@ -11,7 +12,7 @@ export interface OrderDocument extends Document {
     timeslot: string;
     totalPrice: number;
     finishedAt?: Date;
-    status: 'pending' | 'paid' | 'ready' | 'delivered' | 'cancelled';
+    status: OrderStatus;
 }
 
 const orderSchema = new Schema<OrderDocument>({
