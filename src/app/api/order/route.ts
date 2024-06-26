@@ -32,6 +32,7 @@ export async function GET(req: Request) {
         return {
             _id: order._id,
             name: order.name,
+            comment: order.comment || "",
             items: order.items.map(pizzaId => foodDetailsMap[pizzaId.toString()]),
             orderDate: order.orderDate,
             totalPrice: order.totalPrice,
@@ -47,7 +48,8 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // Get the body of the request
-    const { pizzas, name } = await req.json();
+    const { pizzas, name, comment} = await req.json();
+
 
     // Check if there are too many pizzas
     if (pizzas.length > ORDER.MAX_ITEMS || pizzas.length < 1) {
@@ -81,10 +83,10 @@ export async function POST(req: Request) {
 
     // Create the order
     const order = new Order();
-    order.name = name || "anonymous";
+    order.name = (name || "anonymous").slice(0,30);
     order.items = pizzas
     order.totalPrice = totalPrice;
-    order.comment = "No comment";
+    order.comment = (comment || "No comment" ).slice(0,500);
     await order.save()
 
     // Get the order ID

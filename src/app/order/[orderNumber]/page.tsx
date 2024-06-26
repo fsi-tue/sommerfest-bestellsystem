@@ -8,6 +8,7 @@ import { FoodDocument } from "@/model/food";
 
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
+	const [comment, setComment] = useState('');
     const [status, setStatus] = useState('');
     const [foods, setFoods] = useState([] as FoodDocument[]);
 
@@ -28,6 +29,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
             .then(data => {
                 setStatus(data.status)
                 setFoods(data.items)
+				setComment(data.comment)
             });
     }, [params.orderNumber]);
 
@@ -46,6 +48,15 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
             return 'Unknown status';
         }
     }
+
+	const hasComment = () => {
+		return (
+			typeof comment === "string" &&
+			comment != "" && 
+			comment.toLowerCase() !== "No comment".toLowerCase()
+		);
+	}
+
 
     return (
         <div className="content">
@@ -67,6 +78,14 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                 <div className="">
                     <div className="ml-4">
                         <h3 className="text-lg font-bold">Order details</h3>
+						{hasComment() && (
+							<div class="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+								<div class="flex flex-col">
+									<span class="font-bold">Comment:</span>
+									<span class="pl-4 italic">{comment}</span>
+								</div>
+							</div>
+						)}
                         <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
                             {foods.map(pizza => (
                                 <li key={pizza.name}>{pizza.name}: {pizza.price}€</li>

@@ -136,6 +136,14 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         return date.toLocaleDateString('en-US', options as any);
     };
 
+	const hasComment = order => {
+		return (
+			typeof order.comment === "string" &&
+			order.comment != "" && 
+			order.comment.toLowerCase() !== "No comment".toLowerCase()
+		);
+	}
+
     return (
         <div className="content">
             <div className="p-4">
@@ -186,6 +194,14 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                         {formatDateTime(new Date(order.orderDate))}
                                     </span>
                                 </div>
+								{hasComment(order) && (
+								<div class="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+									<div class="flex flex-col">
+										<span class="font-bold">Comment:</span>
+										<span class="pl-4 italic">{comment}</span>
+									</div>
+								</div>
+								)}
                                 <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
                                     {(order.items || []).map(food => (
                                         <li key={food.name}>{food.name}: {food.price}€ ({food.dietary})</li>
