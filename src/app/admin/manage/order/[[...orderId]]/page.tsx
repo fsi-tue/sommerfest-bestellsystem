@@ -186,7 +186,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     <div className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
                                         <div className="flex flex-col">
                                             <span className="font-bold">Comment:</span>
-                                            <span className="pl-4 italic">{comment}</span>
+                                            <span className="pl-4 italic">{order.comment}</span>
                                         </div>
                                     </div>
                                 )}
