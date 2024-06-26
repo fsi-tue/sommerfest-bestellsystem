@@ -1,14 +1,16 @@
-export const formatDateTime = (date: Date) => {
+export const formatDateTime = (date: Date, short = false) => {
     const options = {
-        weekday: 'long', // "Monday"
-        year: 'numeric', // "2024"
-        month: 'long', // "June"
-        day: 'numeric', // "22"
-        hour: 'numeric', // "10"
-        minute: 'numeric', // "30"
-        second: 'numeric', // "15"
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
         hour12: false // "AM/PM"
-    };
+    }
 
-    return date.toLocaleDateString('en-US', options as any);
+    if (short) {
+        return date.toLocaleDateString('en-US', options as any);
+    }
+
+    return date.toLocaleString('en-US', options as any);
 };

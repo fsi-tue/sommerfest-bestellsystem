@@ -18,7 +18,7 @@ const Page = () => {
 	const orderIds = JSON.parse(getFromLocalStorage('orderIds')) || [];
 
 	return (
-		<div className="content">
+		<div>
 			<h2 className="text-2xl">History</h2>
 
 			{orderIds.length === 0 &&

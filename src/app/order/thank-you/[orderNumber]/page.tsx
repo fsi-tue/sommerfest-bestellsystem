@@ -8,7 +8,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
     const orderLink = `/order/${params.orderNumber}`;
 
     return (
-        <div className="content">
+        <div>
             <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">Thank you for your order! 🍕</h1>
             <div className="flex flex-col items-center p-4 rounded-lg shadow-md">
 

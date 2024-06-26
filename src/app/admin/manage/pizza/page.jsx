@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import Pizza from "./Pizza.jsx";
+import Food from "./Food.jsx";
 import {getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import WithAuth from "../../WithAuth.jsx";
@@ -10,7 +10,7 @@ import {FOOD} from "@/config";
 const Page = () => {
 	const token = getFromLocalStorage('token', '');
 
-	const [pizzas, setPizzas] = useState([]);
+	const [foods, setFoods] = useState([]);
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,7 @@ const Page = () => {
 		})
 			.then(response => response.json())
 			.then(data => {
-				setPizzas(data);
+				setFoods(data);
 				setLoading(false);
 			})
 			.catch(error => {
@@ -38,18 +38,18 @@ const Page = () => {
 	if (error) return (<ErrorMessage error={error}/>);
 
 	return (
-		<div className="content">
+		<div>
 			<div className="p-4">
 				<h2 className="text-2xl mb-4">Manage Pizzas 🍕</h2>
 			</div>
 
-			{/* New Pizza */}
-			<Pizza key="new" pizza={{name: 'New Pizza', price: 0, enabled: true, max: FOOD.MAX_ITEMS}} isNew={true}/>
+			{/* New Food */}
+			<Food key="new" food={{name: 'New Pizza', price: 0, enabled: true, max: FOOD.MAX_ITEMS}} isNew={true}/>
 
-			{/* Pizzas */}
+			{/* Foods */}
 			<div className="flex flex-col space-y-4">
-				{pizzas.map(pizza => (
-					<Pizza key={pizza._id} pizza={pizza}/>
+				{foods.map(food => (
+					<Food key={food._id} food={food}/>
 				))}
 			</div>
 		</div>

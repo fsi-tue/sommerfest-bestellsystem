@@ -1,12 +1,14 @@
 // Pizza model
 import { type Document, Model, model, Schema } from "mongoose"
+import { FOOD } from "@/config";
 
 export interface FoodDocument extends Document {
     _id: string;
     name: string;
     price: number;
-    type: 'pizza' | 'drink' | 'dessert';
-    dietary?: 'vegan' | 'vegetarian' | 'gluten-free' | 'lactose-free' | 'halal' | 'kosher' | 'organic';
+    type: 'pizza' | 'drink' | 'dessert'; // Type of food
+    dietary?: 'vegan' | 'vegetarian' | 'gluten-free' | 'lactose-free' | 'halal' | 'kosher' | 'organic'; // Dietary requirements
+    max: number; // Maximum number of items available
     enabled: boolean;
     createdAt: Date;
 }
@@ -32,6 +34,7 @@ const foodSchema = new Schema<FoodDocument>({
         enum: ['vegan', 'vegetarian', 'gluten-free', 'lactose-free', 'halal', 'kosher', 'organic'],
         required: false
     },
+    max: { type: Number, default: FOOD.MAX_ITEMS },
     enabled: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }
 });

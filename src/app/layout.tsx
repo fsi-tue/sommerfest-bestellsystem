@@ -21,7 +21,9 @@ export default function RootLayout({
         <body>
         <main className="max-h-full">
             <Header/>
-            {children}
+            <div className="p-6 bg-gray-50 rounded-lg shadow-lg my-5 w-full max-w-4xl mx-auto">
+                {children}
+            </div>
             <Footer/>
         </main>
         </body>
