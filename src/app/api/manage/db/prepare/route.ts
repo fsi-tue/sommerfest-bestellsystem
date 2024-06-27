@@ -26,12 +26,12 @@ export async function POST() {
 
     // Add pizzas
     const pizzas = [
-        { name: 'Pepperoni half', price: 3, dietary: 'halal', type: 'pizza', size: 0.5 },
-        { name: 'Pepperoni whole', price: 6, dietary: 'halal', type: 'pizza', size: 1 },
-        { name: 'Meat half', price: 4, dietary: 'halal', type: 'pizza', size: 0.5 },
-        { name: 'Meat whole', price: 8, dietary: 'halal', type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 4, dietary: 'halal', type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 8, dietary: 'halal', type: 'pizza', size: 1 },
+        { name: 'Salami/Pepperoni+Ham half', price: 3,  type: 'pizza', size: 0.5 },
+        { name: 'Salami/Pepperoni+Ham whole', price: 6, type: 'pizza', size: 1 },
+        { name: 'Salami/Pepperoni+Ham half', price: 4, type: 'pizza', size: 0.5 },
+        { name: 'Salami/Pepperoni+Ham whole', price: 8, type: 'pizza', size: 1 },
+        { name: 'Capriccosa half', price: 4, type: 'pizza', size: 0.5 },
+        { name: 'Capriccosa whole', price: 8, type: 'pizza', size: 1 },
         { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
         { name: 'Margherita whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
         { name: 'Capriccosa half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },

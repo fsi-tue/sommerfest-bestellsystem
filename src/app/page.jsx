@@ -19,7 +19,7 @@ const Food = ({food, className, onClick}) => {
 				<span className="text-base font-semibold text-gray-900">{food.price}€ {food.name}</span>
 			</div>
 			<div className="flex space-x-2">
-				<span className="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">{food.dietary}</span>
+				{food.dietary && <span className="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">{food.dietary}</span>}
 				<span className="px-3 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">{food.type}</span>
 			</div>
 		</li>
@@ -28,6 +28,7 @@ const Food = ({food, className, onClick}) => {
 
 // Order component
 const Page = () => {
+	// State to hold the order
 	const [error, setError] = useState('');
 	const [foods, setFoods] = useState([]);
 	const [order, setOrder] = useState({name: '', items: [], comment: '', timeslot: 'Select a timeslot'});
@@ -56,15 +57,15 @@ const Page = () => {
 	 * @param updatedOrder
 	 */
 	const updateOrder = (updatedOrder) => {
-		setOrder({...order, ...updatedOrder,});
-	};
+		setOrder({ ...order, ...updatedOrder });
+	  };
 
 	/**
 	 * Set the name of the order
 	 * @param e
 	 */
 	const setName = (e) => {
-		updateOrder({name: e.target.value});
+		updateOrder({ name: e.target.value });
 	};
 
 	/**
