@@ -13,14 +13,14 @@ const EVERY_X_SECONDS = 60;
 const Food = ({food, className, onClick}) => {
 	return (
 		<li
-			className={`${className} flex items-center justify-between p-3 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 mb-3`}
+			className={`${className} flex items-center justify-between p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4`}
 			onClick={onClick}>
 			<div>
 				<span className="text-base font-semibold text-gray-900">{food.price}€ {food.name}</span>
 			</div>
 			<div className="flex space-x-2">
-				<span className="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">{food.dietary}</span>
-				<span className="px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">{food.type}</span>
+				<span className="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">{food.dietary}</span>
+				<span className="px-3 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">{food.type}</span>
 			</div>
 		</li>
 	);
@@ -28,11 +28,11 @@ const Food = ({food, className, onClick}) => {
 
 // Order component
 const Page = () => {
-	// State to hold the order
 	const [error, setError] = useState('');
 	const [foods, setFoods] = useState([]);
-	const [order, setOrder] = useState({name: '', items: [], comment: '', timeslot: ''});
+	const [order, setOrder] = useState({name: '', items: [], comment: '', timeslot: 'Select a timeslot'});
 
+	// Set the start and end date for the timeline
 	const start = new Date();
 	start.setHours(start.getHours() - 1);  // Previous hour
 	start.setMinutes(0, 0, 0);
@@ -41,6 +41,7 @@ const Page = () => {
 	end.setHours(end.getHours() + 1);  // Next hour
 	end.setMinutes(59, 59, 999);
 
+	// Fetch the pizza menu from the server
 	useEffect(() => {
 		// Fetch the pizza menu from the server
 		fetch("/api/pizza")
@@ -50,6 +51,10 @@ const Page = () => {
 			})
 	}, []);
 
+	/**
+	 * Update the order with the new values
+	 * @param updatedOrder
+	 */
 	const updateOrder = (updatedOrder) => {
 		setOrder({...order, ...updatedOrder,});
 	};
@@ -138,20 +143,12 @@ const Page = () => {
 						{foods
 							.filter(food => food.enabled)
 							.map((food, index) => (
-								<li
+								<Food
 									key={index}
-									className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4"
-									onClick={() => addToOrder(food)}>
-									<div>
-										<span className="text-base font-semibold text-gray-900">{food.price}€ {food.name}</span>
-									</div>
-									<div className="flex space-x-2">
-										<span
-											className="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">{food.dietary}</span>
-										<span
-											className="px-3 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">{food.type}</span>
-									</div>
-								</li>
+									food={food}
+									className="pizza"
+									onClick={() => addToOrder(food)}
+								/>
 							))}
 						{!foods.length && <p>Loading...</p>}
 					</ul>
@@ -162,20 +159,12 @@ const Page = () => {
 					{error && <ErrorMessage error={error}/>}
 					<ul className="space-y-4 mb-6">
 						{order.items.map((item, index) => (
-							<li
+							<Food
 								key={index}
-								className="flex items-center justify-between p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4"
-								onClick={() => removeFromOrder(index)}>
-								<div>
-									<span className="text-base font-semibold text-gray-900">{item.price}€ {item.name}</span>
-								</div>
-								<div className="flex space-x-2">
-									<span
-										className="px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full">{item.dietary}</span>
-									<span
-										className="px-3 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">{item.type}</span>
-								</div>
-							</li>
+								food={item}
+								className="pizza order"
+								onClick={() => addToOrder(food)}
+							/>
 						))}
 					</ul>
 
