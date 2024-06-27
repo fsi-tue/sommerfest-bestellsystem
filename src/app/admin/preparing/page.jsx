@@ -232,8 +232,9 @@ const Page = () => {
 
 
 	useEffect(() => {
-		setHistory(getFromLocalStorage('baking.orderhistory', []));
-		if (history.length === 0) actions.forward();
+		const _history = getFromLocalStorage('baking.orderhistory', []) || [];
+		setHistory(_history);
+		if (_history.length === 0) actions.forward();
 	});
 
 
