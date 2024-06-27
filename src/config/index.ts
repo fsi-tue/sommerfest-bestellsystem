@@ -14,7 +14,6 @@ export const tokens = {
 
 export const ORDER = {
     MAX_ITEMS_PER_ORDER: 5,
-    MAX_ORDERS: 100,
     TIME_PER_ORDER: 1000 * 60 * 5, // 5 minutes
 }
 

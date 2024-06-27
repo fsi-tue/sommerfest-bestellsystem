@@ -19,7 +19,7 @@ export default function RootLayout({
             <meta name="description" content="Order your pizza for the FSI/K Sommerfest 2024"/>
         </head>
         <body>
-        <main className="max-h-full">
+        <main className="max-h-full min-h-screen flex flex-col">
             <Header/>
             <div className="p-6 bg-gray-50 rounded-lg shadow-lg my-5 w-full max-w-4xl mx-auto">
                 {children}

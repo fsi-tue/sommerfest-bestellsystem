@@ -3,6 +3,7 @@ import { constants } from '@/config';
 import { Order } from '@/model/order';
 
 import moment from 'moment-timezone';
+import { Food, FoodDocument } from "@/model/food";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
@@ -11,15 +12,18 @@ export const fetchCache = "force-no-store";
 export async function GET(request: Request) {
     await dbConnect();
 
-    const AMOUNT_WARNING = 8;
-    const AMOUNT_CRITICAL = 10;
+    const AMOUNT_WARNING = 3;
+    const AMOUNT_CRITICAL = 5;
+
     const COLOR_OK = '#0ce504';
     const COLOR_WARN = '#e59604';
     const COLOR_CRIT = '#B33';
 
-    const TIME_SLOT_SIZE_MINUTES = 5;
+    const TIME_SLOT_SIZE_MINUTES = 10;
     const timeSlots = [];
-    let currentTime = moment().tz(constants.TIMEZONE_ORDERS).subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes').subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES, "minutes");
+    let currentTime = moment().tz(constants.TIMEZONE_ORDERS)
+        .subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes')
+        .subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES, "minutes");
 
     for (let i = -5; i < 15; i++) {
         timeSlots.push({
@@ -36,11 +40,24 @@ export async function GET(request: Request) {
             $lt: moment().utc().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
         },
     });
+    const food = await Food.find();
+    const foodById = food
+        .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+            map[food._id.toString()] = food;
+            return map;
+        }, {});
 
-    const orderTimeslots = timeSlots.map((timeSlot, index) =>
-        orders.filter(
-            order => order.orderDate >= timeSlot.startTime && order.orderDate <= timeSlot.stopTime
-        ).map(order => order.items.length).reduce((a, b) => a + b, 0));
+    const orderTimeslots = timeSlots.map(({ startTime, stopTime }) => {
+        let totalAmount = 0.0;
+        orders.forEach(({ orderDate, items }) => {
+            if (orderDate >= startTime && orderDate <= stopTime) {
+                items.forEach(({ _id }) => {
+                    totalAmount += foodById[_id].size;
+                });
+            }
+        });
+        return totalAmount;
+    });
 
     return Response.json(timeSlots.map((timeSlot, index) => ({
         time: timeSlot.time,

@@ -11,10 +11,10 @@ export async function GET(req: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    /* const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return new Response('Unauthorized', { status: 401 });
-    }
+    } */
 
     const orders = await Order.find();
     const foods = await Food.find();
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         const foodsForOrder = foods.filter((food: any) => order.items.includes(food._id));
 
         // Create a map of food details
-        const foodDetailsMap = foodsForOrder
+        const foodById = foodsForOrder
             .reduce((map: { [id: string]: FoodDocument }, food: any) => {
                 map[food._id.toString()] = food;
                 return map;
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
             _id: order._id,
             name: order.name,
             comment: order.comment || "",
-            items: order.items.map(pizzaId => foodDetailsMap[pizzaId.toString()]),
+            items: order.items.map(pizzaId => foodById[pizzaId.toString()]),
             orderDate: order.orderDate,
             timeslot: new Date(order.orderDate.getTime() + totalTime),
             totalPrice: order.totalPrice,

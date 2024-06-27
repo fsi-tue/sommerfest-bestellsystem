@@ -32,12 +32,12 @@ const Timeline = ({startDate, stopDate, every_x_seconds, setTimeslot}) => {
 
 		const interval = setInterval(fetchData, every_x_seconds * 1000); // Fetch data every x seconds
 		fetchData(); // Fetch data initially
-		return () => clearInterval(interval); // Clear interval on unmount
+		return () => clearInterval(interval); // Clear interval on unmounting
 	}, []); // Run effect only once on mount
 
 	return (
-		<ResponsiveContainer width="80%" height={300}>
-			<BarChart data={data} onClick={(event) => setTimeslot(event.activeLabel)}>
+		<ResponsiveContainer height={300}>
+			<BarChart data={data} onClick={(event) => setTimeslot(event.activeLabel)} margin={{top: 5, right: 30, left: -30, bottom: 5}}>
 				<XAxis dataKey="time"/>
 				<YAxis/>
 				<Tooltip/>

@@ -6,9 +6,14 @@ export interface FoodDocument extends Document {
     _id: string;
     name: string;
     price: number;
-    type: 'pizza' | 'drink' | 'dessert'; // Type of food
-    dietary?: 'vegan' | 'vegetarian' | 'gluten-free' | 'lactose-free' | 'halal' | 'kosher' | 'organic'; // Dietary requirements
-    max: number; // Maximum number of items available
+    // Type of food
+    type: 'pizza' | 'drink' | 'dessert';
+    // Dietary requirements
+    dietary?: 'vegan' | 'vegetarian' | 'gluten-free' | 'lactose-free' | 'halal' | 'kosher' | 'organic';
+    // Size, e.g., 0.5 for half a pizza
+    size: number
+    // Maximum number of items available
+    max: number;
     enabled: boolean;
     createdAt: Date;
 }
@@ -16,13 +21,11 @@ export interface FoodDocument extends Document {
 const foodSchema = new Schema<FoodDocument>({
     name: { type: String, required: true },
     price: {
-        type: Number,
         required: true,
+        type: Number,
+        default: 0,
         min: 0,
         max: 100,
-        default: 0,
-        get: (v: number) => v,
-        set: (v: number) => v
     },
     type: {
         type: String,
@@ -33,6 +36,13 @@ const foodSchema = new Schema<FoodDocument>({
         type: String,
         enum: ['vegan', 'vegetarian', 'gluten-free', 'lactose-free', 'halal', 'kosher', 'organic'],
         required: false
+    },
+    size: {
+        required: true,
+        type: Number,
+        default: 1,
+        min: 0.1,
+        max: 1
     },
     max: { type: Number, default: FOOD.MAX_ITEMS },
     enabled: { type: Boolean, default: true },
