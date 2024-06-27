@@ -19,7 +19,7 @@ const Food = ({ food, className, onClick }) => {
 				<span className="text-base font-semibold text-gray-900">{food.price}€ {food.name}</span>
 			</div>
 			<div className="flex space-x-2">
-				<span className="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">{food.dietary}</span>
+				{food.dietary && <span className="px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">{food.dietary}</span>}
 				<span className="px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">{food.type}</span>
 			</div>
 		</li>
