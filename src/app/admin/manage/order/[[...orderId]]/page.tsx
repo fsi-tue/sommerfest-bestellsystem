@@ -18,6 +18,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     const [filter, setFilter] = useState(''); // state to hold order status
     const [filteredOrders, setFilteredOrders] = useState([] as OrderDocument[]); // state to hold order status]
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const [noFinished, setNoFinished] = useState(true);
 
     // Order states
     const states = ORDER_STATES
@@ -190,8 +191,19 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
             <SearchInput search={setFilter} searchValue={filter}/>
 
+            <div>
+                <button className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200
+    ${noFinished ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
+                        onClick={() => setNoFinished(!noFinished)}
+                >
+                    {noFinished ? 'Show Finished' : 'Hide Finished'}
+                </button>
+            </div>
+
             <div className="flex flex-col space-y-4">
                 {filteredOrders && filteredOrders.length > 0 && filteredOrders
+                    .filter(order => noFinished ? !['delivered', 'cancelled'].includes(order.status) : true) // Filter by finished
                     .toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
                     .map((order, index) => ( // Map the orders
                         <div key={order._id + index} className="w-full px-4 py-4 bg-white rounded-lg shadow-sm">
@@ -244,7 +256,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                             <span className="text-sm font-medium text-gray-800">{food.name}</span>
                                             <div className="flex gap-1 mt-1">
                                                 {food.dietary && <span
-																									className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
+																							    className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
                                                 <span
                                                     className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
                                             </div>

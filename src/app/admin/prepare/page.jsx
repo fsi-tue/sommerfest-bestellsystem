@@ -5,7 +5,6 @@ import {addToLocalStorage, getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import {formatDateTime, getDateFromTimeSlot} from "@/lib/time";
 import WithAuth from "../WithAuth.jsx";
-import SearchInput from "../../components/SearchInput.jsx";
 
 
 const Page = () => {
