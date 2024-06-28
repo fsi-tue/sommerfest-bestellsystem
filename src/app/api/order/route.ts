@@ -12,12 +12,12 @@ export async function GET(req: Request) {
     await dbConnect();
 
     // Authenticate the user
-    /* const headersList = headers()
+    const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
         }, { status: 401 });
-    } */
+    }
 
     const orders = await Order.find();
     const foods = await Food.find();
