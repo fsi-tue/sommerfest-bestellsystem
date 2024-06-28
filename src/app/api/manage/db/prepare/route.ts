@@ -11,6 +11,19 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+const pizzas = [
+    { name: "Salami", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Salami 🍕"] },
+    { name: "Ham and mushrooms", ingredients: ["Cheese 🧀","Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"] },
+    { name: "Capriccosa", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"] },
+    { name: "Margherita", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Basil 🌿"] },
+    { name: "Veggies", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"] },
+    { name: "Margherita vegan", ingredients: ["Vegan Cheese 🧀","Tomato Sauce 🍅","Basil 🌿"] },
+    { name: "Capriccosa vegan", ingredients: ["Vegan Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"] }
+];
+
+const pizza_by_name = (pizza_name: string) => {
+    return pizzas.filter(pizza => pizza.name == pizza_name).map(pizza => pizza.ingredients).flat();
+};
 
 /**
  * Fill the database
@@ -29,27 +42,25 @@ export async function POST() {
 
     // Add pizzas
     const pizzas = [
-        { name: 'Salami/Pepperoni+Ham half', price: 3,  type: 'pizza', size: 0.5 },
-        { name: 'Salami/Pepperoni+Ham whole', price: 6, type: 'pizza', size: 1 },
-        { name: 'Salami/Pepperoni+Ham half', price: 4, type: 'pizza', size: 0.5 },
-        { name: 'Salami/Pepperoni+Ham whole', price: 8, type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 4, type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 8, type: 'pizza', size: 1 },
-        { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
-        { name: 'Margherita whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
-        { name: 'Veggies half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
-        { name: 'Veggies whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
-        { name: 'Margherita half', price: 3, dietary: 'vegan', type: 'pizza', size: 0.5 },
-        { name: 'Margherita whole', price: 6, dietary: 'vegan', type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 4, dietary: 'vegan', type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 8, dietary: 'vegan', type: 'pizza', size: 1 },
+        { name: 'Salami half', price: 4, type: 'pizza', ingredients: pizza_by_name('Salami'), },
+        { name: 'Salami full', price: 8, type: 'pizza', ingredients: pizza_by_name('Salami'), },
+        { name: 'Ham and mushrooms half', price: 4, type: 'pizza', ingredients: pizza_by_name('Ham and mushrooms'), },
+        { name: 'Ham and mushrooms full', price: 8, type: 'pizza', ingredients: pizza_by_name('Ham and mushrooms'), },
+        { name: 'Capriccosa half', price: 4, type: 'pizza', ingredients: pizza_by_name('Capriccosa'), },
+        { name: 'Capriccosa full', price: 8, type: 'pizza', ingredients: pizza_by_name('Capriccosa'), },
+        { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Margherita'), },
+        { name: 'Margherita full', price: 6, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Margherita'), },
+        { name: 'Veggies half', price: 3, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Veggies'), },
+        { name: 'Veggies full', price: 6, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Veggies'), },
+        { name: 'Margherita vegan half', price: 3, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Margherita vegan'), },
+        { name: 'Margherita vegan full', price: 6, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Margherita vegan'), },
+        { name: 'Capriccosa vegan half', price: 3, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Capriccosa vegan'), },
+        { name: 'Capriccosa vegan full', price: 6, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Capriccosa vegan'), },
     ];
     for (const pizza of pizzas) {
         await new Food(pizza).save();
     }
-
+    
     // Add the system
     const system = new System({ name: constants.SYSTEM_NAME, status: 'active' })
     await system.save()
