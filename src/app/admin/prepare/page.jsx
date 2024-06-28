@@ -78,6 +78,14 @@ const Page = () => {
 		}
 	}, []);
 
+	const hasComment = (order) => {
+		return (
+			typeof order.comment === "string" &&
+			order.comment !== "" &&
+			order.comment.toLowerCase() !== "No comment".toLowerCase()
+		);
+	};
+
 	const actions = {
 		cancel: (_id) => {
 			updateOrderStatus(_id, 'cancelled');
@@ -133,6 +141,10 @@ const Page = () => {
 												</span>
 										</div>
 									</div>
+									{hasComment(order) && <div className="text-sm ml-2">
+										<span>Comment:</span>
+										<span className="pl-4 italic">{order.comment}</span>
+									</div>}
 									<div className="text-xs font-light text-gray-600">
 										{order.items && (
 											<table className="w-full text-left">
