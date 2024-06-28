@@ -1,17 +1,22 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {addToLocalStorage, getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import {formatDateTime, getDateFromTimeSlot} from "@/lib/time";
 import WithAuth from "../WithAuth.jsx";
+import SearchInput from "../../components/SearchInput.jsx";
 
 
 const Page = () => {
 	const [error, setError] = useState('');
 	const [orders, setOrders] = useState([]);
+	const [filteredOrders, setFilteredOrders] = useState([]); // state to hold order status]
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [isClient, setIsClient] = useState(false);
+	const [filter, setFilter] = useState('');
+	const inputRef = useRef(null);
+
 
 	const token = getFromLocalStorage('token', '');
 	const headers = {
@@ -143,9 +148,30 @@ const Page = () => {
 		},
 	};
 
+	// Update the filtered orders when the orders change
 	useEffect(() => {
+		setFilteredOrders(orders);
+	}, [orders]);
 
-	}, []);
+	// Filter the orders
+	useEffect(() => {
+		if (filter) {
+			setFilteredOrders(orders.filter((order) => {
+				if (order.name.toLowerCase().includes(filter.toLowerCase())) {
+					return true;
+				}
+				if (order._id.toLowerCase().includes(filter.toLowerCase())) {
+					return true;
+				}
+				if (order.status.toLowerCase().includes(filter.toLowerCase())) {
+					return true;
+				}
+				return (order.items || []).some((food) => food.name.toLowerCase().includes(filter.toLowerCase()));
+			}));
+		} else {
+			setFilteredOrders(orders);
+		}
+	}, [filter, orders]);
 
 	return (
 		<div>
@@ -160,8 +186,8 @@ const Page = () => {
 				</div>
 
 				<div className="flex flex-col space-y-2">
-					{orders && orders.length > 0 && orders
-						.toSorted((a, b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime()) // Sort by date
+					{filteredOrders && filteredOrders.length > 0 && filteredOrders
+						.toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
 						.filter(order => !['ready', 'delivered', 'cancelled'].includes(order.status))
 						.map((order, index) => (
 							<div key={index} className="bg-white rounded-lg shadow-sm p-2">
@@ -210,7 +236,8 @@ const Page = () => {
 														</td>
 														<td className="px-2 py-1 w-1/4">
 															<label className="inline-flex items-center">
-																<input type="checkbox" className="form-checkbox h-6 w-6 rounded" checked={item.status === 'done'}
+																<input type="checkbox" className="form-checkbox h-6 w-6 rounded"
+																       checked={item.status === 'done'}
 																       onChange={(event) => actions.setFoodStatus(order, item, event.target.checked)}/>
 																<span className="ml-2 text-gray-700">Done</span>
 															</label>

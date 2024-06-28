@@ -192,7 +192,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
             <div className="flex flex-col space-y-4">
                 {filteredOrders && filteredOrders.length > 0 && filteredOrders
-                    .toSorted((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()) // Sort by date
+                    .toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
                     .map((order, index) => ( // Map the orders
                         <div key={order._id + index} className="w-full px-4 py-4 bg-white rounded-lg shadow-sm">
                             <div className="mb-4 p-4 bg-white rounded-lg shadow-sm">
