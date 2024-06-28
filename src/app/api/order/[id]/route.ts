@@ -46,7 +46,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     // Get the foods for the order
     const foodsDetails = await Food
         .find({ _id: { $in: order.items } })
-        .select('name price');
+        .select('name price ingredients');
 
     // Create a map of food details
     const foodDetailsMap = foodsDetails
