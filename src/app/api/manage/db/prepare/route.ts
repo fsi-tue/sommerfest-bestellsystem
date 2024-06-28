@@ -26,22 +26,22 @@ export async function POST() {
 
     // Add pizzas
     const pizzas = [
-        { name: 'Salami/Pepperoni+Ham half', price: 3,  type: 'pizza', size: 0.5 },
-        { name: 'Salami/Pepperoni+Ham whole', price: 6, type: 'pizza', size: 1 },
-        { name: 'Salami/Pepperoni+Ham half', price: 4, type: 'pizza', size: 0.5 },
-        { name: 'Salami/Pepperoni+Ham whole', price: 8, type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 4, type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 8, type: 'pizza', size: 1 },
-        { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
-        { name: 'Margherita whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
-        { name: 'Veggies half', price: 3, dietary: 'vegetarian', type: 'pizza', size: 0.5 },
-        { name: 'Veggies whole', price: 6, dietary: 'vegetarian', type: 'pizza', size: 1 },
-        { name: 'Margherita half', price: 3, dietary: 'vegan', type: 'pizza', size: 0.5 },
-        { name: 'Margherita whole', price: 6, dietary: 'vegan', type: 'pizza', size: 1 },
-        { name: 'Capriccosa half', price: 4, dietary: 'vegan', type: 'pizza', size: 0.5 },
-        { name: 'Capriccosa whole', price: 8, dietary: 'vegan', type: 'pizza', size: 1 },
+        { name: 'Salami halb', price: 4, type: 'pizza' },
+        { name: 'Salami ganz', price: 8, type: 'pizza' },
+        { name: 'Schinken Pilze halb', price: 4, type: 'pizza' },
+        { name: 'Schinken Pilze ganz', price: 8, type: 'pizza' },
+        { name: 'Capriccosa halb', price: 4, type: 'pizza' },
+        { name: 'Capriccosa ganz', price: 8, type: 'pizza' },
+        { name: 'Margherita halb', price: 3, type: 'pizza' },
+        { name: 'Margherita ganz', price: 6, type: 'pizza' },
+        { name: 'Capriccosa vegi halb', price: 3, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Capriccosa vegi ganz', price: 6, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Gemüse halb', price: 3, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Gemüse ganz', price: 6, dietary: 'vegetarian', type: 'pizza' },
+        { name: 'Margherita vegan halb', price: 3, dietary: 'vegan', type: 'pizza' },
+        { name: 'Margherita vegan ganz', price: 6, dietary: 'vegan', type: 'pizza' },
+        { name: 'Capriccosa vegan halb', price: 3, dietary: 'vegan', type: 'pizza' },
+        { name: 'Capriccosa vegan ganz', price: 6, dietary: 'vegan', type: 'pizza' },
     ];
     for (const pizza of pizzas) {
         await new Food(pizza).save();
