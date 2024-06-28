@@ -183,6 +183,7 @@ const Page = () => {
 
 				<div className="flex flex-col space-y-2">
 					{filteredOrders && filteredOrders.length > 0 && filteredOrders
+						.filter(order => !['cancelled'].includes(order.status))
 						.toSorted((a, b) => {
 							return getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()
 						}) // Sort by date
