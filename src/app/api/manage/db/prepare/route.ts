@@ -10,7 +10,7 @@ import {constants} from "@/config";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-export const pizzas = [
+const pizzas = [
     { name: "Salami", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Salami 🍕"] },
     { name: "Ham and mushrooms", ingredients: ["Cheese 🧀","Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"] },
     { name: "Capriccosa", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"] },
