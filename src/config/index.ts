@@ -13,7 +13,7 @@ export const tokens = {
 }
 
 export const ORDER = {
-    MAX_ITEMS_PER_TIMESLOT: 5,
+    MAX_ITEMS_PER_TIMESLOT: 4,
 }
 
 export const FOOD = {
