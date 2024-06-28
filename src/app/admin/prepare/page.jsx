@@ -5,7 +5,6 @@ import {addToLocalStorage, getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import {formatDateTime, getDateFromTimeSlot} from "@/lib/time";
 import WithAuth from "../WithAuth.jsx";
-import {ORDER_STATES} from "../../../model/order";
 
 
 const Page = () => {
@@ -16,11 +15,6 @@ const Page = () => {
 	const [isClient, setIsClient] = useState(false);
 	const [filter, setFilter] = useState('');
 	const inputRef = useRef(null);
-
-	const [noFinished, setNoFinished] = useState(true);
-
-	// Order states
-	const states = ORDER_STATES
 
 
 	const token = getFromLocalStorage('token', '');
@@ -129,6 +123,9 @@ const Page = () => {
 	};
 
 	const actions = {
+		cancel: (_id) => {
+			updateOrderStatus(_id, 'cancelled');
+		},
 		setFoodStatus: (order, item, checked) => {
 			const index = order.items.indexOf(item);
 			const newOrder = {...order};
@@ -141,7 +138,13 @@ const Page = () => {
 
 			// Save to local storage
 			addToLocalStorage(`foodItems.${order._id}`, JSON.stringify(newOrder.items));
-		}
+		},
+		undone: (_id) => {
+			updateOrderStatus(_id, 'pending');
+		},
+		done: (_id) => {
+			updateOrderStatus(_id, 'baking');
+		},
 	};
 
 	// Update the filtered orders when the orders change
@@ -183,10 +186,8 @@ const Page = () => {
 
 				<div className="flex flex-col space-y-2">
 					{filteredOrders && filteredOrders.length > 0 && filteredOrders
-						.filter(order => !['cancelled'].includes(order.status))
-						.toSorted((a, b) => {
-							return getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()
-						}) // Sort by date
+						.toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
+						.filter(order => !['ready', 'delivered', 'cancelled'].includes(order.status))
 						.map((order, index) => (
 							<div key={index} className="bg-white rounded-lg shadow-sm p-2">
 								<div className="mb-2">
@@ -209,65 +210,56 @@ const Page = () => {
 												</span>
 										</div>
 									</div>
-									{!['ready', 'delivered', 'cancelled'].includes(order.status) && (
-										<>
-											{hasComment(order) && <div className="text-sm ml-2">
-												<span>Comment:</span>
-												<span className="pl-4 italic">{order.comment}</span>
-											</div>}
-											<div className="text-xs font-light text-gray-600">
-												{order.items && (
-													<table className="w-full text-left">
-														<thead>
-														<tr>
-															<th className="px-2 py-1 w-1/2">Item</th>
-															<th className="px-2 py-1 w-1/4">Timeslot</th>
-															<th className="px-2 py-1 w-1/4">Status</th>
-														</tr>
-														</thead>
-														<tbody>
-														{order.items.map((item, itemIndex) => (
-															<tr key={itemIndex} className="border-t">
-																<td className="px-2 py-1 text-sm font-bold w-1/2">{item.name}</td>
-																<td
-																	className={`px-2 py-1 w-1/4
+									{hasComment(order) && <div className="text-sm ml-2">
+										<span>Comment:</span>
+										<span className="pl-4 italic">{order.comment}</span>
+									</div>}
+									<div className="text-xs font-light text-gray-600">
+										{order.items && (
+											<table className="w-full text-left">
+												<thead>
+												<tr>
+													<th className="px-2 py-1 w-1/2">Item</th>
+													<th className="px-2 py-1 w-1/4">Timeslot</th>
+													<th className="px-2 py-1 w-1/4">Status</th>
+												</tr>
+												</thead>
+												<tbody>
+												{order.items.map((item, itemIndex) => (
+													<tr key={itemIndex} className="border-t">
+														<td className="px-2 py-1 text-sm font-bold w-1/2">{item.name}</td>
+														<td
+															className={`px-2 py-1 w-1/4
 																${getDateFromTimeSlot(order.timeslot).toDate().getTime() < new Date().getTime() && item.status !== 'done' ? 'bg-red-100' : ''}`}>
-																	{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}
-																</td>
-																<td className="px-2 py-1 w-1/4">
-																	<label className="inline-flex items-center">
-																		<input type="checkbox" className="form-checkbox h-6 w-6 rounded"
-																		       checked={item.status === 'done'}
-																		       onChange={(event) => actions.setFoodStatus(order, item, event.target.checked)}/>
-																		<span className="ml-2 text-gray-700">Done</span>
-																	</label>
-																</td>
-															</tr>
-														))}
-														</tbody>
-													</table>
-												)}
-											</div>
-										</>
-									)}
-									{['ready', 'delivered', 'cancelled'].includes(order.status) && (
-										<span
-											className={`text-xs ${getDateFromTimeSlot(order.timeslot).toDate().getTime() < new Date().getTime() && item.status !== 'done' ? 'bg-red-100' : ''}`}>
-											{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}
-										</span>
-									)}
+															{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}
+														</td>
+														<td className="px-2 py-1 w-1/4">
+															<label className="inline-flex items-center">
+																<input type="checkbox" className="form-checkbox h-6 w-6 rounded"
+																       checked={item.status === 'done'}
+																       onChange={(event) => actions.setFoodStatus(order, item, event.target.checked)}/>
+																<span className="ml-2 text-gray-700">Done</span>
+															</label>
+														</td>
+													</tr>
+												))}
+												</tbody>
+											</table>
+										)}
+									</div>
 								</div>
 								<div className="flex justify-between items-center">
-									{states.map(state => (
-										<button
-											key={state}
-											disabled={state === order.status}
-											className={`px-2 py-1 text-xs rounded ${state === order.status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
-											onClick={() => updateOrderStatus(order._id, state)}
-										>
-											{state}
-										</button>
-									))}
+									<button onClick={() => actions.cancel(order._id)}
+									        className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-100">Cancel
+									</button>
+									<button onClick={() => actions.undone(order._id)}
+									        disabled={order.status === 'pending'}
+									        className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Undone
+									</button>
+									<button onClick={() => actions.done(order._id)}
+									        disabled={order.items.some(item => item.status !== 'done')}
+									        className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Done
+									</button>
 								</div>
 							</div>
 						))}
