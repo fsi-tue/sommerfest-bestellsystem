@@ -69,6 +69,14 @@ const Page = () => {
 	};
 
 	useEffect(() => {
+		const timer = setInterval(() => {
+			setCurrentTime(new Date());
+		}, 1000);
+
+		return () => clearInterval(timer); // Cleanup timer on component unmount
+	}, []);
+
+	useEffect(() => {
 		if (isClient) {
 			const timer = setInterval(() => {
 				setCurrentTime(new Date());
@@ -113,6 +121,11 @@ const Page = () => {
 			<div>
 				<div className="p-4">
 					<h2 className="text-2xl mb-4">Food Pipeline 🍕</h2>
+					<h3 className="text-lg mb-2">Current Time: {currentTime.toLocaleTimeString()}</h3>
+				</div>
+
+				<div>
+					{error && <ErrorMessage error={error}/>}
 				</div>
 
 				<div className="flex flex-col space-y-2">
