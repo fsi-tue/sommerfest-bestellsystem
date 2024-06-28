@@ -47,7 +47,14 @@ const Page = () => {
         fetch('/api/manage/system/status', {
             headers: headers,
         })
-            .then(response => response.json())
+            .            then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const error = (data && data.message) || response.statusText;
+                    throw new Error(error);
+                }
+                return data;
+            })
             .then(data => setStatus(data.status))
             .catch((error) => setMessage('Error getting system status'))
     }

@@ -2,11 +2,11 @@ import { Food } from "@/model/food";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 
 export async function GET(req: Request) {
     await dbConnect();
-    console.log('GET pizzas')
 
     try {
         const pizzas = await Food.find({ type: 'pizza' });
@@ -15,7 +15,7 @@ export async function GET(req: Request) {
         console.error('Error fetching pizzas:', error);
     }
 
-    return new Response('Error fetching pizzas', { status: 500 });
+    return new Response('Error fetching pizzas', { status: 500 })
 }
 
 export async function POST(req: Request) {
@@ -24,7 +24,9 @@ export async function POST(req: Request) {
     // Authenticate the user
     const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return new Response('Unauthorized', { status: 401 });
+        return NextResponse.json({
+            message: 'Unauthorized'
+        }, { status: 401 });
     }
 
     const newPizza = await req.json()
@@ -45,7 +47,9 @@ export async function PUT(req: Request) {
     // Authenticate the user
     const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return new Response('Unauthorized', { status: 401 });
+        return NextResponse.json({
+            message: 'Unauthorized'
+        }, { status: 401 });
     }
 
     const pizza = await req.json()
@@ -53,7 +57,9 @@ export async function PUT(req: Request) {
     try {
         const updatedPizza = await Food.findById(pizza._id);
         if (!updatedPizza) {
-            return new Response('Pizza not found', { status: 404 });
+            return NextResponse.json({
+                message: 'Pizza not found'
+            }, { status: 404 });
         }
 
         updatedPizza.set(pizza);
@@ -61,6 +67,8 @@ export async function PUT(req: Request) {
         return Response.json(updatedPizza);
     } catch (error) {
         console.error('Error updating pizza:', error);
-        return new Response('Error updating pizza', { status: 500 });
+        return NextResponse.json({
+            message: 'Error updating pizza'
+        }, { status: 500 });
     }
 }

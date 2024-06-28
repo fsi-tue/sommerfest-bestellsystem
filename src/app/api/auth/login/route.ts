@@ -4,13 +4,16 @@ import { Session } from "@/model/session";
 
 import moment from 'moment-timezone';
 import crypto from 'crypto';
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request): Promise<Response> {
     await dbConnect()
 
     const { token } = await req.json();
     if (!token) {
-        return new Response('Token missing', { status: 400 });
+        return NextResponse.json({
+            message: 'Token not set'
+        }, { status: 500 });
     }
     const bearer = { token: '', expires: 0 };
 
@@ -18,7 +21,9 @@ export async function POST(req: Request): Promise<Response> {
         // Validate token
         const correct_token: string = process.env.PAYMENT_ADMIN_TOKEN || tokens.PAYMENT_ADMIN_TOKEN || '';
         if (!correct_token || correct_token.length === 0) {
-            return new Response('Token not set', { status: 500 });
+            return NextResponse.json({
+                message: 'Token not set'
+            }, { status: 500 });
         }
 
         if (token === correct_token) {
@@ -36,16 +41,22 @@ export async function POST(req: Request): Promise<Response> {
             bearer.token = newToken;
             bearer.expires = moment(session.expiresAt).unix();
         } else {
-            return new Response('Invalid token', { status: 403 });
+            return NextResponse.json({
+                message: 'Invalid token'
+            }, { status: 401 });
         }
 
         if (bearer.expires > 0) {
             return new Response(JSON.stringify(bearer));
         } else {
-            return new Response('Error creating token', { status: 500 });
+            return NextResponse.json({
+                message: 'Error creating token'
+            }, { status: 500 });
         }
     } catch (error) {
         console.error(error);
-        return new Response('Error creating token', { status: 500 });
+        return NextResponse.json({
+            message: 'Error creating token'
+        }, { status: 500 });
     }
 }

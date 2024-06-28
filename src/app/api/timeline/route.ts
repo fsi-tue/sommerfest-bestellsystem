@@ -4,6 +4,7 @@ import { Order } from '@/model/order';
 
 import moment from 'moment-timezone';
 import { Food, FoodDocument } from "@/model/food";
+import { getDateFromTimeSlot } from "@/lib/time";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
@@ -55,13 +56,7 @@ export async function GET(request: Request) {
     const orderTimeslots = timeSlots.map(({ startTime, stopTime }) => {
         let totalAmount = 0.0;
         orders.forEach(({ timeslot, items }) => {
-            const [hour, minute] = timeslot.split(':');
-            const timeSlot = moment().tz(constants.TIMEZONE_ORDERS).set({
-                hour: Number(hour),
-                minute: Number(minute),
-                second: 0,
-                millisecond: 0
-            })
+            const timeSlot = getDateFromTimeSlot(timeslot);
             if (timeSlot >= startTime && timeSlot < stopTime) {
                 items.forEach(({ _id }) => {
                     totalAmount += foodById[_id].size;

@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import {useRouter} from "next/navigation";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {addToLocalStorage, getFromLocalStorage} from "../../../lib/localStorage";
 
-const OrderButton = ({order}) => {
+const OrderButton = ({order, setError}) => {
 	const router = useRouter();
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -12,9 +12,13 @@ const OrderButton = ({order}) => {
 	const timeslot = order.timeslot;
 	const comment = order.comment;
 
-	if (items.length === 0) {
-		return null;
-	}
+	useEffect(() => {
+		if (items.length === 0 || !timeslot) {
+			setIsButtonDisabled(true);
+		} else {
+			setIsButtonDisabled(false);
+		}
+	}, [items, timeslot]);
 
 	const body = {
 		name: name,
@@ -35,7 +39,15 @@ const OrderButton = ({order}) => {
 			},
 			body: JSON.stringify(body),
 		})
-			.then(response => response.json())
+			.then(async response => {
+				const data = await response.json();
+				if (!response.ok) {
+					const error = (data && data.message) || response.statusText;
+					console.log('Error:', error);
+					throw new Error(error);
+				}
+				return data;
+			})
 			.then(data => {
 				if (data.orderId) {
 					// Add order ID to local storage
@@ -48,7 +60,8 @@ const OrderButton = ({order}) => {
 				}
 			})
 			.catch(error => {
-				console.error('Error ordering pizza:', error);
+				console.log(error)
+				setError(error.message);
 				setIsButtonDisabled(false); // Re-enable the button in case of error
 			});
 	};
@@ -56,7 +69,7 @@ const OrderButton = ({order}) => {
 	return (
 		<button
 			onClick={orderPizza}
-			className={`bg-primary-950 text-white px-4 py-2 rounded-lg mt-4 w-full md:w-auto hover:bg-primary-800 ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+			className={`w-full bg-green-700 text-white px-4 py-2 rounded-lg md:w-auto  ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-800'}`}
 			disabled={isButtonDisabled}
 		>
 			Order now

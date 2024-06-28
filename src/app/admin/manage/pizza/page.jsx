@@ -23,7 +23,14 @@ const Page = () => {
 		fetch('/api/pizza/', {
 			headers: headers,
 		})
-			.then(response => response.json())
+			.then(async response => {
+				const data = await response.json();
+				if (!response.ok) {
+					const error = (data && data.message) || response.statusText;
+					throw new Error(error);
+				}
+				return data;
+			})
 			.then(data => {
 				setFoods(data);
 				setLoading(false);

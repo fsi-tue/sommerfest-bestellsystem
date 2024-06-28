@@ -77,14 +77,6 @@ const orderSchema = new Schema<OrderDocument>({
     timestamps: true,
 });
 
-// Custom validator for the length of the food array
-orderSchema.path('items').validate({
-    validator: function (value) {
-        return value.length > 0 && value.length <= ORDER.MAX_ITEMS_PER_ORDER;
-    },
-    message: props => `An order must have between 1 and ${ORDER.MAX_ITEMS_PER_ORDER} items. Currently, it has ${props.value.length}.`
-});
-
 // Middleware to set finishedAt when the order is marked as finished
 orderSchema.pre('save', function (next) {
     if (this.status === 'delivered' && !this.finishedAt) {

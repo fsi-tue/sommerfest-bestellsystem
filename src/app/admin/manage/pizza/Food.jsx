@@ -25,9 +25,16 @@ const Food = ({food, isNew}) => {
 			headers: headers,
 			body: JSON.stringify(food)
 		})
-			.then(response => response.json())
+			.then(async response => {
+				const data = await response.json();
+				if (!response.ok) {
+					const error = (data && data.message) || response.statusText;
+					throw new Error(error);
+				}
+				return data;
+			})
 			.then(data => setLocalFood(data))
-			.catch(error => setError('Error updating food'));
+			.catch(error => setError(error.message));
 	}
 
 	const createPizza = (food) => {
@@ -35,9 +42,17 @@ const Food = ({food, isNew}) => {
 			method: 'POST',
 			headers: headers,
 			body: JSON.stringify(food)
-		}).then(response => response.json())
+		})
+			.then(async response => {
+				const data = await response.json();
+				if (!response.ok) {
+					const error = (data && data.message) || response.statusText;
+					throw new Error(error);
+				}
+				return data;
+			})
 			.then(data => setLocalFood(data))
-			.catch(error => setError('Error creating food'));
+			.catch(error => setError(error.message));
 
 	}
 
@@ -47,7 +62,7 @@ const Food = ({food, isNew}) => {
 			headers: headers,
 		})
 			.then(() => setLocalFood(null))
-			.catch(error => setError('Error deleting food'));
+			.catch(error => setError(error.message));
 	}
 
 	if (error) return (<ErrorMessage error={error}/>);
@@ -61,10 +76,12 @@ const Food = ({food, isNew}) => {
 	      className={`text-sm font-medium text-white py-1 px-3 rounded-full ${localFood.enabled ? 'bg-green-500' : 'bg-gray-500'}`}>
         {localFood.enabled ? 'Enabled' : 'Disabled'}
       </span>
-					{localFood._id && <span className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localFood._id}</span>}
+					{localFood._id && <span
+						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localFood._id}</span>}
 					<span
 						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localFood.price} €</span>
-					{localFood.type && <span className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localFood.type}</span>}
+					{localFood.type && <span
+						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localFood.type}</span>}
 					{localFood.dietary && <span
 						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localFood.dietary}</span>}
 					<span className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">

@@ -6,6 +6,7 @@ import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import { Order } from "@/model/order";
 import { constants, ORDER } from "@/config";
 import { System } from "@/model/system";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
     await dbConnect();
@@ -13,18 +14,23 @@ export async function GET(req: Request) {
     // Authenticate the user
     /* const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return new Response('Unauthorized', { status: 401 });
+        return NextResponse.json({
+            message: 'Unauthorized'
+        }, { status: 401 });
     } */
 
     const orders = await Order.find();
     const foods = await Food.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
+
+        /*
         // Get all orders that were ordered before this order and are not finished
         const ordersBefore = orders.filter(orderBefore => orderBefore.orderDate < order.orderDate && (!['delivered', 'cancelled'].includes(orderBefore.status)));
         const orderBeforeItemsTotal = ordersBefore.map(order => order.items).flat();
         const totalTime = orderBeforeItemsTotal.length * ORDER.TIME_PER_ORDER + // Time for the pizzas BEFORE THIS order
             order.items.length * ORDER.TIME_PER_ORDER; // Time for the pizzas IN THIS order
+         */
 
         // Get the foods for the order
         const foodsForOrder = foods.filter((food: any) => order.items.includes(food._id));
@@ -36,13 +42,14 @@ export async function GET(req: Request) {
                 return map;
             }, {});
 
+
         return {
             _id: order._id,
             name: order.name,
             comment: order.comment || "",
             items: order.items.map(pizzaId => foodById[pizzaId.toString()]),
             orderDate: order.orderDate,
-            timeslot: new Date(order.orderDate.getTime() + totalTime),
+            timeslot: order.timeslot, // new Date(order.orderDate.getTime() + totalTime),
             totalPrice: order.totalPrice,
             finishedAt: order.finishedAt,
             status: order.status
@@ -59,28 +66,61 @@ export async function POST(req: Request) {
     const system = await System.findOne({ name: constants.SYSTEM_NAME });
     if (system && system.status !== 'active') {
         console.error('System is not active', system.status);
-        return new Response('System is not active', { status: 400 });
+        return NextResponse.json({
+            message: 'System is not active'
+        }, { status: 400 });
     }
 
     // Get the body of the request
-    const { pizzas: items, name, comment } = await req.json();
+    const { pizzas: items, name, comment, timeslot } = await req.json();
 
-    // Check if there are too many pizzas
-    if (items.length > ORDER.MAX_ITEMS_PER_ORDER || items.length < 1) {
-        console.error('Too many or too few items', items.length);
-        return new Response(`Too many or too few items.
-                                        We don't know what to do with that.
-                                        Can't you just order a normal amount of food?`
-        );
+    // Check if there are too many or too few items
+    const currentOrderItemsTotal = items
+        .reduce((total: number, item: { size: number }) => total + item.size, 0);
+    console.log('Current order items total:', currentOrderItemsTotal);
+    if (currentOrderItemsTotal > ORDER.MAX_ITEMS_PER_TIMESLOT || items.length < 1) {
+        return NextResponse.json({
+            message: 'Too many or too few items'
+        }, { status: 400 });
     }
+
+    // Sum up all items in the current order
+
 
     // Check if the pizzas are valid
     const foodIds: string[] = items.map((pizza: { _id: string }) => pizza._id);
-    if (!foodIds.every(async (pizzaId: string) => await Food.exists({ _id: pizzaId }))) {
-        console.error('Some pizzas are missing', items);
-        return new Response(`Some of the food you ordered seem to have vanished into the abyss.
-                            Are you trying to order ghost food?
-                            Let's try ordering real ones this time!`, { status: 400 });
+    if (!foodIds.every(async (foodId: string) => await Food.exists({ _id: foodId }))) {
+        console.error('Some items are missing', items);
+        return NextResponse.json({
+            message: 'Some items are missing'
+        }, { status: 400 });
+    }
+
+    // Find orders with the same time slot
+    const orders = await Order.find(
+        {
+            timeslot: timeslot,
+            status: { $nin: ['delivered', 'cancelled'] }
+        }
+    );
+    // Find all food items
+    const food = await Food.find();
+    const foodById = food
+        .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+            map[food._id.toString()] = food;
+            return map;
+        }, {});
+    // Sum up all items in the orders
+    const orderItemsTotal = orders
+        .flatMap(order => order.items)
+        .reduce((total, item) => total + foodById[item._id].size, 0);
+    // Check if the total number of items is not too high
+    console.log('Order items total:', orderItemsTotal, currentOrderItemsTotal);
+    if (orderItemsTotal + currentOrderItemsTotal > ORDER.MAX_ITEMS_PER_TIMESLOT) {
+        return NextResponse
+            .json({
+                message: `There are too many items in this time slot. Please choose another time slot.`
+            }, { status: 400 });
     }
 
     // Calculate the total price.
@@ -101,6 +141,7 @@ export async function POST(req: Request) {
     order.items = items
     order.totalPrice = totalPrice;
     order.comment = (comment || "No comment").slice(0, 500);
+    order.timeslot = timeslot;
     await order.save()
 
     // Get the order ID

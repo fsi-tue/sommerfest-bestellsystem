@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import { Session } from "@/model/session";
 import dbConnect from "@/lib/dbConnect";
+import { NextResponse } from "next/server";
 
 /**
  * POST /logout
@@ -13,8 +14,10 @@ export async function POST(req: Request) {
     // Authenticate the user
     const headersList = headers()
     const token = extractBearerFromHeaders(headersList);
-    if (!await validateToken(token)) {
-        return new Response('Unauthorized', { status: 401 });
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+        return NextResponse.json({
+            message: 'Unauthorized'
+        }, { status: 401 });
     }
 
     // Remove the token from the database

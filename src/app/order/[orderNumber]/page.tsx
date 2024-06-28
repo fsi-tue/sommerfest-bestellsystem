@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import OrderQR from "@/app/components/order/OrderQR.jsx";
 import { useRouter } from "next/navigation";
 import { getFromLocalStorage } from "@/lib/localStorage";
-import { formatDateTime } from "@/lib/time";
+import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import { statusToText } from "@/model/order";
 
 
@@ -24,7 +24,14 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
     useEffect(() => {
         // Get the order status from the server
         fetch(`/api/order/${params.orderNumber}`)
-            .then(response => response.json())
+            .            then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const error = (data && data.message) || response.statusText;
+                    throw new Error(error);
+                }
+                return data;
+            })
             .then(data => {
                 setOrder(data)
             });
@@ -60,7 +67,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
             <a className="text-xs font-light text-gray-500 mb-0"
                href={params.orderNumber}>{params.orderNumber}</a>
 
-            <div className="p-4 rounded-lg shadow-md flex sm:flex-row flex-col items-start bg-white mt-4">
+            <div className="p-4 flex sm:flex-row flex-col items-start bg-white mt-4">
                 <div>
                     <h3 className="text-lg font-bold">QR Code</h3>
                     <OrderQR orderId={params.orderNumber}/>
@@ -94,7 +101,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                             Order date: {formatDateTime(new Date(order.orderDate))}
                         </p>
                         <p className="text-lg font-light text-gray-600">
-                            Timeslot: {formatDateTime(new Date(order.timeslot))}
+                            Timeslot: {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}
                         </p>
                         {order.status !== 'cancelled' &&
 													<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"

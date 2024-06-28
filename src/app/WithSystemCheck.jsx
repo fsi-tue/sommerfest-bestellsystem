@@ -10,13 +10,20 @@ const WithSystemCheck = (WrappedComponent) => {
 		const checkSystemStatus = () => {
 			setLoading(true);
 			fetch('/api/manage/system/status')
-				.then(response => response.json())
+				.then(async response => {
+					const data = await response.json();
+					if (!response.ok) {
+						const error = (data && data.message) || response.statusText;
+						throw new Error(error);
+					}
+					return data;
+				})
 				.then(data => {
 					setSystemStatus(data.status);
 					setLoading(false);
 				})
 				.catch(error => {
-					console.error('Error fetching system status:', error);
+					console.error('Error fetching system status:', error.message);
 					setLoading(false);
 				});
 		};

@@ -6,8 +6,9 @@ import { getFromLocalStorage } from "@/lib/localStorage";
 import WithAuth from "@/app/admin/WithAuth";
 import { ORDER_STATES, OrderDocument, OrderStatus } from "@/model/order";
 import { FoodDocument } from "@/model/food";
-import { formatDateTime } from "@/lib/time";
+import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import SearchInput from "@/app/components/SearchInput";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 const Page = ({ params }: { params: { orderId: string } }) => {
     const token = getFromLocalStorage('token', '');
@@ -32,9 +33,17 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         fetch('/api/order/', {
             headers: headers,
         })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json();
+                console.log(data);
+                if (!response.ok) {
+                    const error = (data && data.message) || response.statusText;
+                    throw new Error(error);
+                }
+                return data;
+            })
             .then(data => setOrders(data))
-            .catch(error => setError('ErrorMessage fetching orders'));
+            .catch(error => setError(error.message));
     }, []);
 
     // Update the filtered orders when the orders change
@@ -85,7 +94,14 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             headers: headers,
             body: JSON.stringify({ id: _id, status })
         })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const error = (data && data.message) || response.statusText;
+                    throw new Error(error);
+                }
+                return data;
+            })
             .then(() => {
                 // Update the order by id
                 const newOrders = orders.map((order: OrderDocument) => {
@@ -96,7 +112,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 });
                 setOrders(newOrders);
             })
-            .catch(error => setError('ErrorMessage updating order status'));
+            .catch(error => setError(error.message));
     }
 
     /**
@@ -143,6 +159,8 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 </div>
             </div>
 
+            {error && <ErrorMessage error={error}/>}
+
             <SearchInput search={setFilter} searchValue={filter}/>
 
             <div className="flex flex-col space-y-4">
@@ -177,7 +195,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="font-medium">Timeslot:</span>
-                                        <span>{formatDateTime(new Date(order.timeslot))}</span>
+                                        <span>{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}</span>
                                     </div>
                                 </div>
                             </div>
@@ -198,8 +216,8 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                         <div className="flex flex-col">
                                             <span className="text-sm font-medium text-gray-800">{food.name}</span>
                                             <div className="flex gap-1 mt-1">
-                                                    <span
-                                                        className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>
+                                                {food.dietary && <span
+                                                        className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
                                                 <span
                                                     className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
                                             </div>

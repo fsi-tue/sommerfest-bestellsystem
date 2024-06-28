@@ -4,6 +4,7 @@ import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import { System } from "@/model/system";
 import { constants } from "@/config";
+import { NextResponse } from "next/server";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
@@ -20,14 +21,18 @@ export async function POST(req: Request, { params }: { params: { status: string 
     // Authenticate the user
     const headersList = headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return new Response('Unauthorized', { status: 401 });
+        return NextResponse.json({
+            message: 'Unauthorized'
+        }, { status: 401 });
     }
 
     // Set the system status
     const system = await System.findOne({ name: constants.SYSTEM_NAME });
 
     if (!system) {
-        return new Response('System not found', { status: 404 });
+        return NextResponse.json({
+            message: 'System not found'
+        }, { status: 404 });
     }
 
     // Get the status from the URL
