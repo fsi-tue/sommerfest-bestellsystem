@@ -1,16 +1,16 @@
 'use client'
 
 import './order/Order.css';
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import OrderButton from "@/app/components/order/OrderButton.jsx";
 import Timeline from "@/app/components/Timeline.jsx";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
-import {ORDER} from "@/config";
+import { ORDER } from "@/config";
 import WithSystemCheck from "./WithSystemCheck.jsx";
 
 const EVERY_X_SECONDS = 60;
 
-const Food = ({food, className, onClick}) => {
+const Food = ({ food, className, onClick }) => {
 	return (
 		<li
 			className={`${className} flex items-center justify-between p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4`}
@@ -26,12 +26,52 @@ const Food = ({food, className, onClick}) => {
 	);
 };
 
+const PizzaIngredientsTable = () => {
+	const tableCellClass = "border border-gray-300 px-4 py-2";
+	const headerCellClass = `bg-gray-200 ${tableCellClass}`;
+	const pizzas = [
+		{ name: "Salami", ingredients: "Cheese 🧀 Tomato Sauce 🍅 Salami 🍕" },
+		{ name: "Ham and mushrooms", ingredients: "Cheese 🧀 Tomato Sauce 🍅 Ham 🥓, Mushrooms 🍄" },
+		{ name: "Capriccosa", ingredients: "Cheese 🧀 Tomato Sauce 🍅 Mushrooms 🍄, Artichokes 🌱, Olives 🫒, Ham 🥓, Basil 🌿" },
+		{ name: "Margherita", ingredients: "Cheese 🧀 Tomato Sauce 🍅 and Basil 🌿" },
+		{ name: "Veggies", ingredients: "Cheese 🧀 Tomato Sauce 🍅Mushrooms 🍄, Onions 🧅, Green Peppers 🫑, Olives 🫒" },
+		{ name: "Margherita vegan", ingredients: "Vegan Cheese 🧀 Tomato Sauce 🍅 and Basil 🌿" },
+		{ name: "Capriccosa vegan", ingredients: "Vegan Cheese 🧀 Tomato Sauce 🍅 Mushrooms 🍄, Artichokes 🌱, Olives 🫒, Basil 🌿" }
+	];
+
+	return (
+		<div className="container mx-auto p-4">
+			<h2 className="text-2xl font-bold mb-4">Pizza Ingredients</h2>
+			<table className="table-auto w-full border-collapse border border-gray-300">
+				<thead>
+					<tr>
+						<th className={headerCellClass}>Pizza</th>
+						<th className={headerCellClass}>Ingredients</th>
+					</tr>
+				</thead>
+				<tbody>
+					{pizzas.map((pizza, index) => (
+						<tr key={index}>
+							<td className={tableCellClass}>
+								<a href="#selectorder">{pizza.name}</a>
+							</td>
+							<td className={tableCellClass}>
+								<a href="#selectorder">{pizza.ingredients}</a>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+};
+
 // Order component
 const Page = () => {
 	// State to hold the order
 	const [error, setError] = useState('');
 	const [foods, setFoods] = useState([]);
-	const [order, setOrder] = useState({name: '', items: [], comment: '', timeslot: 'Select a timeslot'});
+	const [order, setOrder] = useState({ name: '', items: [], comment: '', timeslot: 'Select a timeslot' });
 
 	// Set the start and end date for the timeline
 	const start = new Date();
@@ -58,7 +98,7 @@ const Page = () => {
 	 */
 	const updateOrder = (updatedOrder) => {
 		setOrder({ ...order, ...updatedOrder });
-	  };
+	};
 
 	/**
 	 * Set the name of the order
@@ -72,14 +112,14 @@ const Page = () => {
 	 * Set the timeslot of the order
 	 */
 	const setTimeslot = (timeslot) => {
-		updateOrder({timeslot: timeslot});
+		updateOrder({ timeslot: timeslot });
 	}
 
 	/**
 	 * Set the comment of the order
 	 */
 	const setComment = (e) => {
-		updateOrder({comment: e.target.value});
+		updateOrder({ comment: e.target.value });
 	}
 
 	/**
@@ -96,7 +136,7 @@ const Page = () => {
 
 		const newOrder = [...order.items];
 		newOrder.push(food);
-		updateOrder({items: newOrder});
+		updateOrder({ items: newOrder });
 	}
 
 	/**
@@ -107,7 +147,7 @@ const Page = () => {
 		setError('');
 		const newOrder = [...order.items];
 		newOrder.splice(index, 1);
-		updateOrder({items: newOrder});
+		updateOrder({ items: newOrder });
 	}
 
 
@@ -140,6 +180,7 @@ const Page = () => {
 			<div className="flex flex-col-reverse md:flex-row justify-between gap-8">
 				<div className="md:w-1/2 w-full">
 					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Menu:</h3>
+					<a id='selectorder'></a>
 					<ul className="space-y-4">
 						{foods
 							.filter(food => food.enabled)
@@ -157,7 +198,7 @@ const Page = () => {
 
 				<div className="md:w-1/2 w-full">
 					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Your current order:</h3>
-					{error && <ErrorMessage error={error}/>}
+					{error && <ErrorMessage error={error} />}
 					<ul className="space-y-4 mb-6">
 						{order.items.map((item, index) => (
 							<Food
@@ -195,14 +236,15 @@ const Page = () => {
 						/>
 					</div>
 
-					<OrderButton order={order} setError={setError}/>
+					<OrderButton order={order} setError={setError} />
 
 					<div className="timeline-container mt-8">
 						<h2 className="text-2xl font-semibold mb-4 text-gray-900">Timeslot</h2>
 						<p className="mb-4 text-lg font-light leading-7 text-gray-800">Select your timeslot for pick-up.</p>
 
-						<Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot} every_x_seconds={EVERY_X_SECONDS}/>
+						<Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot} every_x_seconds={EVERY_X_SECONDS} />
 					</div>
+					<PizzaIngredientsTable />
 				</div>
 			</div>
 		</div>
