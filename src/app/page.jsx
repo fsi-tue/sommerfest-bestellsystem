@@ -26,17 +26,19 @@ const Food = ({ food, className, onClick }) => {
 	);
 };
 
+
 const PizzaIngredientsTable = () => {
 	const tableCellClass = "border border-gray-300 px-4 py-2";
 	const headerCellClass = `bg-gray-200 ${tableCellClass}`;
+	
 	const pizzas = [
-		{ name: "Salami", ingredients: "Cheese 🧀 Tomato Sauce 🍅 Salami 🍕" },
-		{ name: "Ham and mushrooms", ingredients: "Cheese 🧀 Tomato Sauce 🍅 Ham 🥓, Mushrooms 🍄" },
-		{ name: "Capriccosa", ingredients: "Cheese 🧀 Tomato Sauce 🍅 Mushrooms 🍄, Artichokes 🌱, Olives 🫒, Ham 🥓, Basil 🌿" },
-		{ name: "Margherita", ingredients: "Cheese 🧀 Tomato Sauce 🍅 and Basil 🌿" },
-		{ name: "Veggies", ingredients: "Cheese 🧀 Tomato Sauce 🍅Mushrooms 🍄, Onions 🧅, Green Peppers 🫑, Olives 🫒" },
-		{ name: "Margherita vegan", ingredients: "Vegan Cheese 🧀 Tomato Sauce 🍅 and Basil 🌿" },
-		{ name: "Capriccosa vegan", ingredients: "Vegan Cheese 🧀 Tomato Sauce 🍅 Mushrooms 🍄, Artichokes 🌱, Olives 🫒, Basil 🌿" }
+		{ name: "Salami", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Salami 🍕"] },
+		{ name: "Ham and mushrooms", ingredients: ["Cheese 🧀","Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"] },
+		{ name: "Capriccosa", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"] },
+		{ name: "Margherita", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Basil 🌿"] },
+		{ name: "Veggies", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"] },
+		{ name: "Margherita vegan", ingredients: ["Vegan Cheese 🧀","Tomato Sauce 🍅","Basil 🌿"] },
+		{ name: "Capriccosa vegan", ingredients: ["Vegan Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"] }
 	];
 
 	return (
@@ -56,7 +58,7 @@ const PizzaIngredientsTable = () => {
 								<a href="#selectorder">{pizza.name}</a>
 							</td>
 							<td className={tableCellClass}>
-								<a href="#selectorder">{pizza.ingredients}</a>
+								<a href="#selectorder">{pizza.ingredients.join(", ")}</a>
 							</td>
 						</tr>
 					))}
