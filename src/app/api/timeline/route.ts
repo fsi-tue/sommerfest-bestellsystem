@@ -44,7 +44,7 @@ export async function GET(request: Request) {
             $gte: moment().utc().subtract(10 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
             $lt: moment().utc().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
         },
-        // status: { $ne: 'cancelled' }, // TODO: Check if this is needed
+        status: { $ne: 'cancelled' }, // TODO: Check if this is needed
     });
     const food = await Food.find();
     const foodById = food

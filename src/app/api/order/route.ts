@@ -101,7 +101,7 @@ export async function POST(req: Request) {
     const orders = await Order.find(
         {
             timeslot: timeslot,
-            status: { $nin: ['delivered', 'cancelled'] }
+            status: { $nin: ['cancelled'] }
         }
     );
     // Find all food items

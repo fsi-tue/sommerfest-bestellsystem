@@ -1,16 +1,16 @@
 'use client'
 
 import './order/Order.css';
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import OrderButton from "@/app/components/order/OrderButton.jsx";
 import Timeline from "@/app/components/Timeline.jsx";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
-import { ORDER } from "@/config";
 import WithSystemCheck from "./WithSystemCheck.jsx";
+import {getDateFromTimeSlot} from "@/lib/time";
 
 const EVERY_X_SECONDS = 60;
 
-const Food = ({ food, className, onClick }) => {
+const Food = ({food, className, onClick}) => {
 	return (
 		<li
 			className={`${className} flex items-center justify-between p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 mb-4`}
@@ -48,36 +48,45 @@ const PizzaIngredientsTable = () => {
 	const headerCellClass = `bg-gray-200 ${tableCellClass}`;
 
 	const pizzas = [
-		{ name: "Salami", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Salami 🍕"] },
-		{ name: "Ham and mushrooms", ingredients: ["Cheese 🧀","Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"] },
-		{ name: "Capriccosa", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"] },
-		{ name: "Margherita", ingredients: ["Cheese 🧀","Tomato Sauce 🍅","Basil 🌿"] },
-		{ name: "Veggies", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"] },
-		{ name: "Margherita vegan", ingredients: ["Vegan Cheese 🧀","Tomato Sauce 🍅","Basil 🌿"] },
-		{ name: "Capriccosa vegan", ingredients: ["Vegan Cheese 🧀","Tomato Sauce 🍅","Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"] }
+		{name: "Salami", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Salami 🍕"]},
+		{name: "Ham and mushrooms", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"]},
+		{
+			name: "Capriccosa",
+			ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"]
+		},
+		{name: "Margherita", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"]},
+		{
+			name: "Veggies",
+			ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"]
+		},
+		{name: "Margherita vegan", ingredients: ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"]},
+		{
+			name: "Capriccosa vegan",
+			ingredients: ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
+		}
 	];
 
 	return (
 		<div className="container mx-auto p-4">
-			<h2 className="text-2xl font-bold mb-4">Pizza Ingredients</h2>
+			<h2 className="text-2xl font-bold mb-4">Pizza Ingredients:</h2>
 			<table className="table-auto w-full border-collapse border border-gray-300">
 				<thead>
-					<tr>
-						<th className={headerCellClass}>Pizza</th>
-						<th className={headerCellClass}>Ingredients</th>
-					</tr>
+				<tr>
+					<th className={headerCellClass}>Pizza</th>
+					<th className={headerCellClass}>Ingredients</th>
+				</tr>
 				</thead>
 				<tbody>
-					{pizzas.map((pizza, index) => (
-						<tr key={index}>
-							<td className={tableCellClass}>
-								<a href="#selectorder">{pizza.name}</a>
-							</td>
-							<td className={tableCellClass}>
-								<a href="#selectorder">{pizza.ingredients.join(", ")}</a>
-							</td>
-						</tr>
-					))}
+				{pizzas.map((pizza, index) => (
+					<tr key={index}>
+						<td className={tableCellClass}>
+							<a href="#selectorder">{pizza.name}</a>
+						</td>
+						<td className={tableCellClass}>
+							<a href="#selectorder">{pizza.ingredients.join(", ")}</a>
+						</td>
+					</tr>
+				))}
 				</tbody>
 			</table>
 		</div>
@@ -137,7 +146,7 @@ const Page = () => {
 		setError('');
 		const newOrder = [...order.items];
 		newOrder.push(food);
-		updateOrder({ items: newOrder });
+		updateOrder({items: newOrder});
 	}
 
 	/**
@@ -148,13 +157,29 @@ const Page = () => {
 		setError('');
 		const newOrder = [...order.items];
 		newOrder.splice(index, 1);
-		updateOrder({ items: newOrder });
+		updateOrder({items: newOrder});
 	}
 
 	/**
 	 * Set the timeslot of the order
 	 */
 	const setTimeslot = (timeslot) => {
+		// Check if the timeslot is not in the past
+
+		const BUFFER = 10;
+
+		// Get time with buffer
+		const currentTime = new Date();
+		currentTime.setMinutes(currentTime.getMinutes() + BUFFER);
+
+		const timeslotTime = getDateFromTimeSlot(timeslot).toDate()
+
+		if (timeslotTime < currentTime) {
+			setError('You cannot choose a timeslot in the past.');
+			setTimeout(() => setError(''), 5000);
+			return;
+		}
+
 		updateOrder({timeslot: timeslot});
 	}
 
@@ -169,8 +194,8 @@ const Page = () => {
 	/**
 	 * Set the comment of the order
 	 */
-	const setComment = (e) => {
-		updateOrder({comment: e.target.value});
+	const setComment = (comment) => {
+		updateOrder({comment: comment});
 	}
 
 
@@ -203,6 +228,7 @@ const Page = () => {
 			<div className="flex flex-col md:flex-row justify-between gap-8">
 				<div className="md:w-1/2 w-full">
 					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Menu:</h3>
+					<p className="mb-6 text-lg font-light leading-7 text-gray-800">Select your pizza from the list below. Ingredients are at the bottom.</p>
 					<a id='selectorder'></a>
 					<ul className="space-y-4">
 						{foods
@@ -222,7 +248,7 @@ const Page = () => {
 				<div className="md:w-1/2 w-full">
 					<a id="order"/>
 					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Your current order:</h3>
-					{error && <ErrorMessage error={error} />}
+					{error && <ErrorMessage error={error}/>}
 					<ul className="space-y-4 mb-6">
 						{order.items
 							.map((food, index) => (
@@ -265,22 +291,32 @@ const Page = () => {
 						<h2 className="text-2xl font-semibold mb-4 text-gray-900">Timeslot</h2>
 						<p className="mb-4 text-lg font-light leading-7 text-gray-800">Select your timeslot for pick-up.</p>
 
-						<Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot} every_x_seconds={EVERY_X_SECONDS} />
+						<Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot} every_x_seconds={EVERY_X_SECONDS}/>
 					</div>
-					<PizzaIngredientsTable />
 				</div>
+			</div>
+			<div>
+				<PizzaIngredientsTable/>
 			</div>
 
 			{/* Floating island */}
 			<div
 				className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-white px-3 py-3 rounded-2xl shadow-2xl transition-shadow duration-300">
 				<div className="flex items-center justify-between">
-					<FloatingIslandElement title="Pizzas" content={order.items.reduce((total, item) => total + item.size, 0)}/>
-					<div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
-					<FloatingIslandElement title="Total Price"
-					                       content={`${order.items.reduce((total, item) => total + item.price, 0)}€`}/>
-					<div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
-					<FloatingIslandElement title="Timeslot" content={order.timeslot ?? 'Not selected'}/>
+					{!error && (
+						<>
+							<FloatingIslandElement title="Pizzas"
+							                       content={order.items.reduce((total, item) => total + item.size, 0)}/>
+							<div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
+							<FloatingIslandElement title="Total Price"
+							                       content={`${order.items.reduce((total, item) => total + item.price, 0)}€`}/>
+							<div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
+							<FloatingIslandElement title="Timeslot" content={order.timeslot ?? 'Not selected'}/>
+						</>)
+					}
+					{error && (
+						<ErrorMessage error={error}/>
+					)}
 					<div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
 					<OrderButton order={order} setError={setError}/>
 				</div>
