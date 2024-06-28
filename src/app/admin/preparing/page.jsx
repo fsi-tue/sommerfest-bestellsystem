@@ -5,6 +5,7 @@ import {addToLocalStorage, getFromLocalStorage} from "@/lib/localStorage.js";
 import WithAuth from "../WithAuth.jsx";
 import {formatDateTime} from "@/lib/time";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
+import { useRouter } from 'next/navigation';
 
 const FoodItemHistory = ({items, disabled, actions}) => {
 	const handleForward = actions.forward;
@@ -102,6 +103,8 @@ const Page = () => {
 	const [history, setHistory] = useState([]);
 	const validOrderStates = ["paid", "pending"];
 
+	const router = useRouter();
+
 	const ingredients = {
 		'667bc9f81ad7a76bb34dbf4a': {'Cheese': 'grated', 'Tomato Sauce': 'all over', 'Mushrooms': '2'},
 	};
@@ -123,7 +126,8 @@ const Page = () => {
 			setDisabled(true)
 			setTimeout(() => {
 				// do a reload
-			}, 15000);//15 ms callback
+				actions.forward();
+			}, 5000);//5 s callback
 		} else {
 			fetch(`/api/order/${orderNumber}`)
 				.then(response => response.json())
@@ -150,7 +154,7 @@ const Page = () => {
 			orderid: order.orderid || "",
 			state: order.status || "",
 			name: item.name,
-			ingredients: ingredients[item._id] || {"missing ingredients for": item._id},
+			ingredients: item.ingredients || {"missing ingredients for": item._id},
 		}
 	});
 
@@ -196,7 +200,7 @@ const Page = () => {
 				} else {
 					const new_history = [...history, nextOrderId];
 					setHistory(new_history);
-					addToLocalStorage('baking.orderhistory', new_history);
+					// addToLocalStorage('baking.orderhistory', new_history);
 					setOrderNumber(nextOrderId);
 				}
 			});
@@ -209,7 +213,7 @@ const Page = () => {
 				} else {
 					const new_history = [...history, nextOrderId];
 					setHistory(new_history);
-					addToLocalStorage('baking.orderhistory', new_history);
+					// addToLocalStorage('baking.orderhistory', new_history);
 					setOrderNumber(nextOrderId);
 				}
 			});
@@ -229,14 +233,6 @@ const Page = () => {
 				});
 		},
 	};
-
-
-	useEffect(() => {
-		const _history = getFromLocalStorage('baking.orderhistory', []) || [];
-		setHistory(_history);
-		if (_history.length === 0) actions.forward();
-	});
-
 
 	return (
 		<div className="content">
