@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import {getFromLocalStorage} from "@/lib/localStorage";
+import {addToLocalStorage, getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import {formatDateTime, getDateFromTimeSlot} from "@/lib/time";
 import WithAuth from "../WithAuth.jsx";
@@ -33,10 +33,34 @@ const Page = () => {
 						throw new Error(error);
 					}
 					setOrders(data);
+					setFoodStatusFromLocalStorage(data);
 				})
 				.catch(error => setError(error.message));
 		}
 	}, [isClient]);
+
+	const setFoodStatusFromLocalStorage = (orders) => {
+		// Get from local storage
+		orders.map(order => {
+			let foodItems = getFromLocalStorage(`foodItems.${order._id}`, []);
+			if (!foodItems || foodItems.length === 0) {
+				return;
+			}
+			foodItems = JSON.parse(foodItems);
+
+			const newOrder = {...order};
+			newOrder.items = newOrder.items.map((item, index) => {
+				const foodItem = foodItems[index];
+				if (foodItem && foodItem.status) {
+					item.status = foodItem.status;
+				}
+				return item;
+			})
+			console.log(newOrder.items)
+
+			return newOrder;
+		})
+	}
 
 	/**
 	 * Function to update the order status
@@ -47,7 +71,7 @@ const Page = () => {
 		fetch('/api/order', {
 			method: 'PUT',
 			headers: headers,
-			body: JSON.stringify({ id: _id, status })
+			body: JSON.stringify({id: _id, status})
 		})
 			.then(async response => {
 				const data = await response.json();
@@ -61,7 +85,7 @@ const Page = () => {
 				// Update the order by id
 				setOrders(prevOrders =>
 					prevOrders.map(order =>
-						order._id === _id ? { ...order, status } : order
+						order._id === _id ? {...order, status} : order
 					)
 				);
 			})
@@ -100,13 +124,16 @@ const Page = () => {
 		},
 		setFoodStatus: (order, item, checked) => {
 			const index = order.items.indexOf(item);
-			const newOrder = { ...order };
-			newOrder.items[index] = { ...item, status: checked ? 'done' : 'pending' };
+			const newOrder = {...order};
+			newOrder.items[index] = {...item, status: checked ? 'done' : 'pending'};
 			setOrders(prevOrders =>
 				prevOrders.map(o =>
 					o._id === order._id ? newOrder : o
 				)
 			);
+
+			// Save to local storage
+			addToLocalStorage(`foodItems.${order._id}`, JSON.stringify(newOrder.items));
 		},
 		undone: (_id) => {
 			updateOrderStatus(_id, 'pending');
@@ -115,6 +142,10 @@ const Page = () => {
 			updateOrderStatus(_id, 'baking');
 		},
 	};
+
+	useEffect(() => {
+
+	}, []);
 
 	return (
 		<div>
@@ -179,7 +210,7 @@ const Page = () => {
 														</td>
 														<td className="px-2 py-1 w-1/4">
 															<label className="inline-flex items-center">
-																<input type="checkbox" className="form-checkbox h-6 w-6 rounded"
+																<input type="checkbox" className="form-checkbox h-6 w-6 rounded" checked={item.status === 'done'}
 																       onChange={(event) => actions.setFoodStatus(order, item, event.target.checked)}/>
 																<span className="ml-2 text-gray-700">Done</span>
 															</label>
