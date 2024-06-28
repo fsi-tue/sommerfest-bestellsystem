@@ -7,9 +7,9 @@ export interface FoodDocument extends Document {
     name: string;
     price: number;
     // Type of food
-    type: 'pizza' | 'drink' | 'dessert';
+    type: string;
     // Dietary requirements
-    dietary?: 'vegan' | 'vegetarian' | 'gluten-free' | 'lactose-free' | 'halal' | 'kosher' | 'organic';
+    dietary?: string;
     // Size, e.g., 0.5 for half a pizza
     size: number
     ingredients: string[];
@@ -30,12 +30,10 @@ const foodSchema = new Schema<FoodDocument>({
     },
     type: {
         type: String,
-        enum: ['pizza', 'grill'],
         required: true
     },
     dietary: {
         type: String,
-        enum: ['vegan', 'vegetarian', 'gluten-free', 'lactose-free', 'halal', 'kosher', 'organic'],
         required: false
     },
     size: {
