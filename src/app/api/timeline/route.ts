@@ -23,13 +23,17 @@ export async function GET(request: Request) {
     const timeSlots = [];
     let currentTime = moment().tz(constants.TIMEZONE_ORDERS)
         .subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes')
-        .subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES, "minutes");
+        .subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES, "minutes")
+        .set({
+            second: 0,
+            millisecond: 0
+        });
 
     for (let i = -5; i < 15; i++) {
         timeSlots.push({
             time: currentTime.format('HH:mm'),
-            startTime: currentTime.toDate(),
-            stopTime: moment(currentTime).add(TIME_SLOT_SIZE_MINUTES, 'minutes').toDate(),
+            startTime: currentTime,
+            stopTime: currentTime.clone().add(TIME_SLOT_SIZE_MINUTES, 'minutes')
         });
         currentTime = moment(currentTime).add(TIME_SLOT_SIZE_MINUTES, 'minutes');
     }
@@ -39,6 +43,7 @@ export async function GET(request: Request) {
             $gte: moment().utc().subtract(10 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
             $lt: moment().utc().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
         },
+        // status: { $ne: 'cancelled' }, // TODO: Check if this is needed
     });
     const food = await Food.find();
     const foodById = food
@@ -49,8 +54,15 @@ export async function GET(request: Request) {
 
     const orderTimeslots = timeSlots.map(({ startTime, stopTime }) => {
         let totalAmount = 0.0;
-        orders.forEach(({ orderDate, items }) => {
-            if (orderDate >= startTime && orderDate <= stopTime) {
+        orders.forEach(({ timeslot, items }) => {
+            const [hour, minute] = timeslot.split(':');
+            const timeSlot = moment().tz(constants.TIMEZONE_ORDERS).set({
+                hour: Number(hour),
+                minute: Number(minute),
+                second: 0,
+                millisecond: 0
+            })
+            if (timeSlot >= startTime && timeSlot < stopTime) {
                 items.forEach(({ _id }) => {
                     totalAmount += foodById[_id].size;
                 });
