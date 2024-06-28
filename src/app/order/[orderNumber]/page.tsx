@@ -5,10 +5,10 @@ import OrderQR from "@/app/components/order/OrderQR.jsx";
 import { useRouter } from "next/navigation";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
-import { statusToText } from "@/model/order";
 
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
+    const [error, setError] = useState(null);
     const [order, setOrder] = useState({} as any);
 
     // Check if logged in
@@ -24,7 +24,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
     useEffect(() => {
         // Get the order status from the server
         fetch(`/api/order/${params.orderNumber}`)
-            .            then(async response => {
+            .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
                     const error = (data && data.message) || response.statusText;
@@ -50,14 +50,31 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
         });
     }
 
-	const hasComment = () => {
-		return (
-			typeof order.comment === "string" &&
-			order.comment != "" &&
-			order.comment.toLowerCase() !== "No comment".toLowerCase()
-		);
-	}
+    const hasComment = () => {
+        return (
+            typeof order.comment === "string" &&
+            order.comment != "" &&
+            order.comment.toLowerCase() !== "No comment".toLowerCase()
+        );
+    }
 
+    const statusToText = (order: { status: string, isPaid: boolean }) => {
+        let statusText
+        if (order.status === 'ready') {
+            statusText = 'Your order is ready for pickup! 🎉';
+        } else if (order.status === 'pending') {
+            statusText = 'Please pay at the counter.';
+        } else if (order.status === 'baking') {
+            statusText = 'Your pizza is in the oven. Its getting hot 🔥';
+        } else if (order.status === 'delivered') {
+            statusText = 'Your order has been delivered.';
+        } else if (order.status === 'cancelled') {
+            statusText = 'Your order has been cancelled. 😢';
+        } else {
+            statusText = 'Unknown order.';
+        }
+        return statusText
+    }
 
     return (
         <div>
@@ -73,29 +90,29 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                     <OrderQR orderId={params.orderNumber}/>
 
                     <p className="mb-3 text-lg font-light text-gray-600 leading-7">
-                        {statusToText(order.status)}
+                        {statusToText(order)}
                     </p>
                 </div>
                 <div className="">
                     <div className="ml-4">
                         <h3 className="text-lg font-bold">Order details</h3>
-						{hasComment() && (
-							<div className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
-								<div className="flex flex-col">
-									<span className="font-bold">Comment:</span>
-									<span className="pl-4 italic">{order.comment}</span>
-								</div>
-							</div>
-						)}
+                        {hasComment() && (
+                            <div className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
+                                <div className="flex flex-col">
+                                    <span className="font-bold">Comment:</span>
+                                    <span className="pl-4 italic">{order.comment}</span>
+                                </div>
+                            </div>
+                        )}
                         <ul className="list-disc list-inside text-sm font-light text-gray-600 mb-4">
                             {order && order.items && order.items.map((food: any) => (
                                 <li key={food.name}>{food.name}: {food.price}€</li>
                             ))}
                         </ul>
-                        <p className="text-lg font-light text-gray-600">
+                        <p className={`font-light text-gray-600 ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
                             Total: {order && order.items && order.items.reduce((total: number, food: {
                             price: number
-                        }) => total + food.price, 0)}€
+                        }) => total + food.price, 0)}€ {order.isPaid ? '(Paid)' : '(Not paid)'}
                         </p>
                         <p className="text-lg font-light text-gray-600">
                             Order date: {formatDateTime(new Date(order.orderDate))}
@@ -104,10 +121,10 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                             Timeslot: {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}
                         </p>
                         {order.status !== 'cancelled' &&
-													<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-													        onClick={cancelOrder}>
-														Cancel order
-													</button>}
+					                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+					                        onClick={cancelOrder}>
+						                Cancel order
+					                </button>}
                     </div>
                 </div>
             </div>

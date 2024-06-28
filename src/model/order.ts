@@ -1,28 +1,9 @@
 import { type Document, Model, model, Schema } from "mongoose";
 import { FoodDocument } from "./food";
-import { ORDER } from "@/config";
 
-export type OrderStatus = 'pending' | 'paid' | 'baking' | 'ready' | 'delivered' | 'cancelled';
-export const ORDER_STATES: OrderStatus[] = ['pending', 'paid', 'baking', 'ready', 'delivered', 'cancelled'];
+export type OrderStatus = 'pending' | 'baking' | 'ready' | 'delivered' | 'cancelled';
+export const ORDER_STATES: OrderStatus[] = ['pending', 'baking', 'ready', 'delivered', 'cancelled'];
 
-
-export const statusToText = (status: string) => {
-    if (status === 'ready') {
-        return 'Your order is ready for pickup!';
-    } else if (status === 'pending') {
-        return 'Please pay at the counter.';
-    } else if (status === 'baking') {
-        return 'Its getting hot 🔥:)';
-    } else if (status === 'paid') {
-        return 'Your order is being prepared...';
-    } else if (status === 'delivered') {
-        return 'Your order has been delivered!';
-    } else if (status === 'cancelled') {
-        return 'Your order has been cancelled.';
-    } else {
-        return 'Unknown status';
-    }
-}
 
 export interface OrderDocument extends Document {
     _id: string;
@@ -33,6 +14,7 @@ export interface OrderDocument extends Document {
     timeslot: string;
     totalPrice: number;
     finishedAt?: Date;
+    isPaid: boolean;
     status: OrderStatus;
 }
 
@@ -67,6 +49,10 @@ const orderSchema = new Schema<OrderDocument>({
     },
     finishedAt: {
         type: Date,
+    },
+    isPaid: {
+        type: Boolean,
+        default: false,
     },
     status: {
         type: String,

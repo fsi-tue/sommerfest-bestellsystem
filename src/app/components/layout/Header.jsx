@@ -18,7 +18,7 @@ const Header = () => {
 	}, []);
 
 	const adminLinks = [
-		{to: "/admin/preparing", text: "Prepare Foods"}, //does not work yet
+		{to: "/admin/prepare", text: "Prepare Foods"}, //does not work yet
 		{to: "/admin/manage", text: "Manage DB"},
 		{to: "/admin/manage/order", text: "Manage Orders"},
 		{to: "/admin/manage/pizza", text: "Manage Foods"},

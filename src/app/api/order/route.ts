@@ -52,7 +52,8 @@ export async function GET(req: Request) {
             timeslot: order.timeslot, // new Date(order.orderDate.getTime() + totalTime),
             totalPrice: order.totalPrice,
             finishedAt: order.finishedAt,
-            status: order.status
+            status: order.status,
+            isPaid: order.isPaid
         }
     }))
 

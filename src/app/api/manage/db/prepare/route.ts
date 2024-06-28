@@ -42,25 +42,25 @@ export async function POST() {
 
     // Add pizzas
     const pizzas = [
-        { name: 'Salami half', price: 4, type: 'pizza', ingredients: pizza_by_name('Salami'), },
-        { name: 'Salami full', price: 8, type: 'pizza', ingredients: pizza_by_name('Salami'), },
-        { name: 'Ham and mushrooms half', price: 4, type: 'pizza', ingredients: pizza_by_name('Ham and mushrooms'), },
-        { name: 'Ham and mushrooms full', price: 8, type: 'pizza', ingredients: pizza_by_name('Ham and mushrooms'), },
-        { name: 'Capriccosa half', price: 4, type: 'pizza', ingredients: pizza_by_name('Capriccosa'), },
-        { name: 'Capriccosa full', price: 8, type: 'pizza', ingredients: pizza_by_name('Capriccosa'), },
-        { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Margherita'), },
-        { name: 'Margherita full', price: 6, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Margherita'), },
-        { name: 'Veggies half', price: 3, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Veggies'), },
-        { name: 'Veggies full', price: 6, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Veggies'), },
-        { name: 'Margherita vegan half', price: 3, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Margherita vegan'), },
-        { name: 'Margherita vegan full', price: 6, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Margherita vegan'), },
-        { name: 'Capriccosa vegan half', price: 3, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Capriccosa vegan'), },
-        { name: 'Capriccosa vegan full', price: 6, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Capriccosa vegan'), },
+        { name: 'Salami half', price: 4, type: 'pizza', ingredients: pizza_by_name('Salami'), size: 0.5 },
+        { name: 'Salami full', price: 8, type: 'pizza', ingredients: pizza_by_name('Salami'), size: 1 },
+        { name: 'Ham and mushrooms half', price: 4, type: 'pizza', ingredients: pizza_by_name('Ham and mushrooms'), size: 0.5 },
+        { name: 'Ham and mushrooms full', price: 8, type: 'pizza', ingredients: pizza_by_name('Ham and mushrooms'), size: 1 },
+        { name: 'Capriccosa half', price: 4, type: 'pizza', ingredients: pizza_by_name('Capriccosa'), size: 0.5 },
+        { name: 'Capriccosa full', price: 8, type: 'pizza', ingredients: pizza_by_name('Capriccosa'), size: 1 },
+        { name: 'Margherita half', price: 3, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Margherita'), size: 0.5 },
+        { name: 'Margherita full', price: 6, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Margherita'), size: 1 },
+        { name: 'Veggies half', price: 3, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Veggies'), size: 0.5 },
+        { name: 'Veggies full', price: 6, dietary: 'vegetarian', type: 'pizza', ingredients: pizza_by_name('Veggies'), size: 1 },
+        { name: 'Margherita vegan half', price: 3, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Margherita vegan'), size: 0.5 },
+        { name: 'Margherita vegan full', price: 6, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Margherita vegan'), size: 1 },
+        { name: 'Capriccosa vegan half', price: 3, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Capriccosa vegan'), size: 0.5 },
+        { name: 'Capriccosa vegan full', price: 6, dietary: 'vegan', type: 'pizza', ingredients: pizza_by_name('Capriccosa vegan'), size: 1 },
     ];
     for (const pizza of pizzas) {
         await new Food(pizza).save();
     }
-    
+
     // Add the system
     const system = new System({ name: constants.SYSTEM_NAME, status: 'active' })
     await system.save()

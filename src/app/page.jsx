@@ -160,10 +160,10 @@ const Page = () => {
 
 	/**
 	 * Set the name of the order
-	 * @param e
+	 * @param name
 	 */
-	const setName = (e) => {
-		updateOrder({name: e.target.value});
+	const setName = (name) => {
+		updateOrder({name: name});
 	};
 
 	/**

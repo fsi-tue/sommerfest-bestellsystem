@@ -3,8 +3,7 @@
 import {useEffect, useState} from "react";
 import {getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
-import {getDateFromTimeSlot} from "@/lib/time";
-import {formatDateTime} from "@/lib/time";
+import {formatDateTime, getDateFromTimeSlot} from "@/lib/time";
 import WithAuth from "../WithAuth.jsx";
 
 const getHeaders = () => {
@@ -98,6 +97,9 @@ const Page = () => {
 			newOrders[orderIndex] = newOrder;
 			setOrders(newOrders);
 		},
+		undone: (_id) => {
+			updateOrderStatus(_id, 'pending')
+		},
 		done: (_id) => {
 			updateOrderStatus(_id, 'baking')
 		},
@@ -127,17 +129,17 @@ const Page = () => {
 								<div key={activeOrderId + index} className="bg-white rounded-lg shadow-sm p-2">
 									<div className="mb-2">
 										<div className="flex justify-between items-center">
-											<div className="flex space-x-2">
+											<div className="flex space-x-2 flex-wrap">
 										    <span
-											    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+											    className="inline-flex items-center px-2.5 py-0.5 m-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
 											    {order._id}
 										    </span>
 												<span
-													className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+													className="inline-flex items-center px-2.5 py-0.5 m-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
 										      {order.name}
 										    </span>
 												<span
-													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium text-gray-800
+													className={`inline-flex items-center px-2.5 py-0.5 m-0.5 rounded-full text-sm font-medium text-gray-800
 												    ${order.status === 'pending' ? 'bg-yellow-100' : ''}
 												    ${order.status === 'paid' ? 'bg-orange-100' : ''}
 												    ${order.status === 'baking' ? 'bg-green-100' : ''}`}>
@@ -181,6 +183,10 @@ const Page = () => {
 									<div className="flex justify-between items-center">
 										<button onClick={() => actions.cancel(order._id)}
 										        className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-100">Cancel
+										</button>
+										<button onClick={() => actions.undone(order._id)}
+										        disabled={order.status === 'pending'}
+										        className="px-2 py-1 text-xs rounded border border-gray-300 hover:bg-gray-100 disabled:opacity-50">Undone
 										</button>
 										<button onClick={() => actions.done(order._id)}
 										        disabled={order.items.some(item => item.status !== 'done')}

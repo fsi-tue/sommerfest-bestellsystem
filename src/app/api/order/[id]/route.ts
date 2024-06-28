@@ -1,10 +1,9 @@
 import dbConnect from "@/lib/dbConnect";
-
-import moment from 'moment-timezone';
 import mongoose from "mongoose";
 import { Order } from "@/model/order";
 import { Food, FoodDocument } from "@/model/food";
 import { constants } from "@/config";
+import moment from "moment-timezone";
 
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
@@ -68,6 +67,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         totalPrice: order.totalPrice,
         finishedAt: moment(order.finishedAt).tz(constants.TIMEZONE_ORDERS).format(),
         status: order.status,
+        isPaid: order.isPaid
     }
 
     // Send the order

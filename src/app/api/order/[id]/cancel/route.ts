@@ -35,6 +35,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
         // Check if the order is already delivered or ready
         if (['delivered', 'ready'].includes(foundOrder.status)) {
+            console.log('Order was already cancelled:', foundOrder.status)
             return new Response(`Order was already ${foundOrder.status}. Cannot cancel!`, { status: 400 });
         }
 
@@ -47,7 +48,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         // console.log('Order updated:', foundOrder)
         return Response.json(foundOrder);
     } catch (error) {
-        console.error('Error setting order as paid:', error);
-        return new Response('Error setting order as paid', { status: 500 });
+        console.error('Error cancel order:', error);
+        return new Response('Error cancel order', { status: 500 });
     }
 }

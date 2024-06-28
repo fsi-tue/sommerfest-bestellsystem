@@ -115,6 +115,33 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             .catch(error => setError(error.message));
     }
 
+    const setOrderAsPaid = (_id: string, isPaid: boolean) => {
+        fetch(`/api/order/${_id}/pay`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify({ isPaid: isPaid })
+        })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    const error = (data && data.message) || response.statusText;
+                    throw new Error(error);
+                }
+                return data;
+            })
+            .then(() => {
+                // Update the order by id
+                const newOrders = orders.map((order: OrderDocument) => {
+                    if (order._id === _id) {
+                        order.isPaid = isPaid;
+                    }
+                    return order;
+                });
+                setOrders(newOrders);
+            })
+            .catch(error => setError(error.message));
+    }
+
     /**
      * Function to convert barcode to order
      * @param barcode
@@ -217,7 +244,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                             <span className="text-sm font-medium text-gray-800">{food.name}</span>
                                             <div className="flex gap-1 mt-1">
                                                 {food.dietary && <span
-                                                        className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
+																									className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
                                                 <span
                                                     className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
                                             </div>
@@ -238,6 +265,14 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                         {state}
                                     </button>
                                 ))}
+                                <button
+                                    className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 
+    ${order.isPaid ? 'bg-green-300 text-green-700 hover:bg-green-400' : 'bg-red-300 text-red-700 hover:bg-red-400'} 
+    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    onClick={() => setOrderAsPaid(order._id, !order.isPaid)}
+                                >
+                                    {order.isPaid ? 'Paid' : 'Not Paid'}
+                                </button>
                             </div>
                         </div>
                     ))}
