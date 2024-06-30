@@ -35,7 +35,8 @@ const Page = () => {
 				setFoods(data);
 				setLoading(false);
 			})
-			.catch(error => {
+			.catch(() => {
+				console.error('Error fetching pizzas');
 				setError('Error fetching pizzas');
 				setLoading(false);
 			});

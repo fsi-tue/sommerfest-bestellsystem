@@ -14,8 +14,6 @@ const Page = () => {
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const [isClient, setIsClient] = useState(false);
 	const [filter, setFilter] = useState('');
-	const inputRef = useRef(null);
-
 
 	const token = getFromLocalStorage('token', '');
 	const headers = {

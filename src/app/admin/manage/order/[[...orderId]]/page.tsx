@@ -256,7 +256,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                             <span className="text-sm font-medium text-gray-800">{food.name}</span>
                                             <div className="flex gap-1 mt-1">
                                                 {food.dietary && <span
-																							    className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
+																									className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
                                                 <span
                                                     className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
                                             </div>

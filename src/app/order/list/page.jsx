@@ -1,7 +1,7 @@
 'use client'
 
 import Timeline from "@/app/components/Timeline.jsx";
-import {getFromLocalStorage} from "@/lib/localStorage.js";
+import {getFromLocalStorage} from "@/lib/localStorage";
 
 const EVERY_X_SECONDS = 60;
 

@@ -228,7 +228,8 @@ const Page = () => {
 			<div className="flex flex-col md:flex-row justify-between gap-8">
 				<div className="md:w-1/2 w-full">
 					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Menu:</h3>
-					<p className="mb-6 text-lg font-light leading-7 text-gray-800">Select your pizza from the list below. Ingredients are at the bottom.</p>
+					<p className="mb-6 text-lg font-light leading-7 text-gray-800">Select your pizza from the list below.
+						Ingredients are at the bottom.</p>
 					<a id='selectorder'></a>
 					<ul className="space-y-4">
 						{foods
@@ -260,12 +261,6 @@ const Page = () => {
 								/>
 							))}
 					</ul>
-
-					{/* <div className="mb-6">
-						<p
-							className="text-lg font-semibold text-gray-900">Total: {order.items.reduce((total, pizza) => total + pizza.price, 0)}€</p>
-						<p className="text-lg font-semibold text-gray-900">Timeslot: {order.timeslot}</p>
-					</div> */}
 
 					<div className="mb-6">
 						<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>

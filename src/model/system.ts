@@ -22,8 +22,7 @@ const systemSchema = new Schema({
 let System: Model<SystemDocument>;
 try {
     System = model<SystemDocument>('system', systemSchema);
-}
-catch (error) {
+} catch (error) {
     System = model<SystemDocument>('system');
 }
 

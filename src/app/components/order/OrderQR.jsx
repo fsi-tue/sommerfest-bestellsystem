@@ -6,8 +6,6 @@ const OrderQR = (orderId) => {
 	const canvasRef = useRef(null);
 
 	// Link to the order page
-	// TODO: Change this to the correct endpoint
-	const pathname = usePathname()
 	const orderLink = `/order/${orderId.orderId}`;
 
 	// Generate QR code

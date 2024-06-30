@@ -17,11 +17,11 @@
     "build": "next build",
     "build:standalone": "BUILD_STANDALONE=true next build",
     "start": "next start",
-    "docker:build": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack build",
-    "docker:up": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack up",
-    "docker:db:up": "docker-compose -f docker-compose.db.yml -p pern_stack up",
-    "docker:down": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack down",
-    "docker:down:volumes": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pern_stack down --volumes"
+    "docker:build": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza build",
+    "docker:up": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza up",
+    "docker:db:up": "docker-compose -f docker-compose.db.yml -p pizza up",
+    "docker:down": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza down",
+    "docker:down:volumes": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza down --volumes"
   },
   "dependencies": {
     "@yudiel/react-qr-scanner": "^2.0.4",

@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
-import { mongodb } from "@/config";
 
 declare global {
     var mongoose: any; // This must be a `var` and not a `let / const`
 }
 
-const MONGODB_URI = process.env.MONGO_URI || mongodb.mongoUri
+let MONGODB_URI: string = process.env.MONGO_URI ?? ''
+if (!MONGODB_URI || MONGODB_URI === '') {
+    throw new Error(
+        "Please define the MONGO_URI environment variable inside .env.local",
+    );
+}
 console.log('MONGODB_URI', MONGODB_URI)
 
 if (!MONGODB_URI) {

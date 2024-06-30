@@ -8,36 +8,36 @@ const Timeline = ({startDate, stopDate, every_x_seconds, setTimeslot}) => {
 	const [data, setData] = useState([]);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const response = await fetch('/api/timeline');
-				const jsonData = await response.json();
-				setData(jsonData);
-			} catch (error) {
-				console.error('Error fetching data:', error);
-				const timeSlots = [];
-				const currentTime = new Date(startDate);
+		const fetchData = () => {
+			fetch('/api/timeline')
+				.then(response => response.json())
+				.then(jsonData => setData(jsonData))
+				.catch(error => {
+					console.error('Error fetching timeline data', error);
+					const timeSlots = [];
+					const currentTime = new Date(startDate);
 
-				// Generate time slots every 5 minutes
-				while (currentTime <= stopDate) {
-					timeSlots.push({time: currentTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})});
-					currentTime.setMinutes(currentTime.getMinutes() + 5);
-				}
-				setData(timeSlots.map((timeSlot, index) => ({
-					time: timeSlot.time,
-					height: 0,
-				})));
-			}
+					// Generate time slots
+					while (currentTime <= stopDate) {
+						timeSlots.push({time: currentTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})});
+						currentTime.setMinutes(currentTime.getMinutes() + 5);
+					}
+					setData(timeSlots.map(timeSlot=> ({
+						time: timeSlot.time,
+						height: 0,
+					})));
+				})
 		};
 
-		const interval = setInterval(fetchData, every_x_seconds * 1000); // Fetch data every x seconds
 		fetchData(); // Fetch data initially
+		const interval = setInterval(fetchData, every_x_seconds * 1000); // Fetch data every x seconds
 		return () => clearInterval(interval); // Clear interval on unmounting
 	}, []); // Run effect only once on mount
 
 	return (
 		<ResponsiveContainer height={300}>
-			<BarChart data={data} onClick={(event) => setTimeslot(event.activeLabel)} margin={{top: 5, right: 30, left: -30, bottom: 5}}>
+			<BarChart data={data} onClick={(event) => setTimeslot(event.activeLabel)}
+			          margin={{top: 5, right: 30, left: -30, bottom: 5}}>
 				<XAxis dataKey="time"/>
 				<YAxis/>
 				<Tooltip/>
@@ -68,7 +68,8 @@ Timeline.parameters = {
 	startDate: new Date(),
 	stopDate: new Date(),
 	every_x_seconds: 60,
-	setTimeslot: () => {}
+	setTimeslot: () => {
+	}
 };
 
 export default Timeline;

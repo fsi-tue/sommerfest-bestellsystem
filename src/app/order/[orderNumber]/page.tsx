@@ -34,7 +34,10 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
             })
             .then(data => {
                 setOrder(data)
-            });
+            })
+            .catch(error => {
+                setError(error);
+            })
     }, [params.orderNumber]);
 
     const cancelOrder = () => {
@@ -47,7 +50,9 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
             if (response.ok) {
                 setOrder({ ...order, status: 'cancelled' });
             }
-        });
+        }).catch(error => {
+            setError(error);
+        })
     }
 
     const hasComment = () => {
@@ -121,10 +126,10 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                             Timeslot: {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}
                         </p>
                         {order.status !== 'cancelled' &&
-					                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-					                        onClick={cancelOrder}>
-						                Cancel order
-					                </button>}
+													<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+													        onClick={cancelOrder}>
+														Cancel order
+													</button>}
                     </div>
                 </div>
             </div>

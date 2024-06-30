@@ -1,7 +1,3 @@
-export const mongodb = {
-    mongoUri: process.env.MONGO_URI || "mongodb://localhost:27017/pizza-system",
-}
-
 export const constants = {
     SYSTEM_NAME: process.env.SYSTEM_NAME || "fsi",
     LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS || "8"),

@@ -2,7 +2,7 @@
 
 import {useEffect} from "react";
 import {useRouter} from "next/navigation";
-import {removeFromLocalStorage} from "@/lib/localStorage.js";
+import {removeFromLocalStorage} from "@/lib/localStorage";
 
 const Page = () => {
 	const router = useRouter();
