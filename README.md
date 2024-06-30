@@ -1,10 +1,12 @@
 # TueTops
 
-Welcome to the **TueTops**! Get ready to embark on a delightful journey of ordering and managing pizzas, brought to you by the enthusiastic students of the University of Tübingen's student council. 
+Welcome to the **TueTops**! Get ready to embark on a delightful journey of ordering and managing pizzas, brought to you
+by the enthusiastic students of the University of Tübingen's student council.
 
 ## How To Use
 
-Once you have the Docker container up and running with the steps provided below, simply navigate to [http://localhost:8000](http://localhost:8000) and start your pizza adventure!
+Once you have the Docker container up and running with the steps provided below, simply navigate
+to <http://localhost:3000> and start your pizza adventure!
 
 ### Dependencies
 
@@ -16,6 +18,7 @@ Before you begin, make sure you have the following installed:
 ### Controls
 
 #### Start the Fun
+
 To start your Docker containers and networks (it will build first if no build exists):
 
 ```sh
@@ -23,6 +26,7 @@ bun run docker:up
 ```
 
 #### Build the Magic
+
 To build Docker images from a `docker-compose.yml`, `Dockerfile`, and context:
 
 ```sh
@@ -30,6 +34,7 @@ bun run docker:build
 ```
 
 #### Pause the Party
+
 To stop Docker containers and networks:
 
 ```sh
