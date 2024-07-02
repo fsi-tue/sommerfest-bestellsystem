@@ -12,7 +12,6 @@ export interface FoodDocument extends Document {
     dietary?: string;
     // Size, e.g., 0.5 for half a pizza
     size: number
-    ingredients: string[];
     // Maximum number of items available
     max: number;
     enabled: boolean;
@@ -43,12 +42,6 @@ const foodSchema = new Schema<FoodDocument>({
         min: 0.1,
         max: 1
     },
-    ingredients: [
-        {
-            type: String,
-            required: true
-        }
-    ],
     max: { type: Number, default: FOOD.MAX_ITEMS },
     enabled: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now }

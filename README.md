@@ -1,46 +1,55 @@
-# Pizza Order App
+# TueTops
+
+Welcome to the **TueTops**! Get ready to embark on a delightful journey of ordering and managing pizzas, brought to you
+by the enthusiastic students of the University of Tübingen's student council.
 
 ## How To Use
 
-Once you have started the Docker container using the provided tools and commands below, you will need to navigate
-to <http://localhost:8000>.
+Once you have the Docker container up and running with the steps provided below, simply navigate
+to <http://localhost:3000> and start your pizza adventure!
 
 ### Dependencies
 
-You will need to install:
+Before you begin, make sure you have the following installed:
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Bun](https://bun.sh/)
 
 ### Controls
 
-Starts Docker containers and networks (will build first if no build exists):
+#### Start the Fun
 
-```
+To start your Docker containers and networks (it will build first if no build exists):
+
+```sh
 bun run docker:up
 ```
 
-Builds Docker images from a docker-compose.yml, Dockerfile, and "context":
+#### Build the Magic
 
-```
+To build Docker images from a `docker-compose.yml`, `Dockerfile`, and context:
+
+```sh
 bun run docker:build
 ```
 
-Stops Docker containers and networks:
+#### Pause the Party
 
-```
+To stop Docker containers and networks:
+
+```sh
 bun run docker:down
 ```
 
 ### Access to MongoDB
 
-You can access the MongoDB instance through the following tools:
+Want to dive into the data? Access the MongoDB instance using the following tools:
 
 - **Mongo Express:** [http://localhost:8081](http://localhost:8081)
 - **Username:** `admin`
 - **Password:** `admin`
 
-To connect to the MongoDB database, use the following configuration in your MongoDB client:
+Connect to the MongoDB database with these settings:
 
 - **Host name/address:** `db`
 - **Port:** `27017`
@@ -49,11 +58,17 @@ To connect to the MongoDB database, use the following configuration in your Mong
 
 ## Technologies Used
 
+This app is powered by a robust tech stack:
+
 - Docker
 - MongoDB
 - Next.js
 
 ## Authors
 
+Meet the creative minds behind the project:
+
 - [Zeilenschubser](https://github.com/zeilenschubser) (Original Author)
 - [Josef Müller](https://github.com/am9zZWY)
+
+Enjoy using **TueTops – Pizza Ordering App** and have fun at the summer fest! 🍕

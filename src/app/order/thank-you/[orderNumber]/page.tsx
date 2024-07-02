@@ -5,17 +5,15 @@ import OrderQR from "@/app/components/order/OrderQR.jsx";
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
 
-    const orderLink = `/order/${params.orderNumber}`;
-
     return (
-        <div>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
             <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">Thank you for your order! 🍕</h1>
             <div className="flex flex-col items-center p-4 rounded-lg shadow-md">
 
                 <OrderQR orderId={params.orderNumber}/>
 
                 <p className="mb-3 text-lg font-light text-gray-600 leading-7">
-                    Your order number is: <Link href={orderLink}
+                    Your order number is: <Link href={`/order/${params.orderNumber}`}
                                                 className="font-bold hover:underline">{params.orderNumber}</Link>
                 </p>
                 <p className="mb-3 text-lg font-light text-gray-600 leading-7">

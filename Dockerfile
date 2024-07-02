@@ -1,57 +1,57 @@
-FROM node:22-alpine AS base
+# Use the official Bun image
+FROM oven/bun:1 AS base
+WORKDIR /usr/src/app
 
-# Install dependencies only when needed
+# Install dependencies into a temporary directory to cache them
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
+RUN mkdir -p /temp/dev
+COPY package.json bun.lockb /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Install dependencies based on the preferred package manager
-COPY package.json ./
-RUN npm i ----legacy-peer-deps
+# Install production dependencies
+RUN mkdir -p /temp/prod
+COPY package.json bun.lockb /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-
-# Rebuild the source code only when needed
+# Copy dependencies and project files
 FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /temp/dev/node_modules ./node_modules
 COPY . .
 
-# Avoid telemetry during build
-ENV NEXT_TELEMETRY_DISABLED 1
-# Set the environment variable to build the standalone output
-ENV BUILD_STANDALONE true
+# Set environment variables
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV BUILD_STANDALONE=true
 
-RUN npm run build
+# Build the project
+RUN bun run build
 
-# Production image, copy all the files and run next
+# Create the production image
 FROM base AS runner
-WORKDIR /app
+WORKDIR /usr/src/app
 
-ENV NODE_ENV production
-# Avoid telemetry during build
-ENV NEXT_TELEMETRY_DISABLED 1
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
+# Copy necessary files and set permissions
+COPY --from=builder /usr/src/app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy build output
+COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next/static ./.next/static
 
 USER nextjs
 
+# Expose the port
 EXPOSE 3000
 
-ENV PORT 3000
+# Set the port environment variable
+ENV PORT=3000
 
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+# Start the server
+CMD ["bun", "run", "server.js"]

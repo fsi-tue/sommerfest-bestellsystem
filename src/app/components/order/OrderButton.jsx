@@ -43,7 +43,7 @@ const OrderButton = ({order, setError}) => {
 				const data = await response.json();
 				if (!response.ok) {
 					const error = (data && data.message) || response.statusText;
-					console.log('Error:', error);
+					console.log('Error placing order:', error);
 					throw new Error(error);
 				}
 				return data;
@@ -51,9 +51,9 @@ const OrderButton = ({order, setError}) => {
 			.then(data => {
 				if (data.orderId) {
 					// Add order ID to local storage
-					const orderIds = JSON.parse(getFromLocalStorage('orderIds')) || [];
-					orderIds.push(data.orderId);
-					addToLocalStorage('orderIds', JSON.stringify(orderIds));
+					const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) || [];
+					localStorageOrders.push({id: data.orderId, items: items.map(item => item.name), timeslot: timeslot});
+					addToLocalStorage('localStorageOrders', JSON.stringify(localStorageOrders));
 
 					// Redirect to thank you page
 					router.push(`/order/thank-you/${data.orderId}`);

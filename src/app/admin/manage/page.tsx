@@ -40,14 +40,17 @@ const Page = () => {
             headers: headers,
         })
             .then(() => setMessage('Database prepared'))
-            .catch((error) => setMessage('Error preparing database'))
+            .catch((error) => {
+                console.error('Error preparing database', error);
+                setMessage(error)
+            })
     }
 
     const getSystemStatus = () => {
         fetch('/api/manage/system/status', {
             headers: headers,
         })
-            .            then(async response => {
+            .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
                     const error = (data && data.message) || response.statusText;
@@ -56,7 +59,10 @@ const Page = () => {
                 return data;
             })
             .then(data => setStatus(data.status))
-            .catch((error) => setMessage('Error getting system status'))
+            .catch((error) => {
+                console.error('There was an error!', error);
+                setMessage(error)
+            })
     }
 
     useEffect(() => {
@@ -72,7 +78,10 @@ const Page = () => {
                 setMessage(`System ${status}`)
                 setStatus(status)
             })
-            .catch((error) => setMessage('Error updating system status'))
+            .catch((error) => {
+                console.error('Error updating system status', error);
+                setMessage(error)
+            })
     }
 
     return (

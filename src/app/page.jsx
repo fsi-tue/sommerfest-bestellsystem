@@ -201,107 +201,107 @@ const Page = () => {
 
 	return (
 		<div>
-			<h2 className="text-4xl font-extrabold mb-6 text-center text-gray-900">Order your pizza at Sommerfest 2024!</h2>
-			<div className="mb-8 font-light leading-7 text-gray-800">
-				<ol className="list-decimal list-inside space-y-4">
-					<li>
-						<p className="text-lg font-semibold">Choose Pizza:</p>
-						<p>Select whole or halved from the list below (a whole pizza has a diameter of 12 inches / 30 cm).</p>
-					</li>
-					<li>
-						<p className="text-lg font-semibold">Pick-Up Time:</p>
-						<p>Choose a time (some slots may be full).</p>
-					</li>
-					<li>
-						<p className="text-lg font-semibold">Pay in Cash:</p>
-						<p>Pay when collecting at the counter.</p>
-					</li>
-				</ol>
-				<div className="mt-6">
-					<p className="text-lg font-semibold">Order Times:</p>
-					<p>Earliest pick-up: 17:25</p>
-					<p>Latest order: 23:40</p>
+			<div className="bg-white p-8 rounded-lg shadow-md mb-8">
+				<h2 className="text-4xl font-extrabold mb-6 text-center text-gray-900">Order your pizza at Sommerfest 2024!</h2>
+				<div className="mb-8 font-light leading-7 text-gray-800">
+					<ol className="list-decimal list-inside space-y-4">
+						<li>
+							<p className="text-lg font-semibold">Choose Pizza:</p>
+							<p>Select whole or halved from the list below (a whole pizza has a diameter of 12 inches / 30 cm).</p>
+						</li>
+						<li>
+							<p className="text-lg font-semibold">Pick-Up Time:</p>
+							<p>Choose a time (some slots may be full).</p>
+						</li>
+						<li>
+							<p className="text-lg font-semibold">Pay in Cash:</p>
+							<p>Pay when collecting at the counter.</p>
+						</li>
+					</ol>
+					<div className="mt-6">
+						<p className="text-lg font-semibold">Order Times:</p>
+						<p>Earliest pick-up: 17:25</p>
+						<p>Latest order: 23:40</p>
+					</div>
+					<p className="mt-8 text-center text-xl text-gray-700">Enjoy your evening!</p>
 				</div>
-				<p className="mt-8 text-center text-xl text-gray-700">Enjoy your evening!</p>
 			</div>
 
-			<div className="flex flex-col md:flex-row justify-between gap-8">
-				<div className="md:w-1/2 w-full">
-					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Menu:</h3>
-					<p className="mb-6 text-lg font-light leading-7 text-gray-800">Select your pizza from the list below. Ingredients are at the bottom.</p>
-					<a id='selectorder'></a>
-					<ul className="space-y-4">
-						{foods
-							.filter(food => food.enabled)
-							.map((food, index) => (
-								<Food
-									key={index}
-									food={food}
-									className="pizza"
-									onClick={() => addToOrder(food)}
-								/>
-							))}
-						{!foods.length && <p>Loading...</p>}
-					</ul>
-				</div>
-
-				<div className="md:w-1/2 w-full">
-					<a id="order"/>
-					<h3 className="text-2xl font-semibold mb-6 text-gray-900">Your current order:</h3>
-					{error && <ErrorMessage error={error}/>}
-					<ul className="space-y-4 mb-6">
-						{order.items
-							.map((food, index) => (
-								<Food
-									key={index}
-									food={food}
-									className="pizza order"
-									onClick={() => removeFromOrder(food)}
-								/>
-							))}
-					</ul>
-
-					{/* <div className="mb-6">
-						<p
-							className="text-lg font-semibold text-gray-900">Total: {order.items.reduce((total, pizza) => total + pizza.price, 0)}€</p>
-						<p className="text-lg font-semibold text-gray-900">Timeslot: {order.timeslot}</p>
-					</div> */}
-
-					<div className="mb-6">
-						<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-						<input
-							id="name"
-							name="name"
-							type="text"
-							placeholder="Enter your name (optional)"
-							className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
-							onChange={(e) => setName(e.target.value)}
-						/>
-						<label htmlFor="comment" className="block text-sm font-medium text-gray-700">Comment</label>
-						<textarea
-							id="comment"
-							name="comment"
-							placeholder="Enter your comment (optional)"
-							className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
-							onChange={(e) => setComment(e.target.value)}
-						/>
+			<div className="bg-white p-8 rounded-lg shadow-md mb-8">
+				<div className="flex flex-col md:flex-row justify-between gap-8">
+					<div className="md:w-1/2 w-full">
+						<h3 className="text-2xl font-semibold mb-6 text-gray-900">Menu:</h3>
+						<p className="mb-6 text-lg font-light leading-7 text-gray-800">Select your pizza from the list below.
+							Ingredients are at the bottom.</p>
+						<a id='selectorder'></a>
+						<ul className="space-y-4">
+							{foods
+								.filter(food => food.enabled)
+								.map((food, index) => (
+									<Food
+										key={index}
+										food={food}
+										className="pizza"
+										onClick={() => addToOrder(food)}
+									/>
+								))}
+							{!foods.length && <p>Loading...</p>}
+						</ul>
 					</div>
 
-					<div className="timeline-container mt-8">
-						<h2 className="text-2xl font-semibold mb-4 text-gray-900">Timeslot</h2>
-						<p className="mb-4 text-lg font-light leading-7 text-gray-800">Select your timeslot for pick-up.</p>
+					<div className="md:w-1/2 w-full">
+						<a id="order"/>
+						<h3 className="text-2xl font-semibold mb-6 text-gray-900">Your current order:</h3>
+						{error && <ErrorMessage error={error}/>}
+						<ul className="space-y-4 mb-6">
+							{order.items
+								.map((food, index) => (
+									<Food
+										key={index}
+										food={food}
+										className="pizza order"
+										onClick={() => removeFromOrder(food)}
+									/>
+								))}
+						</ul>
 
-						<Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot} every_x_seconds={EVERY_X_SECONDS}/>
+						<div className="mb-6">
+							<label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+							<input
+								id="name"
+								name="name"
+								type="text"
+								placeholder="Enter your name (optional)"
+								className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
+								onChange={(e) => setName(e.target.value)}
+							/>
+							<label htmlFor="comment" className="block text-sm font-medium text-gray-700">Comment</label>
+							<textarea
+								id="comment"
+								name="comment"
+								placeholder="Enter your comment (optional)"
+								className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
+								onChange={(e) => setComment(e.target.value)}
+							/>
+						</div>
+
+						<div className="timeline-container mt-8">
+							<h2 className="text-2xl font-semibold mb-4 text-gray-900">Timeslot</h2>
+							<p className="mb-4 text-lg font-light leading-7 text-gray-800">Select your timeslot for pick-up.</p>
+
+							<Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot} every_x_seconds={EVERY_X_SECONDS}/>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div>
+
+			<div className="bg-white p-8 rounded-lg shadow-md mb-8">
 				<PizzaIngredientsTable/>
 			</div>
 
 			{/* Floating island */}
 			<div
-				className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-white px-3 py-3 rounded-2xl shadow-2xl transition-shadow duration-300">
+				className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 px-1 md:px-3 py-1 md:py-3 rounded-2xl shadow-2xl transition-shadow duration-300 bg-white">
 				<div className="flex items-center justify-between">
 					{!error && (
 						<>

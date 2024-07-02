@@ -1,6 +1,4 @@
 // Fill the database
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import { System } from "@/model/system";
 import { constants } from "@/config";

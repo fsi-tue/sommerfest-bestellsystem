@@ -48,7 +48,7 @@ export async function GET(request: Request) {
     });
     const food = await Food.find();
     const foodById = food
-        .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+        .reduce((map: { [id: string]: FoodDocument }, food) => {
             map[food._id.toString()] = food;
             return map;
         }, {});
@@ -58,8 +58,8 @@ export async function GET(request: Request) {
         orders.forEach(({ timeslot, items }) => {
             const timeSlot = getDateFromTimeSlot(timeslot);
             if (timeSlot >= startTime && timeSlot < stopTime) {
-                items.forEach(({ _id }) => {
-                    totalAmount += foodById[_id].size;
+                items.forEach(({ food }) => {
+                    totalAmount += foodById[food._id].size;
                 });
             }
         });
