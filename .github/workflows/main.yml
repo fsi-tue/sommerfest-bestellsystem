@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   main:
-    name: Update FSE repository and build Docker image on trinity after push to master
+    name: Update Pizza repository and build Docker image on trinity after push to master
     runs-on: ubuntu-latest
     steps:
     - name: Execute remote ssh commands using ssh key
