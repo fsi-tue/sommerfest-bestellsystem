@@ -13,27 +13,18 @@ export async function GET(req: Request) {
 
     // Authenticate the user
     const headersList = headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
+    /* if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
         }, { status: 401 });
-    }
+    } */
 
     const orders = await Order.find();
     const foods = await Food.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
-
-        /*
-        // Get all orders that were ordered before this order and are not finished
-        const ordersBefore = orders.filter(orderBefore => orderBefore.orderDate < order.orderDate && (!['delivered', 'cancelled'].includes(orderBefore.status)));
-        const orderBeforeItemsTotal = ordersBefore.map(order => order.items).flat();
-        const totalTime = orderBeforeItemsTotal.length * ORDER.TIME_PER_ORDER + // Time for the pizzas BEFORE THIS order
-            order.items.length * ORDER.TIME_PER_ORDER; // Time for the pizzas IN THIS order
-         */
-
         // Get the foods for the order
-        const foodsForOrder = foods.filter((food: any) => order.items.includes(food._id));
+        const foodsForOrder = foods.filter((food) => order.items.some((item) => item.food.toString() === food._id.toString()));
 
         // Create a map of food details
         const foodById = foodsForOrder
@@ -41,19 +32,21 @@ export async function GET(req: Request) {
                 map[food._id.toString()] = food;
                 return map;
             }, {});
-
-
+        
         return {
             _id: order._id,
             name: order.name,
             comment: order.comment || "",
-            items: order.items.map(pizzaId => foodById[pizzaId.toString()]),
+            items: order.items.map((item) => ({
+                food: foodById[item.food],
+                status: item.status
+            })),
             orderDate: order.orderDate,
             timeslot: order.timeslot, // new Date(order.orderDate.getTime() + totalTime),
             totalPrice: order.totalPrice,
-            finishedAt: order.finishedAt,
             status: order.status,
-            isPaid: order.isPaid
+            isPaid: order.isPaid,
+            finishedAt: order.finishedAt,
         }
     }))
 
@@ -74,6 +67,7 @@ export async function POST(req: Request) {
 
     // Get the body of the request
     const { pizzas: items, name, comment, timeslot } = await req.json();
+    console.log(items)
 
     // Check if there are too many or too few items
     const currentOrderItemsTotal = items
@@ -107,14 +101,14 @@ export async function POST(req: Request) {
     // Find all food items
     const food = await Food.find();
     const foodById = food
-        .reduce((map: { [id: string]: FoodDocument }, food: any) => {
+        .reduce((map: { [id: string]: FoodDocument }, food) => {
             map[food._id.toString()] = food;
             return map;
         }, {});
     // Sum up all items in the orders
     const orderItemsTotal = orders
         .flatMap(order => order.items)
-        .reduce((total, item) => total + foodById[item._id].size, 0);
+        .reduce((total, item) => total + foodById[item.food._id].size, 0);
     // Check if the total number of items is not too high
     console.log('Order items total:', orderItemsTotal, currentOrderItemsTotal);
     if (orderItemsTotal + currentOrderItemsTotal > ORDER.MAX_ITEMS_PER_TIMESLOT) {
@@ -139,10 +133,10 @@ export async function POST(req: Request) {
     // Create the order
     const order = new Order();
     order.name = (name || "anonymous").slice(0, 30);
-    order.items = items
-    order.totalPrice = totalPrice;
     order.comment = (comment || "No comment").slice(0, 500);
+    order.items = items.map((item: { _id: string }) => ({ food: item._id }));
     order.timeslot = timeslot;
+    order.totalPrice = totalPrice;
     await order.save()
 
     // Get the order ID
@@ -162,7 +156,8 @@ export async function PUT(req: Request) {
     }
 
     // Get the order details from the request body
-    const { id, status } = await req.json()
+    const { id, order } = await req.json()
+    console.log('Order:', order)
 
     if (!id || !mongoose.isValidObjectId(id)) {
         console.error('Invalid ID:', id);
@@ -178,8 +173,15 @@ export async function PUT(req: Request) {
             return new Response('Order not found', { status: 404 });
         }
 
-        // Update the order status
-        foundOrder.status = status;
+        // Update the order
+        foundOrder.name = order.name;
+        foundOrder.comment = order.comment;
+        foundOrder.items = order.items;
+        foundOrder.timeslot = order.timeslot;
+        foundOrder.totalPrice = order.totalPrice;
+        foundOrder.status = order.status;
+        foundOrder.isPaid = order.isPaid;
+        foundOrder.finishedAt = order.finishedAt;
 
         // Save the updated order
         await foundOrder.save();
@@ -187,7 +189,7 @@ export async function PUT(req: Request) {
         // console.log('Order updated:', foundOrder)
         return Response.json(foundOrder);
     } catch (error) {
-        console.error(`Error setting order as ${status}:`, error);
-        return new Response(`Error setting order as ${status}:`, { status: 500 });
+        console.error(`Error updating order ${id}:`, error);
+        return new Response(`Error updating order ${id}`, { status: 500 });
     }
 }

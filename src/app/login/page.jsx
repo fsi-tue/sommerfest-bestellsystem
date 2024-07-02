@@ -31,10 +31,11 @@ const Page = () => {
 			.then((data) => {
 				addToLocalStorage('token', data.token);
 				window.dispatchEvent(new CustomEvent("loginSuccessEvent"))
-				router.push('/admin/manage/order');
-			}).catch((error) => {
-			setErrorMessage(error.message);
-		});
+				router.push('/admin/prepare');
+			})
+			.catch((error) => {
+				setErrorMessage(error.message);
+			});
 	}
 
 

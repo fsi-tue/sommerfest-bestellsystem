@@ -23,7 +23,7 @@ const SearchInput = ({search, searchValue}) => {
 		<div className="relative w-full mb-4">
 			<input
 				type="text"
-				placeholder="Search by Name, OrderId, State or Pizza"
+				placeholder="Search by anything"
 				className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition duration-200 pr-10"
 				onChange={(e) => {
 					setInputValue(e.target.value);

@@ -45,6 +45,7 @@ export default {
       green: colors.green,
       transparent: 'transparent',
       current: 'currentColor',
+      neutral: colors.neutral
     },
     plugins: [],
   }

@@ -1,28 +1,27 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import WithAuth from "@/app/admin/WithAuth";
-import { ORDER_STATES, OrderDocument, OrderStatus } from "@/model/order";
-import { FoodDocument } from "@/model/food";
+import { ORDER_STATES, OrderDocument, OrderStatus, OrderWithId } from "@/model/order";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import SearchInput from "@/app/components/SearchInput";
 import ErrorMessage from "@/app/components/ErrorMessage";
 
 const Page = ({ params }: { params: { orderId: string } }) => {
-    const token = getFromLocalStorage('token', '');
-
     const [error, setError] = useState('');
-    const [orders, setOrders] = useState([] as OrderDocument[]); // state to hold order status
+
+    const [orders, setOrders] = useState<OrderWithId[]>([]);
+    const [filteredOrders, setFilteredOrders] = useState([] as OrderWithId[]); // state to hold order status]
     const [filter, setFilter] = useState(''); // state to hold order status
-    const [filteredOrders, setFilteredOrders] = useState([] as OrderDocument[]); // state to hold order status]
-    const inputRef = useRef<HTMLInputElement | null>(null);
+
     const [noFinished, setNoFinished] = useState(true);
 
     // Order states
-    const states = ORDER_STATES
+    const orderStates = ORDER_STATES
 
+    const token = getFromLocalStorage('token', '');
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
@@ -36,7 +35,6 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         })
             .then(async response => {
                 const data = await response.json();
-                console.log(data);
                 if (!response.ok) {
                     const error = (data && data.message) || response.statusText;
                     throw new Error(error);
@@ -44,7 +42,10 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 return data;
             })
             .then(data => setOrders(data))
-            .catch(error => setError(error.message));
+            .catch(error => {
+                console.error('Error fetching orders', error);
+                setError(error.message)
+            });
     }, []);
 
     // Update the filtered orders when the orders change
@@ -62,7 +63,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     // Filter the orders
     useEffect(() => {
         if (filter) {
-            setFilteredOrders(orders.filter((order: OrderDocument) => {
+            setFilteredOrders(orders.filter((order: OrderWithId) => {
                 if (order.name.toLowerCase().includes(filter.toLowerCase())) {
                     return true;
                 }
@@ -72,13 +73,8 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 if (order.status.toLowerCase().includes(filter.toLowerCase())) {
                     return true;
                 }
-                return (order.items || []).some((food: FoodDocument) => food.name.toLowerCase().includes(filter.toLowerCase()));
+                return (order.items || []).some((item) => item.food.name.toLowerCase().includes(filter.toLowerCase()));
             }));
-
-            // Set input value to filter
-            if (inputRef !== null && inputRef.current) {
-                inputRef.current.value = filter;
-            }
         } else {
             setFilteredOrders(orders);
         }
@@ -90,10 +86,18 @@ const Page = ({ params }: { params: { orderId: string } }) => {
      * @param status
      */
     const updateOrderStatus = (_id: string, status: OrderStatus) => {
+        const order = orders.find(order => order._id === _id);
+        if (!order) {
+            setError('Order not found');
+            return;
+        }
+
+        const newOrder = { ...order, status };
+
         fetch('/api/order', {
             method: 'PUT',
             headers: headers,
-            body: JSON.stringify({ id: _id, status })
+            body: JSON.stringify({ id: _id, order: newOrder })
         })
             .then(async response => {
                 const data = await response.json();
@@ -104,14 +108,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 return data;
             })
             .then(() => {
-                // Update the order by id
-                const newOrders = orders.map((order: OrderDocument) => {
-                    if (order._id === _id) {
-                        order.status = status;
-                    }
-                    return order;
-                });
-                setOrders(newOrders);
+                setOrders(orders.map(order => order._id === _id ? newOrder : order));
             })
             .catch(error => setError(error.message));
     }
@@ -132,7 +129,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             })
             .then(() => {
                 // Update the order by id
-                const newOrders = orders.map((order: OrderDocument) => {
+                const newOrders = orders.map((order) => {
                     if (order._id === _id) {
                         order.isPaid = isPaid;
                     }
@@ -172,7 +169,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
     return (
         <div>
-            <div className="p-4">
+            <div className="md:p-4">
                 <h2 className="text-2xl mb-4">Manage Orders 💸</h2>
                 <div className="flex items-center justify-between">
                     <div className="w-1/2">
@@ -189,9 +186,11 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
             {error && <ErrorMessage error={error}/>}
 
-            <SearchInput search={setFilter} searchValue={filter}/>
+            <div className="md:p-4">
+                <SearchInput search={setFilter} searchValue={filter}/>
+            </div>
 
-            <div>
+            <div className="py-2 md:p-4">
                 <button className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200
     ${noFinished ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -249,25 +248,29 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                             )}
 
                             <ul className="list-none text-sm font-light text-gray-600 mb-4">
-                                {order.items.map((food, index) => (
+                                {order.items.map((item, index) => (
                                     <li key={index}
                                         className="flex justify-between items-center mb-2 p-2 bg-white rounded-md shadow-sm hover:shadow-md transition-shadow duration-200">
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-800">{food.name}</span>
+                                            <span className="text-sm font-medium text-gray-800">{item.food.name}</span>
                                             <div className="flex gap-1 mt-1">
-                                                {food.dietary && <span
-																									className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{food.dietary}</span>}
+                                                {item.food.dietary && (
+                                                    <span
+                                                        className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{item.food.dietary}</span>
+                                                )}
                                                 <span
-                                                    className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{food.type}</span>
+                                                    className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{item.food.type}</span>
+                                                <span
+                                                    className="px-2 py-0.5 text-xs font-semibold border border-gray-100 rounded-full">{item.status}</span>
                                             </div>
                                         </div>
-                                        <span className="text-sm font-semibold text-gray-800">{food.price}€</span>
+                                        <span className="text-sm font-semibold text-gray-800">{item.food.price}€</span>
                                     </li>
                                 ))}
                             </ul>
 
                             <div className="flex gap-2 flex-wrap justify-start">
-                                {states.map(state => (
+                                {orderStates.map(state => (
                                     <button
                                         key={state}
                                         disabled={state === order.status}

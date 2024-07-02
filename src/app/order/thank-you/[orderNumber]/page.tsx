@@ -6,7 +6,7 @@ import OrderQR from "@/app/components/order/OrderQR.jsx";
 const Page = ({ params }: { params: { orderNumber: string } }) => {
 
     return (
-        <div>
+        <div className="bg-white p-8 rounded-lg shadow-md mb-8">
             <h1 className="text-2xl font-bold mb-4 text-center text-gray-800">Thank you for your order! 🍕</h1>
             <div className="flex flex-col items-center p-4 rounded-lg shadow-md">
 
