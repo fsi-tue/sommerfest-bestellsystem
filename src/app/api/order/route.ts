@@ -38,7 +38,7 @@ export async function GET(req: Request) {
             name: order.name,
             comment: order.comment || "",
             items: order.items.map((item) => ({
-                food: foodById[item.food],
+                food: foodById[item.food._id],
                 status: item.status
             })),
             orderDate: order.orderDate,
