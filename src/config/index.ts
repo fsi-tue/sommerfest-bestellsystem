@@ -4,6 +4,10 @@ export const constants = {
     TIMEZONE_ORDERS: 'Europe/Berlin'
 }
 
+export const mongo = {
+    MONGO_URI: process.env.MONGO_URI || "mongodb://localhost:27017/pizza-system",
+}
+
 export const tokens = {
     PAYMENT_ADMIN_TOKEN: process.env.PAYMENT_ADMIN_TOKEN,
 }
