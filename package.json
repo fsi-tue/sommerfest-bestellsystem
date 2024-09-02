@@ -35,7 +35,7 @@
     "react-dom": "^18.2.0",
     "recharts": "^2.12.7",
     "serve": "^14.2.3",
-    "vercel": "^35.1.0"
+    "vercel": "^37.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
