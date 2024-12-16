@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import { Food, FoodDocument } from "@/model/food";
+import { FoodModel, FoodDocument } from "@/model/food";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
-import { Order } from "@/model/order";
+import { OrderModel } from "@/model/order";
 import { constants, ORDER } from "@/config";
 import { System } from "@/model/system";
 import { NextResponse } from "next/server";
@@ -13,14 +13,14 @@ export async function GET(req: Request) {
 
     // Authenticate the user
     const headersList = headers()
-    /* if (!await validateToken(extractBearerFromHeaders(headersList))) {
+    if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
         }, { status: 401 });
-    } */
+    }
 
-    const orders = await Order.find();
-    const foods = await Food.find();
+    const orders = await OrderModel.find();
+    const foods = await FoodModel.find();
 
     const transformedOrders = await Promise.all(orders.map(async order => {
         // Get the foods for the order
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
             name: order.name,
             comment: order.comment || "",
             items: order.items.map((item) => ({
-                food: foodById[item.food._id],
+                food: foodById[item.food._id.toString()],
                 status: item.status
             })),
             orderDate: order.orderDate,
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
 
     // Check if the pizzas are valid
     const foodIds: string[] = items.map((pizza: { _id: string }) => pizza._id);
-    if (!foodIds.every(async (foodId: string) => await Food.exists({ _id: foodId }))) {
+    if (!foodIds.every(async (foodId: string) => await FoodModel.exists({ _id: foodId }))) {
         console.error('Some items are missing', items);
         return NextResponse.json({
             message: 'Some items are missing'
@@ -92,14 +92,14 @@ export async function POST(req: Request) {
     }
 
     // Find orders with the same time slot
-    const orders = await Order.find(
+    const orders = await OrderModel.find(
         {
             timeslot: timeslot,
             status: { $nin: ['cancelled'] }
         }
     );
     // Find all food items
-    const food = await Food.find();
+    const food = await FoodModel.find();
     const foodById = food
         .reduce((map: { [id: string]: FoodDocument }, food) => {
             map[food._id.toString()] = food;
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
     // Sum up all items in the orders
     const orderItemsTotal = orders
         .flatMap(order => order.items)
-        .reduce((total, item) => total + foodById[item.food._id].size, 0);
+        .reduce((total, item) => total + foodById[item.food._id.toString()].size, 0);
     // Check if the total number of items is not too high
     console.log('Order items total:', orderItemsTotal, currentOrderItemsTotal);
     if (orderItemsTotal + currentOrderItemsTotal > ORDER.MAX_ITEMS_PER_TIMESLOT) {
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
     // Don't trust the price from the request body
     const totalPrice: number = await foodIds
         .reduce(async (total: Promise<number>, foodId: string) => {
-            const food = await Food.findOne({ _id: foodId });
+            const food = await FoodModel.findOne({ _id: foodId });
             if (!food) {
                 console.error('Pizza not found', foodId)
                 return total;
@@ -131,7 +131,7 @@ export async function POST(req: Request) {
         }, Promise.resolve(0));
 
     // Create the order
-    const order = new Order();
+    const order = new OrderModel();
     order.name = (name || "anonymous").slice(0, 30);
     order.comment = (comment || "No comment").slice(0, 500);
     order.items = items.map((item: { _id: string }) => ({ food: item._id }));
@@ -167,7 +167,7 @@ export async function PUT(req: Request) {
 
     try {
         // Find the order by ID
-        const foundOrder = await Order.findById(id);
+        const foundOrder = await OrderModel.findById(id);
 
         if (!foundOrder) {
             return new Response('Order not found', { status: 404 });

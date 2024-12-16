@@ -1,10 +1,12 @@
 // Fill the database
-import { Food } from "@/model/food";
+import { FoodModel } from "@/model/food";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
-import { Order } from "@/model/order";
+import { OrderModel } from "@/model/order";
 import { NextResponse } from "next/server";
+import { System } from "@/model/system";
+import { constants } from "@/config";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
@@ -25,8 +27,8 @@ export async function POST() {
         }, { status: 401 });
     }
 
-    await Food.deleteMany({})
-    await Order.deleteMany({})
+    await FoodModel.deleteMany({})
+    await OrderModel.deleteMany({})
 
     return Response.json({ message: 'Successfully deleted database' })
 }

@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
-import { Order } from "@/model/order";
-import { Food, FoodDocument } from "@/model/food";
+import { OrderModel } from "@/model/order";
+import { FoodModel, FoodDocument } from "@/model/food";
 
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
@@ -22,7 +22,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     // Find the order by ID
-    const order = await Order.findById(id);
+    const order = await OrderModel.findById(id);
     if (!order) {
         return new Response(`
             The order with the ID ${id} was not found.
@@ -32,7 +32,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     // Get the foods for the order
-    const foodsDetails = await Food
+    const foodsDetails = await FoodModel
         .find({ _id: { $in: order.items.map((item) => item.food) } })
 
     // Create a map of food details
@@ -48,7 +48,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         name: order.name,
         comment: order.comment || "",
         items: order.items.map((item) => ({
-            food: foodById[item.food._id],
+            food: foodById[item.food._id.toString()],
             status: item.status
         })),
         orderDate: order.orderDate,

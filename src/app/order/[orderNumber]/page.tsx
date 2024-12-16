@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
-import { OrderStatus, OrderWithId } from "@/model/order";
+import { OrderStatus, Order } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
 
 
 const Page = ({ params }: { params: { orderNumber: string } }) => {
     const [error, setError] = useState(null);
-    const [order, setOrder] = useState<OrderWithId | null>(null)
+    const [order, setOrder] = useState<Order | null>(null)
 
     // Check if logged in
     const router = useRouter();
@@ -138,7 +138,7 @@ const Page = ({ params }: { params: { orderNumber: string } }) => {
                 {order?.items?.map((item) => (
                     <>
                         <div className="mt-2 border-b border-gray-200 last:border-b-0"/>
-                        <div className="py-4 flex items-center space-x-4" key={item.food._id}>
+                        <div className="py-4 flex items-center space-x-4" key={item.food._id.toString()}>
                             {/* <img src="https://via.placeholder.com/50" alt="Product Image"
                              className="w-16 h-16 mr-4 rounded-lg"/> */}
                             <div>

@@ -41,12 +41,6 @@
     transition: background-color 0.3s, transform 0.3s;
 }
 
-.pizza.order:hover {
-    background-color: rgba(var(--danger-color-rgb), 0.2);
-    transform: scale(1.01);
-}
-
 .pizza:hover {
-    background-color: rgba(var(--primary-color-rgb), 0.1);
     transform: scale(1.01);
 }

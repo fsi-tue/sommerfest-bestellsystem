@@ -13,7 +13,7 @@ export const fetchCache = "force-no-store";
  * Set the system status
  * @constructor
  */
-export async function GET(req: Request, { params }: { params: { status: string } }) {
+export async function GET(req: Request) {
     await dbConnect();
 
     // Set the system status

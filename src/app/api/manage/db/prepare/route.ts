@@ -1,5 +1,5 @@
 // Fill the database
-import { Food } from "@/model/food";
+import { FoodModel } from "@/model/food";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
@@ -11,27 +11,14 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-const pizzas = [
-    { name: "Salami", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Salami 🍕"] },
-    { name: "Ham and mushrooms", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"] },
-    {
-        name: "Capriccosa",
-        ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"]
-    },
-    { name: "Margherita", ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"] },
-    {
-        name: "Veggies",
-        ingredients: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"]
-    },
-    { name: "Margherita vegan", ingredients: ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"] },
-    {
-        name: "Capriccosa vegan",
-        ingredients: ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
-    }
-];
-
-const pizza_by_name = (pizza_name: string) => {
-    return pizzas.filter(pizza => pizza.name == pizza_name).map(pizza => pizza.ingredients).flat();
+const pizzasByName = {
+    Salami: ["Cheese 🧀", "Tomato Sauce 🍅", "Salami 🍕"],
+    "Ham and mushrooms": ["Cheese 🧀", "Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"],
+    Capriccosa: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"],
+    Margherita: ["Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"],
+    Veggies: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"],
+    "Margherita vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"],
+    "Capriccosa vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
 };
 
 /**
@@ -56,7 +43,7 @@ export async function POST() {
             price: 4,
             dietary: 'meat',
             type: 'pizza',
-            ingredients: pizza_by_name('Salami'),
+            ingredients: pizzasByName['Salami'],
             size: 0.5
         },
         {
@@ -64,7 +51,7 @@ export async function POST() {
             price: 8,
             dietary: 'meat',
             type: 'pizza',
-            ingredients: pizza_by_name('Salami'),
+            ingredients: pizzasByName['Salami'],
             size: 1
         },
         {
@@ -72,7 +59,7 @@ export async function POST() {
             price: 4,
             dietary: 'meat',
             type: 'pizza',
-            ingredients: pizza_by_name('Ham and mushrooms'),
+            ingredients: pizzasByName['Ham and mushrooms'],
             size: 0.5
         },
         {
@@ -80,7 +67,7 @@ export async function POST() {
             price: 8,
             dietary: 'meat',
             type: 'pizza',
-            ingredients: pizza_by_name('Ham and mushrooms'),
+            ingredients: pizzasByName['Ham and mushrooms'],
             size: 1
         },
         {
@@ -88,7 +75,7 @@ export async function POST() {
             price: 4,
             type: 'pizza',
             dietary: 'meat',
-            ingredients: pizza_by_name('Capriccosa'),
+            ingredients: pizzasByName['Capriccosa'],
             size: 0.5
         },
         {
@@ -96,19 +83,19 @@ export async function POST() {
             price: 8,
             type: 'pizza',
             dietary: 'meat',
-            ingredients: pizza_by_name('Capriccosa'),
+            ingredients: pizzasByName['Capriccosa'],
             size: 1
         },
-        { name: 'Margherita half', price: 3, type: 'pizza', ingredients: pizza_by_name('Margherita'), size: 0.5 },
-        { name: 'Margherita full', price: 6, type: 'pizza', ingredients: pizza_by_name('Margherita'), size: 1 },
-        { name: 'Veggies half', price: 3, type: 'pizza', ingredients: pizza_by_name('Veggies'), size: 0.5 },
-        { name: 'Veggies full', price: 6, type: 'pizza', ingredients: pizza_by_name('Veggies'), size: 1 },
+        { name: 'Margherita half', price: 3, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 0.5 },
+        { name: 'Margherita full', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 1 },
+        { name: 'Veggies half', price: 3, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 0.5 },
+        { name: 'Veggies full', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 1 },
         {
             name: 'Margherita vegan half',
             price: 3,
             dietary: 'vegan',
             type: 'pizza',
-            ingredients: pizza_by_name('Margherita vegan'),
+            ingredients: pizzasByName['Margherita vegan'],
             size: 0.5
         },
         {
@@ -116,7 +103,7 @@ export async function POST() {
             price: 6,
             dietary: 'vegan',
             type: 'pizza',
-            ingredients: pizza_by_name('Margherita vegan'),
+            ingredients: pizzasByName['Margherita vegan'],
             size: 1
         },
         {
@@ -124,7 +111,7 @@ export async function POST() {
             price: 3,
             dietary: 'vegan',
             type: 'pizza',
-            ingredients: pizza_by_name('Capriccosa vegan'),
+            ingredients: pizzasByName['Capriccosa vegan'],
             size: 0.5
         },
         {
@@ -132,12 +119,13 @@ export async function POST() {
             price: 6,
             dietary: 'vegan',
             type: 'pizza',
-            ingredients: pizza_by_name('Capriccosa vegan'),
+            ingredients: pizzasByName['Capriccosa vegan'],
             size: 1
         },
     ];
+    console.log('Pizzas:', pizzas);
     for (const pizza of pizzas) {
-        await new Food(pizza).save();
+        await new FoodModel(pizza).save();
     }
 
     // Add the system

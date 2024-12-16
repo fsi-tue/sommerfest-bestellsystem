@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import { getDateFromTimeSlot } from "@/lib/time";
-import { ItemStatus, Order, OrderWithId } from "@/model/order";
+import { ItemStatus } from "@/model/order";
+import type { OrderDocument, OrderModel } from "@/model/order";
 import WithAuth from "@/app/admin/WithAuth";
 import SearchInput from "@/app/components/SearchInput";
 import './Prepare.css';
@@ -14,9 +15,9 @@ const Page = () => {
     const [error, setError] = useState('');
 
     const [filter, setFilter] = useState('')
-    const [orders, setOrders] = useState<OrderWithId[]>([]);
-    const [filteredOrders, setFilteredOrders] = useState<OrderWithId[]>([]);
-    const [ordersByTimeslot, setOrdersByTimeslot] = useState(new Map<string, OrderWithId[]>)
+    const [orders, setOrders] = useState<OrderDocument[]>([]);
+    const [filteredOrders, setFilteredOrders] = useState<OrderDocument[]>([]);
+    const [ordersByTimeslot, setOrdersByTimeslot] = useState(new Map<string, OrderDocument[]>)
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isClient, setIsClient] = useState(false);
@@ -59,9 +60,9 @@ const Page = () => {
     // Filter the orders
     useEffect(() => {
         if (filter) {
-            setFilteredOrders(orders.filter((order: OrderWithId) =>
+            setFilteredOrders(orders.filter((order) =>
                 order.name.toLowerCase().includes(filter.toLowerCase()) ||
-                order._id.toLowerCase().includes(filter.toLowerCase()) ||
+                order._id.toString().toLowerCase().includes(filter.toLowerCase()) ||
                 order.status.toLowerCase().includes(filter.toLowerCase()) ||
                 order.totalPrice.toString().includes(filter) ||
                 order.timeslot.includes(filter) ||
@@ -72,7 +73,7 @@ const Page = () => {
     }, [filter, orders]);
 
     useEffect(() => {
-        const ordersByTimeslot = new Map<string, OrderWithId[]>
+        const ordersByTimeslot = new Map<string, OrderDocument[]>
         filteredOrders.forEach(order => {
             const timeslot = order.timeslot
             // Add order to list at the respective timeslot
@@ -94,10 +95,10 @@ const Page = () => {
         setOrdersByTimeslot(sortedOrdersByTimeslots)
     }, [filteredOrders])
 
-    const setFoodStatusFromLocalStorage = (orders: OrderWithId[]) => {
+    const setFoodStatusFromLocalStorage = (orders: OrderDocument[]) => {
         // Get from local storage
         orders.map(order => {
-            let foodItems = getFromLocalStorage(`foodItems.${order._id}`, []);
+            let foodItems = getFromLocalStorage(`foodItems.${order._id.toString()}`, []);
             if (!foodItems || foodItems.length === 0) {
                 return;
             }
@@ -123,7 +124,7 @@ const Page = () => {
      * @param status
      */
     const updateItemStatus = (_id: string, itemIndex: number, status: ItemStatus) => {
-        const order = orders.find(order => order._id === _id);
+        const order = orders.find(order => order._id.toString() === _id);
         if (!order) {
             console.error('Order not found');
             return;
@@ -148,7 +149,7 @@ const Page = () => {
             })
             .then(() => {
                 // Update the order by id
-                setOrders(orders.map(order => order._id === _id ? newOrder : order));
+                setOrders(orders.map(order => order._id.toString() === _id ? newOrder as OrderDocument : order));
             })
             .catch(error => setError(error.message));
     };
@@ -164,7 +165,7 @@ const Page = () => {
      * Check if the order has a comment
      * @param order
      */
-    const hasComment = (order: Order) => {
+    const hasComment = (order: OrderDocument) => {
         return (
             typeof order.comment === "string" &&
             order.comment != "" &&
@@ -259,7 +260,7 @@ const Page = () => {
                                                                 <td className={`px-4 py-2 text-xs md:text-sm font-medium w-1/6`}>
                                                                     <button
                                                                         className="p-1 rounded-md border border-gray-300 bg-white text-xs md:text-sm font-medium text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                                                        onClick={() => updateItemStatus(order._id, itemIndex, item.status === 'readyToCook' ? 'prepping' : 'readyToCook')}>
+                                                                        onClick={() => updateItemStatus(order._id.toString(), itemIndex, item.status === 'readyToCook' ? 'prepping' : 'readyToCook')}>
                                                                         {item.status === 'readyToCook' ? '✅ Done' : item.status}
                                                                     </button>
                                                                 </td>

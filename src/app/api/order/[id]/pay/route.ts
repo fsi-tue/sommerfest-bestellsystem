@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
-import { Order } from "@/model/order";
+import { OrderModel } from "@/model/order";
 import { NextResponse } from "next/server";
 
 /**
@@ -25,7 +25,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     // Find the order by ID
-    const order = await Order.findById(id);
+    const order = await OrderModel.findById(id);
     if (!order) {
         return NextResponse.json({
             message: 'The Order was not found.'
@@ -66,7 +66,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     try {
         // Find the order by ID
-        const foundOrder = await Order.findById(id);
+        const foundOrder = await OrderModel.findById(id);
 
         if (!foundOrder) {
             return NextResponse.json({
