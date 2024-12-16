@@ -14,10 +14,10 @@ services:
   app:
     container_name: app
     build:
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     env_file:
-      - app/.env
+      - ./.env
     ports:
       - "6000:3000"
     networks:

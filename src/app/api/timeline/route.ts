@@ -1,9 +1,9 @@
 import dbConnect from "@/lib/dbConnect";
 import { constants } from '@/config';
-import { Order } from '@/model/order';
+import { OrderModel } from '@/model/order';
 
 import moment from 'moment-timezone';
-import { Food, FoodDocument } from "@/model/food";
+import { FoodModel, FoodDocument } from "@/model/food";
 import { getDateFromTimeSlot } from "@/lib/time";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
@@ -39,14 +39,14 @@ export async function GET(request: Request) {
         currentTime = moment(currentTime).add(TIME_SLOT_SIZE_MINUTES, 'minutes');
     }
 
-    const orders = await Order.find({
+    const orders = await OrderModel.find({
         orderDate: {
             $gte: moment().utc().subtract(10 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
             $lt: moment().utc().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
         },
         status: { $ne: 'cancelled' }, // TODO: Check if this is needed
     });
-    const food = await Food.find();
+    const food = await FoodModel.find();
     const foodById = food
         .reduce((map: { [id: string]: FoodDocument }, food) => {
             map[food._id.toString()] = food;
@@ -59,7 +59,7 @@ export async function GET(request: Request) {
             const timeSlot = getDateFromTimeSlot(timeslot);
             if (timeSlot >= startTime && timeSlot < stopTime) {
                 items.forEach(({ food }) => {
-                    totalAmount += foodById[food._id].size;
+                    totalAmount += foodById[food._id.toString()].size;
                 });
             }
         });

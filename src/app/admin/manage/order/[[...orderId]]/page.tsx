@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import WithAuth from "@/app/admin/WithAuth";
-import { ORDER_STATES, OrderDocument, OrderStatus, OrderWithId } from "@/model/order";
+import { Order, ORDER_STATES, OrderDocument, OrderStatus } from "@/model/order";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import SearchInput from "@/app/components/SearchInput";
 import ErrorMessage from "@/app/components/ErrorMessage";
@@ -12,8 +12,8 @@ import ErrorMessage from "@/app/components/ErrorMessage";
 const Page = ({ params }: { params: { orderId: string } }) => {
     const [error, setError] = useState('');
 
-    const [orders, setOrders] = useState<OrderWithId[]>([]);
-    const [filteredOrders, setFilteredOrders] = useState([] as OrderWithId[]); // state to hold order status]
+    const [orders, setOrders] = useState<OrderDocument[]>([]);
+    const [filteredOrders, setFilteredOrders] = useState([] as OrderDocument[]); // state to hold order status]
     const [filter, setFilter] = useState(''); // state to hold order status
 
     const [noFinished, setNoFinished] = useState(true);
@@ -41,7 +41,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 }
                 return data;
             })
-            .then(data => setOrders(data))
+            .then(data => setOrders(data as OrderDocument[]))
             .catch(error => {
                 console.error('Error fetching orders', error);
                 setError(error.message)
@@ -63,11 +63,11 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     // Filter the orders
     useEffect(() => {
         if (filter) {
-            setFilteredOrders(orders.filter((order: OrderWithId) => {
+            setFilteredOrders(orders.filter((order) => {
                 if (order.name.toLowerCase().includes(filter.toLowerCase())) {
                     return true;
                 }
-                if (order._id.toLowerCase().includes(filter.toLowerCase())) {
+                if (order._id.toString().toLowerCase().includes(filter.toLowerCase())) {
                     return true;
                 }
                 if (order.status.toLowerCase().includes(filter.toLowerCase())) {
@@ -86,7 +86,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
      * @param status
      */
     const updateOrderStatus = (_id: string, status: OrderStatus) => {
-        const order = orders.find(order => order._id === _id);
+        const order = orders.find(order => order._id.toString() === _id);
         if (!order) {
             setError('Order not found');
             return;
@@ -108,7 +108,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 return data;
             })
             .then(() => {
-                setOrders(orders.map(order => order._id === _id ? newOrder : order));
+                setOrders(orders.map(order => order._id.toString() === _id ? newOrder as OrderDocument : order));
             })
             .catch(error => setError(error.message));
     }
@@ -130,7 +130,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             .then(() => {
                 // Update the order by id
                 const newOrders = orders.map((order) => {
-                    if (order._id === _id) {
+                    if (order._id.toString() === _id) {
                         order.isPaid = isPaid;
                     }
                     return order;
@@ -205,12 +205,12 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                     .filter(order => noFinished ? !['delivered', 'cancelled'].includes(order.status) : true) // Filter by finished
                     .toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
                     .map((order, index) => ( // Map the orders
-                        <div key={order._id + index} className="w-full px-4 py-4 bg-white rounded-lg shadow-sm">
+                        <div key={order._id.toString() + index} className="w-full px-4 py-4 bg-white rounded-lg shadow-sm">
                             <div className="mb-4 p-4 bg-white rounded-lg shadow-sm">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-lg font-semibold text-gray-800">{order.name}</span>
-                                    <a className="text-xs font-light text-gray-500" href={order_url(order._id)}>
-                                        {order._id}
+                                    <a className="text-xs font-light text-gray-500" href={order_url(order._id.toString())}>
+                                        {order._id.toString()}
                                     </a>
                                 </div>
 
@@ -275,7 +275,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                         key={state}
                                         disabled={state === order.status}
                                         className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 ${state === order.status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
-                                        onClick={() => updateOrderStatus(order._id, state)}
+                                        onClick={() => updateOrderStatus(order._id.toString(), state)}
                                     >
                                         {state}
                                     </button>
@@ -284,7 +284,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 
     ${order.isPaid ? 'bg-green-300 text-green-700 hover:bg-green-400' : 'bg-red-300 text-red-700 hover:bg-red-400'} 
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
-                                    onClick={() => setOrderAsPaid(order._id, !order.isPaid)}
+                                    onClick={() => setOrderAsPaid(order._id.toString(), !order.isPaid)}
                                 >
                                     {order.isPaid ? 'Paid' : 'Not Paid'}
                                 </button>

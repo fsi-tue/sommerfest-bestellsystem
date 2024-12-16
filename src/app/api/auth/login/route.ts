@@ -19,7 +19,7 @@ export async function POST(req: Request): Promise<Response> {
 
     try {
         // Validate token
-        const correct_token: string = process.env.PAYMENT_ADMIN_TOKEN || tokens.PAYMENT_ADMIN_TOKEN || '';
+        const correct_token = process.env.PAYMENT_ADMIN_TOKEN;
         if (!correct_token || correct_token.length === 0) {
             return NextResponse.json({
                 message: 'Token not set'

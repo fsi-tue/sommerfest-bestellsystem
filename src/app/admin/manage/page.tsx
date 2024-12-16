@@ -61,7 +61,7 @@ const Page = () => {
             .then(data => setStatus(data.status))
             .catch((error) => {
                 console.error('There was an error!', error);
-                setMessage(error)
+                setMessage('Error getting system status')
             })
     }
 
@@ -135,4 +135,4 @@ const Page = () => {
     );
 }
 
-export default WithAuth(Page);
+export default Page;

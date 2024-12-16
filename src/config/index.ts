@@ -14,6 +14,7 @@ export const tokens = {
 
 export const ORDER = {
     MAX_ITEMS_PER_TIMESLOT: 4,
+    TIMESLOT_DURATION: 10,
 }
 
 export const FOOD = {

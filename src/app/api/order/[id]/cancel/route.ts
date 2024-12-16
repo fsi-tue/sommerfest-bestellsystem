@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
-import { Order } from "@/model/order";
+import { OrderModel } from "@/model/order";
 
 /**
  * Allow user to cancel an order.
@@ -27,7 +27,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     try {
         // Find the order by ID
-        const foundOrder = await Order.findById(id);
+        const foundOrder = await OrderModel.findById(id);
 
         if (!foundOrder) {
             return new Response('Order not found', { status: 404 });
