@@ -1,12 +1,16 @@
-name: Build on merge to main
+name: Test if it builds
 on:
   push:
     branches:
       - main
+  pull_request:
+    types:
+        - opened
+    
 
 jobs:
   build:
-    name: Build on merge to main
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
