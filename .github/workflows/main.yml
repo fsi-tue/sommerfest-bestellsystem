@@ -2,7 +2,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   main:
     name: Update Pizza repository and build Docker image on trinity after push to master
