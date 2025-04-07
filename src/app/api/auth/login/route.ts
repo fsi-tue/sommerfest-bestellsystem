@@ -1,4 +1,4 @@
-import { constants, tokens } from "@/config";
+import { constants } from "@/config";
 import dbConnect from "@/lib/dbConnect";
 import { Session } from "@/model/session";
 

@@ -3,19 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-    /* Colors */
-    --background-color: #f5f5f5;
-
-    /* Primary Color */
-    --primary-color: #000080;
-    --primary-color-rgb: 0, 0, 128;
-
-    /* Danger Color */
-    --danger-color: #800000;
-    --danger-color-rgb: 128, 0, 0;
-    --danger-color-light: #f5c6cb;
-
+@layer base {
     --text-color: #202020;
     --box-color: #ffffff;
     --box-hover-color: #dddddd;
@@ -38,30 +26,8 @@ body {
     font-size: calc(10pt + 0.3vw);
     text-align: justify;
 
-    /* Colors */
-    background-color: var(--background-color);
-    color: var(--text-color);
-
     /* Margin + Padding */
     margin: 0;
     padding: 0;
     width: 100%;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-ul li {
-    margin-bottom: 10px;
-}
-
-ul li a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-ul li a:hover {
-    text-decoration: underline;
 }

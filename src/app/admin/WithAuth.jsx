@@ -5,17 +5,25 @@ import {useRouter} from "next/navigation";
 import {useEffect} from "react";
 
 const WithAuth = (WrappedComponent) => {
-	return (props) => {
-		const token = getFromLocalStorage('token');
+	// Return a named function component
+	return function WithAuthComponent(props) {
 		const router = useRouter();
 
-		if (!token) {
-			useEffect(() => {
-				setTimeout(() => {
-					router.push('/');
-				}, 0);
-			})
-			return (<></>)
+		// Check authentication inside the component body
+		useEffect(() => {
+			const token = getFromLocalStorage('token');
+			if (!token) {
+				router.push('/');
+			}
+		}, [router]);
+
+		// During initial render, check synchronously if we have a token
+		// This helps prevent flash of content before redirect
+		if (typeof window !== 'undefined') {
+			const token = getFromLocalStorage('token');
+			if (!token) {
+				return null; // Return empty while redirecting
+			}
 		}
 
 		return <WrappedComponent {...props} />;

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
@@ -45,7 +45,7 @@ export async function PUT(req: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'

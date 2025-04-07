@@ -29,7 +29,7 @@ export async function POST() {
     await dbConnect()
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
@@ -39,28 +39,12 @@ export async function POST() {
     // Add pizzas
     const pizzas = [
         {
-            name: 'Salami half',
-            price: 4,
-            dietary: 'meat',
-            type: 'pizza',
-            ingredients: pizzasByName['Salami'],
-            size: 0.5
-        },
-        {
             name: 'Salami full',
             price: 8,
             dietary: 'meat',
             type: 'pizza',
             ingredients: pizzasByName['Salami'],
             size: 1
-        },
-        {
-            name: 'Ham and mushrooms half',
-            price: 4,
-            dietary: 'meat',
-            type: 'pizza',
-            ingredients: pizzasByName['Ham and mushrooms'],
-            size: 0.5
         },
         {
             name: 'Ham and mushrooms full',
@@ -71,14 +55,6 @@ export async function POST() {
             size: 1
         },
         {
-            name: 'Capriccosa half',
-            price: 4,
-            type: 'pizza',
-            dietary: 'meat',
-            ingredients: pizzasByName['Capriccosa'],
-            size: 0.5
-        },
-        {
             name: 'Capriccosa full',
             price: 8,
             type: 'pizza',
@@ -86,18 +62,8 @@ export async function POST() {
             ingredients: pizzasByName['Capriccosa'],
             size: 1
         },
-        { name: 'Margherita half', price: 3, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 0.5 },
         { name: 'Margherita full', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 1 },
-        { name: 'Veggies half', price: 3, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 0.5 },
         { name: 'Veggies full', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 1 },
-        {
-            name: 'Margherita vegan half',
-            price: 3,
-            dietary: 'vegan',
-            type: 'pizza',
-            ingredients: pizzasByName['Margherita vegan'],
-            size: 0.5
-        },
         {
             name: 'Margherita vegan full',
             price: 6,
@@ -105,14 +71,6 @@ export async function POST() {
             type: 'pizza',
             ingredients: pizzasByName['Margherita vegan'],
             size: 1
-        },
-        {
-            name: 'Capriccosa vegan half',
-            price: 3,
-            dietary: 'vegan',
-            type: 'pizza',
-            ingredients: pizzasByName['Capriccosa vegan'],
-            size: 0.5
         },
         {
             name: 'Capriccosa vegan full',
@@ -123,7 +81,6 @@ export async function POST() {
             size: 1
         },
     ];
-    console.log('Pizzas:', pizzas);
     for (const pizza of pizzas) {
         await new FoodModel(pizza).save();
     }

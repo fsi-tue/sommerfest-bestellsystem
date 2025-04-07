@@ -1,9 +1,9 @@
 'use client'
 
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 const WithSystemCheck = (WrappedComponent) => {
-	return (props) => {
+	return function WithSystemCheckComponent(props) {
 		const [systemStatus, setSystemStatus] = useState('checking');
 		const [loading, setLoading] = useState(true);
 

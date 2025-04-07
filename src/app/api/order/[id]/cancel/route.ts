@@ -1,18 +1,19 @@
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
 import { OrderModel } from "@/model/order";
+import { NextRequest } from "next/server";
 
 /**
  * Allow user to cancel an order.
- * @param req
- * @param params
  * @constructor
+ * @param request
  */
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest) {
     await dbConnect();
 
     // Get the ID from the URL
-    const id = params.id
+    const searchParams = request.nextUrl.searchParams
+    const id = searchParams.get('id')
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {

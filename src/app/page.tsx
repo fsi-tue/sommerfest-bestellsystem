@@ -1,315 +1,220 @@
-'use client'
+'use client';
 
-import './order/Order.css';
-import { useEffect, useState } from "react";
-import Timeline from "@/app/components/Timeline.jsx";
-import ErrorMessage from "@/app/components/ErrorMessage.jsx";
-import WithSystemCheck from "./WithSystemCheck.jsx";
+import { useCallback, useEffect, useMemo, useState } from "react"; // Added useCallback, useMemo
+import WithSystemCheck from "@/app/WithSystemCheck"; // Keep HOC wrapper
 import { getDateFromTimeSlot } from "@/lib/time";
 import { ORDER } from "@/config";
 import { FoodDocument } from '@/model/food';
 
-const EVERY_X_SECONDS = 60;
+import IntroductionSection from '@/app/components/IntroductionSection';
+import MenuSection from '@/app/components/MenuSection';
+import OrderSection from '@/app/components/OrderSection';
+import FloatingOrderSummary from '@/app/components/FloatingOrderSummary';
+import OrderSummary from "@/app/components/order/OrderSummary";
 
-const Food = ({ food, addClick }: { food: FoodDocument, addClick: () => void }) => {
-    return (
-        <li className="p-4 rounded-lg shadow-sm border-collapse border border-gray-300 transition-shadow duration-300 mb-2">
-            <div className="flex items-center justify-between">
-                <div>
-                    <div className="flex space-x-2">
-                        {food.dietary && (<span
-                                className="px-3 py-1 text-xs border border-gray-100 rounded-full">{food.dietary}</span>
-                        )}
-                        <span
-                            className="px-3 py-1 text-xs border border-gray-100 rounded-full">{food.type}</span>
-                    </div>
-                    <span className="text-base font-semibold text-gray-900">{food.price}€ {food.name}</span>
-                </div>
-                <div className="flex items-center">
-                    <button onClick={addClick}
-                            className="mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-primary-400 shadow-primary-300 text-white rounded-md px-3 py-1 text-sm">
-                        Add
-                    </button>
-                </div>
-            </div>
-            <div className="font-light leading-7 text-gray-800 mt-2 text-xs">
-                {food.ingredients ? food.ingredients.join(', ') : ''}
-            </div>
-        </li>
-    );
-};
+const EVERY_X_SECONDS = 60; // Keep constant here or move to config
 
-const FloatingIslandElement = ({ content, title }: { content: string | number, title: string }) => {
-    return (
-        <div className="p-2.5 text-nowrap h-full flex flex-col items-center justify-center">
-            <div className="flex flex-col items-center justify-center max-w-48 overflow-x-auto text-center">
-                <div className="">
-                    {content}
-                </div>
-            </div>
-            <div className="self-start mt-1 font-light leading-7">
-                {title}
-            </div>
-        </div>
-    )
+// Define OrderType interface (can be moved to a separate types file, e.g., @/types/order.ts)
+export interface OrderType {
+    name: string;
+    // Using a map where key is food._id and value is an array of identical food items
+    items: { [_id: string]: FoodDocument[] };
+    comment: string;
+    timeslot: string | null;
 }
 
-// Order component
 const Page = () => {
-    // State to hold the order
     const [error, setError] = useState('');
-    const [foods, setFoods] = useState({} as { [_id: string]: FoodDocument[] });
-    const [floatingIslandOpen, setFloatingIslandOpen] = useState(false);
+    const [foods, setFoods] = useState<{ [_id: string]: FoodDocument[] }>({});
+    const [isMenuLoading, setIsMenuLoading] = useState(true); // Add loading state for menu
+    const [ordersOpen, openOrders] = useState(false);
+    const [order, setOrder] = useState<OrderType>({
+        name: '',
+        items: {},
+        comment: '',
+        timeslot: null,
+    })
 
-    interface OrderType {
-        name: string;
-        items: { [_id: string]: FoodDocument[] };
-        comment: string;
-        timeslot: string | null;
-    }
-
-    const [order, setOrder] = useState<OrderType>({ name: '', items: {}, comment: '', timeslot: null });
-
-    // Set the start and end date for the timeline
-    const start = new Date();
-    start.setHours(start.getHours() - 1);  // Previous hour
-    start.setMinutes(0, 0, 0);
-
-    const end = new Date();
-    end.setHours(end.getHours() + 1);  // Next hour
-    end.setMinutes(59, 59, 999);
-
-    // Fetch the pizza menu from the server
+    // --- Data Fetching ---
     useEffect(() => {
-        // Fetch the pizza menu from the server
-        fetch("/api/pizza")
+        setIsMenuLoading(true);
+        fetch("/api/pizza") // Consider moving fetch logic to a dedicated service/hook
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = (data && data.message) || response.statusText;
+                    const error = data?.message ?? response?.statusText;
                     throw new Error(error);
                 }
-                return data;
-            })
-            .then(data => {
+                // Assuming data is already grouped by _id, otherwise group it here if needed
                 setFoods(data);
             })
             .catch(error => {
-                console.error('There was an error!', error);
-                setError(error.message);
+                console.error('Error fetching pizza menu:', error);
+                setError(`Failed to load menu: ${error.message}`); // Provide more context
+            })
+            .finally(() => {
+                setIsMenuLoading(false);
             });
+    }, []); // Empty dependency array ensures this runs once on mount
+
+    // --- State Update Handlers (Memoized) ---
+    const clearError = useCallback(() => {
+        setError('');
     }, []);
 
-    /**
-     * Update the order with the new values
-     * @param updatedOrder
-     */
-    const updateOrder = (updatedOrder: Partial<OrderType>) => {
-        setOrder({ ...order, ...updatedOrder });
-    };
+    const updateOrder = useCallback((updatedOrder: Partial<OrderType>) => {
+        setOrder(prevOrder => ({ ...prevOrder, ...updatedOrder }));
+    }, []); // No dependencies needed
 
-    /**
-     * Add food to the order
-     * @param food
-     */
-    const addToOrder = (food: FoodDocument) => {
-        setError('');
-        const updateItems = [...order.items[food._id.toString()] ?? [], food];
-        const items = { ...order.items };
-        items[food._id.toString()] = updateItems;
-        updateOrder({ items: items });
-    }
+    const addToOrder = useCallback((food: FoodDocument) => {
+        clearError(); // Clear any previous errors when adding items
+        const foodId = food._id.toString();
+        setOrder(prevOrder => {
+            const currentItems = prevOrder.items[foodId] ?? [];
+            const updatedItems = [...currentItems, food];
+            return {
+                ...prevOrder,
+                items: {
+                    ...prevOrder.items,
+                    [foodId]: updatedItems,
+                },
+            };
+        });
+    }, [clearError]);
 
-    /**
-     * Remove food from the order
-     * @param food
-     */
-    const removeFromOrder = (food: FoodDocument) => {
-        setError('');
-        const updateItems = [...order.items[food._id.toString()] ?? []];
-        updateItems.pop();
-        const items = { ...order.items };
-        updateOrder({ items: items });
-    }
+    const removeFromOrder = useCallback((food: FoodDocument) => {
+        clearError();
+        const foodId = food._id.toString();
+        setOrder(prevOrder => {
+            const currentItems = prevOrder.items[foodId] ?? [];
+            if (currentItems.length === 0) {
+                return prevOrder;
+            } // Should not happen with this structure, but safe check
 
-    /**
-     * Set the timeslot of the order
-     */
-    const setTimeslot = (timeslot: string) => {
-        // Check if the timeslot is not in the past
-        const BUFFER = ORDER.TIMESLOT_DURATION;
+            const updatedItems = currentItems.slice(0, -1); // Remove the last item instance
 
-        // Get time with buffer
-        const currentTime = new Date();
-        currentTime.setMinutes(currentTime.getMinutes() + BUFFER);
+            const newItemsState = { ...prevOrder.items };
+            if (updatedItems.length === 0) {
+                delete newItemsState[foodId]; // Remove the key if no items of this type remain
+            } else {
+                newItemsState[foodId] = updatedItems;
+            }
 
-        const timeslotTime = getDateFromTimeSlot(timeslot).toDate()
+            return {
+                ...prevOrder,
+                items: newItemsState,
+            };
+        });
+    }, [clearError]);
 
-        if (timeslotTime < currentTime) {
-            setError('You cannot choose a timeslot in the past.');
-            setTimeout(() => setError(''), 5000);
-            return;
+    const setTimeslot = useCallback((timeslot: string) => {
+        clearError();
+        const BUFFER = ORDER.TIMESLOT_DURATION; // Time buffer in minutes
+        const currentTimeWithBuffer = new Date();
+        currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER);
+
+        try {
+            const timeslotTime = getDateFromTimeSlot(timeslot).toDate(); // Ensure this function handles invalid formats gracefully
+
+            if (timeslotTime < currentTimeWithBuffer) {
+                setError('Selected timeslot is too soon or in the past.');
+                // Optionally clear the timeslot visually if invalid
+                // updateOrder({ timeslot: null });
+                setTimeout(() => clearError(), 5000); // Auto-clear error after 5s
+                return; // Prevent setting the invalid timeslot
+            }
+
+            updateOrder({ timeslot }); // Update if valid
+
+        } catch (e) {
+            console.error("Error parsing timeslot:", e);
+            setError("Invalid timeslot selected.");
+            setTimeout(() => clearError(), 5000);
         }
 
-        updateOrder({ timeslot: timeslot });
-    }
+    }, [updateOrder, clearError]); // Dependencies
 
-    /**
-     * Set the name of the order
-     * @param name
-     */
-    const setName = (name: string) => {
-        updateOrder({ name: name });
-    };
+    const setName = useCallback((name: string) => {
+        updateOrder({ name });
+    }, [updateOrder]);
 
-    /**
-     * Set the comment of the order
-     */
-    const setComment = (comment: string) => {
-        updateOrder({ comment: comment });
-    }
+    // --- Derived State / Calculations (Memoized) ---
+    const { totalItems, totalPrice } = useMemo(() => {
+        let itemsCount = 0;
+        let priceTotal = 0;
+        Object.values(order.items).forEach(itemList => {
+            itemsCount += itemList.length;
+            itemList.forEach(item => {
+                priceTotal += item.price;
+            });
+        });
+        return { totalItems: itemsCount, totalPrice: priceTotal };
+    }, [order.items]);
 
-    /**
-     * Get the total price of the order
-     */
-    const getTotalPrice = (): number => {
-        return Object.values(order.items).reduce((total, items) => {
-            return total + items.reduce((total, item) => total + item.price, 0);
-        }, 0);
-    }
+    // Timeline date range calculation (can be done outside component if static)
+    const { start, end } = useMemo(() => {
+        const startDate = new Date();
+        startDate.setHours(startDate.getHours() - 1);
+        startDate.setMinutes(0, 0, 0);
 
-    /**
-     * Get the total number of items in the order
-     */
-    const getTotalItems = (): number => {
-        return Object.values(order.items)
-            .flatMap(items => items)
-            .reduce((total, item) => total + item.size, 0);
-    }
+        const endDate = new Date();
+        endDate.setHours(endDate.getHours() + 1);
+        endDate.setMinutes(59, 59, 999);
+        return { start: startDate, end: endDate };
+    }, []); // Calculate once
 
-
+    // --- Render ---
     return (
-        <div>
-            <div className="bg-white p-8 rounded-lg shadow-md mb-8">
-                <h2 className="text-4xl font-extrabold mb-6 text-center text-gray-900">Order your pizza at Sommerfest
-                    2024!</h2>
-                <div className="mb-8 font-light leading-7 text-gray-800">
-                    <ol className="list-decimal list-inside space-y-4">
-                        <li>
-                            <p className="text-lg font-semibold">Choose Pizza:</p>
-                            <p>Select whole or halved from the list below (a whole pizza has a diameter of 12 inches /
-                                30 cm).</p>
-                        </li>
-                        <li>
-                            <p className="text-lg font-semibold">Pick-Up Time:</p>
-                            <p>Choose a time (some slots may be full).</p>
-                        </li>
-                        <li>
-                            <p className="text-lg font-semibold">Pay in Cash:</p>
-                            <p>Pay when collecting at the counter.</p>
-                        </li>
-                    </ol>
-                    <div className="mt-6">
-                        <p className="text-lg font-semibold">Order Times:</p>
-                        <p>Earliest pick-up: 17:25</p>
-                        <p>Latest order: 23:40</p>
-                    </div>
-                    <p className="mt-8 text-center text-xl text-gray-700">Enjoy your evening!</p>
-                </div>
-            </div>
+        // Using a fragment as the outer div is provided by layout.tsx
+        <>
+            {!ordersOpen ? (
+                <>
+                    <IntroductionSection/>
 
-            <div className="bg-white p-8 rounded-lg shadow-md mb-8">
-                <div className="flex flex-col md:flex-row justify-between gap-8">
-                    <div className="md:w-1/2 w-full">
-                        <h3 className="text-2xl font-semibold mb-6 text-gray-900">Menu</h3>
-                        <p className="mb-6 text-lg font-light leading-7 text-gray-800">Select your pizza from the list
-                            below. Ingredients are at the bottom.</p>
-                        <a id="selectorder"></a>
-                        <ul className="space-y-4">
-                            {Object.entries(foods)
-                                .flatMap(([_, foods]) => foods)
-                                .filter(food => food.enabled)
-                                .map((food, index) => (
-                                    <Food
-                                        key={`${food.name}-${index}`}
-                                        food={food}
-                                        addClick={() => addToOrder(food)}
-                                    />
-                                ))}
-                            {!foods.length && <p>Loading...</p>}
-                        </ul>
+                    <div
+                        className="bg-white p-6 md:p-8 rounded-lg shadow-md mb-24"> {/* Increased bottom margin for floating island */}
+                        {isMenuLoading && !Object.keys(foods).length ? (
+                            <div className="text-center p-10">Loading Menu...</div> // Show loading indicator until food is loaded
+                        ) : (
+                            <div
+                                className="flex flex-col md:flex-row justify-between gap-8 lg:gap-12"> {/* Added more gap */}
+                                <MenuSection
+                                    foods={foods}
+                                    onAddToOrder={addToOrder}
+                                />
+                                <OrderSection
+                                    order={order}
+                                    error={error && !ordersOpen ? '' : error} // Only show error here if floating island is open or no error exists
+                                    start={start}
+                                    end={end}
+                                    everyXSeconds={EVERY_X_SECONDS}
+                                    selectedTimeslot={order.timeslot}
+                                    onSetName={setName}
+                                    onSetTimeslot={setTimeslot}
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="md:w-1/2 w-full">
-                        <a id="order"/>
-                        <h3 className="text-2xl font-semibold mb-6 text-gray-900">Your current order</h3>
-                        {error && <ErrorMessage error={error}/>}
-
-                        <div className="mb-6">
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                            <input
-                                id="name"
-                                name="name"
-                                type="text"
-                                placeholder="Enter your name"
-                                className="mt-1 p-3 border-collapse border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                            <label htmlFor="comment" className="block text-sm font-medium text-gray-700">Comment</label>
-                            <textarea
-                                id="comment"
-                                name="comment"
-                                placeholder="Enter your comment (optional)"
-                                className="mt-1 p-3 border-collapse border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm mb-4"
-                                onChange={(e) => setComment(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="timeline-container mt-8">
-                            <h2 className="text-2xl font-semibold mb-4 text-gray-900">Timeslot</h2>
-                            <p className="mb-4 text-lg font-light leading-7 text-gray-800">Select your timeslot for
-                                pick-up.</p>
-
-                            <Timeline startDate={start} stopDate={end} setTimeslot={setTimeslot}
-                                      every_x_seconds={EVERY_X_SECONDS}/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Floating island */}
-            <div
-                className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 px-1 md:px-3 py-1 md:py-3 rounded-2xl bg-primary-400 shadow-primary-300 shadow-2xl text-white w-96">
-                <div
-                    className="flex items-center justify-between transition-all duration-300  cursor-pointer hover:scale-105" onClick={() => setFloatingIslandOpen(!floatingIslandOpen)}>
-                    {floatingIslandOpen && (
-                        <ul className="space-y-4">
-                    {order && Object.keys(order.items)
-                                .map((item, index) => (
-                                    <div key={`${item}-${index}`}>
-                                        <Food food={order.items[item][0]} addClick={() => removeFromOrder(order.items[item][0])}/>
-                                    </div>
-                                ))}
-                        </ul>
+                    {!isMenuLoading && (
+                        <FloatingOrderSummary
+                            order={order}
+                            isOpen={ordersOpen}
+                            error={error} // Pass error state directly
+                            totalItems={totalItems}
+                            totalPrice={totalPrice}
+                            onToggleOpen={() => openOrders(true)}
+                            onRemoveFromOrder={removeFromOrder}
+                        />
                     )}
-                    {!floatingIslandOpen && !error && (
-                        <>
-                            <FloatingIslandElement title="Items"
-                                                   content={getTotalItems()}/>
-                            <div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
-                            <FloatingIslandElement title="Total Price"
-                                                   content={`${getTotalPrice()}€`}/>
-                            <div className="mx-2 bg-gray-300 dark:bg-white-600 w-px h-10 inline-block"/>
-                            <FloatingIslandElement title="Timeslot" content={order.timeslot ?? 'Not selected'}/>
-                        </>)
-                    }
-                    {error && (
-                        <ErrorMessage error={error}/>
-                    )}
-                </div>
-            </div>
-        </div>
+                </>
+            ) : (
+                <OrderSummary order={order} totalItems={totalItems} totalPrice={totalPrice}
+                              onRemoveFromOrder={removeFromOrder} onClose={() => openOrders(false)}/> // Close button
+            )}
+        </>
     );
 };
 
+// Wrap the Page component with the system check HOC
 export default WithSystemCheck(Page);

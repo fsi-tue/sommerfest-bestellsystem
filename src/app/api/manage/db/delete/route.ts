@@ -5,8 +5,6 @@ import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import { OrderModel } from "@/model/order";
 import { NextResponse } from "next/server";
-import { System } from "@/model/system";
-import { constants } from "@/config";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
@@ -20,7 +18,7 @@ export async function POST() {
     await dbConnect()
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'

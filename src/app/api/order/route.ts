@@ -8,11 +8,11 @@ import { constants, ORDER } from "@/config";
 import { System } from "@/model/system";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
     return Response.json(transformedOrders);
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
     await dbConnect();
 
     // Check system status
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     }
 
     // Get the body of the request
-    const { pizzas: items, name, comment, timeslot } = await req.json();
+    const { pizzas: items, name, comment, timeslot } = await request.json();
     console.log(items)
 
     // Check if there are too many or too few items
@@ -146,17 +146,17 @@ export async function POST(req: Request) {
     return Response.json({ orderId });
 }
 
-export async function PUT(req: Request) {
+export async function PUT(request: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return new Response('Unauthorized', { status: 401 });
     }
 
     // Get the order details from the request body
-    const { id, order } = await req.json()
+    const { id, order } = await request.json()
     console.log('Order:', order)
 
     if (!id || !mongoose.isValidObjectId(id)) {

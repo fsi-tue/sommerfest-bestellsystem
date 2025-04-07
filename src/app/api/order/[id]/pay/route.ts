@@ -3,19 +3,19 @@ import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import { OrderModel } from "@/model/order";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Retrieve whether order is paid or not
- * @param req
- * @param params
  * @constructor
+ * @param request
  */
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest) {
     await dbConnect();
 
     // Get the ID from the URL
-    const id = params.id
+    const searchParams = request.nextUrl.searchParams
+    const id = searchParams.get('id')
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {
@@ -39,22 +39,24 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
 /**
  * Set order as paid
- * @param req
- * @param params
  * @constructor
+ * @param request
  */
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest) {
     await dbConnect();
 
+    // Get the ID from the URL
+    const searchParams = request.nextUrl.searchParams
+    const id = searchParams.get('id')
+
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return new Response('Unauthorized', { status: 401 });
     }
 
     // Get the order details from the request body
-    const id = params.id
-    const { isPaid } = await req.json()
+    const { isPaid } = await request.json()
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {
