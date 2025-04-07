@@ -3,35 +3,34 @@
 import {useEffect, useState} from "react";
 
 const WithSystemCheck = (WrappedComponent) => {
+	const [systemStatus, setSystemStatus] = useState('checking');
+	const [loading, setLoading] = useState(true);
+
+	const checkSystemStatus = () => {
+		setLoading(true);
+		fetch('/api/manage/system/status')
+			.then(async response => {
+				const data = await response.json();
+				if (!response.ok) {
+					const error = (data && data.message) || response.statusText;
+					throw new Error(error);
+				}
+				return data;
+			})
+			.then(data => {
+				setSystemStatus(data.status);
+				setLoading(false);
+			})
+			.catch(error => {
+				console.error('Error fetching system status:', error.message);
+				setLoading(false);
+			});
+	};
+
+	useEffect(() => {
+		checkSystemStatus();
+	}, []);
 	return (props) => {
-		const [systemStatus, setSystemStatus] = useState('checking');
-		const [loading, setLoading] = useState(true);
-
-		const checkSystemStatus = () => {
-			setLoading(true);
-			fetch('/api/manage/system/status')
-				.then(async response => {
-					const data = await response.json();
-					if (!response.ok) {
-						const error = (data && data.message) || response.statusText;
-						throw new Error(error);
-					}
-					return data;
-				})
-				.then(data => {
-					setSystemStatus(data.status);
-					setLoading(false);
-				})
-				.catch(error => {
-					console.error('Error fetching system status:', error.message);
-					setLoading(false);
-				});
-		};
-
-		useEffect(() => {
-			checkSystemStatus();
-		}, []);
-
 		if (loading) {
 			return (
 				<div>
