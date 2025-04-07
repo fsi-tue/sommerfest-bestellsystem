@@ -114,9 +114,12 @@ orderSchema.pre("save", function (next) {
   next();
 });
 
-/**
- * Order model.
- */
-const OrderModel: Model<OrderDocument> = model<OrderDocument>("order", orderSchema);
+// Create the Order model
+let OrderModel: Model<OrderDocument>;
+try {
+  OrderModel = model<OrderDocument>("Order");
+} catch (error) {
+  OrderModel = model<OrderDocument>("Order", orderSchema);
+}
 
 export { OrderModel };

@@ -24,6 +24,7 @@
     "docker:down:volumes": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza down --volumes"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@yudiel/react-qr-scanner": "^2.2.1",
     "caniuse-lite": "^1.0.30001712",
     "moment": "^2.30.1",

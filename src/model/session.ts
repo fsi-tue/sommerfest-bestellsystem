@@ -32,4 +32,5 @@ try {
 } catch (error) {
     Session = model<SessionDocument>('session');
 }
+
 export { Session }
