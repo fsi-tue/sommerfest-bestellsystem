@@ -15,11 +15,11 @@ export const fetchCache = "force-no-store";
  * Set the system status
  * @constructor
  */
-export async function POST(req: Request, { params }: { params: { status: string } }) {
+export async function POST(request: Request) {
     await dbConnect();
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({
             message: 'Unauthorized'
@@ -32,10 +32,11 @@ export async function POST(req: Request, { params }: { params: { status: string 
     if (!system) {
         return NextResponse.json({
             message: 'System not found'
-        }, { status: 404 });
+        }, { status: 500 });
     }
 
     // Get the status from the URL
+    const { params } = await request.json();
     system.status = params.status as 'active' | 'inactive' | 'maintenance';
 
     // Save the updated system

@@ -2,13 +2,15 @@ import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
 import { OrderModel } from "@/model/order";
 import { FoodModel, FoodDocument } from "@/model/food";
+import { NextRequest } from "next/server";
 
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest) {
     await dbConnect();
 
     // Get the ID from the URL
-    const id = params.id
+    const searchParams = request.nextUrl.searchParams
+    const id = searchParams.get('id')
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {
@@ -46,7 +48,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     const transformedOrder = {
         _id: order._id,
         name: order.name,
-        comment: order.comment || "",
+        comment: order.comment ?? "",
         items: order.items.map((item) => ({
             food: foodById[item.food._id.toString()],
             status: item.status

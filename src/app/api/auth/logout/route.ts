@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     await dbConnect()
 
     // Authenticate the user
-    const headersList = headers()
+    const headersList = await headers()
     const token = extractBearerFromHeaders(headersList);
     if (!await validateToken(extractBearerFromHeaders(headersList))) {
         return NextResponse.json({

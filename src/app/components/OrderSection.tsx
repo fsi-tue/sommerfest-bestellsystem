@@ -57,7 +57,6 @@ const OrderSection = ({
                     stopDate={end}
                     setTimeslot={onSetTimeslot} // Pass handler directly
                     every_x_seconds={everyXSeconds}
-                    selectedTimeslot={selectedTimeslot} // Pass state for highlighting
                 />
             </div>
         </div>
