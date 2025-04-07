@@ -1,11 +1,11 @@
 export const constants = {
-    SYSTEM_NAME: process.env.SYSTEM_NAME || "fsi",
-    LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS || "8"),
+    SYSTEM_NAME: process.env.SYSTEM_NAME ?? "fsi",
+    LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS ?? "8"),
     TIMEZONE_ORDERS: 'Europe/Berlin'
 }
 
 export const mongo = {
-    MONGO_URI: process.env.MONGO_URI || "mongodb://localhost:27017/pizza-system",
+    MONGO_URI: process.env.MONGO_URI ?? "mongodb://localhost:27017/pizza-system",
 }
 
 export const tokens = {
