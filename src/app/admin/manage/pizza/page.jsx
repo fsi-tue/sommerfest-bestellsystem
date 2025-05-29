@@ -1,16 +1,17 @@
 'use client'
 
 import {useEffect, useState} from "react";
-import Food from "./Food.jsx";
 import {getFromLocalStorage} from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import WithAuth from "../../WithAuth.jsx";
-import {FOOD} from "@/config";
+import {Wrench} from "lucide-react";
+import EditItem from "./EditItem.jsx";
+import {ITEM_CONFIG} from "@/config/index.ts";
 
 const Page = () => {
 	const token = getFromLocalStorage('token', '');
 
-	const [foods, setFoods] = useState([]);
+	const [items, setItems] = useState([]);
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(true);
 
@@ -32,7 +33,7 @@ const Page = () => {
 				return data;
 			})
 			.then(data => {
-				setFoods(data);
+				setItems(data);
 				setLoading(false);
 			})
 			.catch(() => {
@@ -47,17 +48,23 @@ const Page = () => {
 
 	return (
 		<div>
-			<div className="p-4">
-				<h2 className="text-2xl mb-4">Manage Foods 🍕</h2>
+			<div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+				<div className="flex items-center gap-3 mb-2">
+					<div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+						<Wrench className="w-4 h-4 text-primary-500"/>
+					</div>
+					<h1 className="text-2xl font-semibold text-gray-900">Manage Items</h1>
+				</div>
+				<p className="text-gray-500 text-sm">Add, remove and disable items</p>
 			</div>
 
-			{/* New Food */}
-			<Food key="new" food={{name: 'New Pizza', price: 0, enabled: true, max: FOOD.MAX_ITEMS}} isNew={true}/>
+			{/* New Item */}
+			<EditItem key="new" item={{name: 'New Pizza', price: 0, enabled: true, max: ITEM_CONFIG.MAX_ITEMS}} isNew={true}/>
 
-			{/* Foods */}
+			{/* Items */}
 			<div className="flex flex-col space-y-4">
-				{foods.map(food => (
-					<Food key={food._id} food={food}/>
+				{items.map(item => (
+					<EditItem key={item._id} item={item}/>
 				))}
 			</div>
 		</div>

@@ -79,7 +79,7 @@ const Page = () => {
 									onChange={(e) => setToken(e.target.value)}
 									autoComplete="current-password"
 									required
-									className="block w-full rounded-md border-gray-300 border py-2 px-3 text-gray-900 placeholder-gray-400
+									className="block w-full rounded-md border-gray-100 border py-2 px-3 text-gray-900 placeholder-gray-400
                   focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 shadow-sm"
 								/>
 							</div>

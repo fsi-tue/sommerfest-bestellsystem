@@ -6,7 +6,7 @@ const Footer = () => {
 	return (
 		<footer
 			// Footer container: background, shadow, rounded, padding, margin, width, centered text
-			className="bg-gray-50 shadow rounded-lg p-4 my-5 w-full max-w-7xl mx-auto text-center text-sm text-gray-600"
+			className="bg-gray-50 shadow rounded-2xl p-4 mt-5 w-full max-w-7xl mx-auto text-center text-sm text-gray-600"
 		>
 			{/* Copyright and Credits - kept links and names */}
 			<p>

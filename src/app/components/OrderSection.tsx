@@ -1,32 +1,28 @@
 import Timeline from "@/app/components/Timeline"; // Assuming .tsx or adjust if needed
-import ErrorMessage from "@/app/components/ErrorMessage"; // Assuming .tsx or adjust
-import { OrderType } from '../page'; // Assuming OrderType is exported from page.tsx or moved to types file
+import ErrorMessage from "@/app/components/ErrorMessage";
+import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
+import React from "react";
 
 interface OrderSectionProps {
-    order: OrderType;
     error: string;
     start: Date;
     end: Date;
-    everyXSeconds: number;
-    selectedTimeslot: string | null; // Pass selected timeslot for Timeline highlighting
-    onSetName: (name: string) => void;
-    onSetTimeslot: (timeslot: string) => void; // Parent handler already contains validation
+    every_x_seconds: number;
 }
 
-const OrderSection = ({
-                          order,
-                          error,
-                          start,
-                          end,
-                          everyXSeconds,
-                          selectedTimeslot,
-                          onSetName,
-                          onSetTimeslot,
-                      }: OrderSectionProps) => {
+const OrderSection: React.FC<OrderSectionProps> = ({
+                                                       error,
+                                                       start,
+                                                       end,
+                                                       every_x_seconds
+                                                   }) => {
+
+    const order = useCurrentOrder()
+    const orderActions = useOrderActions()
+
     return (
         <div className="md:w-1/2 w-full">
-            <a id="order" className="block -mt-20 pt-20"></a> {/* Anchor for scrolling, adjusted offset */}
-            <h3 className="text-2xl font-semibold mb-4 text-gray-900">Your Details & Pick-up</h3>
+            <a id="order" className="block -mt-20 pt-20"></a>
             {error && <ErrorMessage error={error}/>}
 
             {/* Form Inputs */}
@@ -39,9 +35,9 @@ const OrderSection = ({
                         type="text"
                         value={order.name} // Controlled component
                         placeholder="Enter your name"
-                        className="mt-1 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm"
-                        onChange={(e) => onSetName(e.target.value)}
-                        required // Added required attribute
+                        className="mt-1 p-3 border border-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm"
+                        onChange={(e) => orderActions.setName(e.target.value)}
+                        required
                     />
                 </div>
             </div>
@@ -55,8 +51,7 @@ const OrderSection = ({
                 <Timeline
                     startDate={start}
                     stopDate={end}
-                    setTimeslot={onSetTimeslot} // Pass handler directly
-                    every_x_seconds={everyXSeconds}
+                    every_x_seconds={every_x_seconds}
                 />
             </div>
         </div>

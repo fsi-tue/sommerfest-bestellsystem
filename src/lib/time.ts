@@ -1,5 +1,5 @@
 import moment from "moment-timezone";
-import { constants } from "@/config";
+import { CONSTANTS } from "@/config";
 
 /**
  * Get the current time slot
@@ -28,11 +28,11 @@ export const formatDateTime = (date: Date) => {
  */
 export const getDateFromTimeSlot = (timeslot: string) => {
     if (!timeslot) {
-        return moment().tz(constants.TIMEZONE_ORDERS);
+        return moment().tz(CONSTANTS.TIMEZONE_ORDERS);
     }
 
     const [hour, minute] = timeslot.split(':');
-    return moment().tz(constants.TIMEZONE_ORDERS).set({
+    return moment().tz(CONSTANTS.TIMEZONE_ORDERS).set({
         hour: Number(hour),
         minute: Number(minute),
         second: 0,

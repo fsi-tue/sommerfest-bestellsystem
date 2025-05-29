@@ -1,7 +1,6 @@
-// Fill the database
 import dbConnect from "@/lib/dbConnect";
 import { System } from "@/model/system";
-import { constants } from "@/config";
+import { CONSTANTS } from "@/config";
 import { NextResponse } from "next/server";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
@@ -17,9 +16,10 @@ export async function GET(req: Request) {
     await dbConnect();
 
     // Set the system status
-    const system = await System.findOne({ name: constants.SYSTEM_NAME });
+    const system = await System.findOne({ name: CONSTANTS.SYSTEM_NAME });
 
     if (!system) {
+        console.error("No system found.");
         return NextResponse.json({
             message: 'System not found'
         }, { status: 404 });

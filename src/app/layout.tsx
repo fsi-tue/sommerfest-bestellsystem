@@ -18,12 +18,12 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body>
-        <main className="max-h-full min-h-screen flex flex-col bg-neutral-200">
-            <Header />
-            <div className="p-3 md:p-6 my-5 w-full max-w-7xl mx-auto">
+        <main className="max-h-full flex flex-col bg-gray-50">
+            <Header/>
+            <div className="p-1 md:p-6 my-5 w-full max-w-7xl mx-auto min-h-screen ">
                 {children}
             </div>
-            <Footer />
+            <Footer/>
         </main>
         </body>
         </html>

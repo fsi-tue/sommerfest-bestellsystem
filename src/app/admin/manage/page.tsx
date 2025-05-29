@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
-import WithAuth from "../WithAuth.jsx";
+import { Database } from "lucide-react";
 
 const Page = () => {
     const token = getFromLocalStorage('token', '');
@@ -86,12 +86,18 @@ const Page = () => {
 
     return (
         <div>
-            <div className="p-4">
-                <h2 className="text-2xl mb-4">Manage Database</h2>
-                {message && <div className="text-red-600">{message}</div>}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <Database className="w-4 h-4 text-primary-500"/>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-gray-900">Manage Database</h1>
+                </div>
+                <p className="text-red-500 text-sm">{message}</p>
             </div>
+
             <div className="w-full px-2 py-2">
-                <div className="bg-white border border-gray-300 rounded-lg shadow-md p-4 relative">
+                <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-4 relative">
                     <div className="mb-4 flex items-center gap-4">
                         <label htmlFor="enable" className="block text-sm font-medium text-gray-700 mb-2">
                             Enable
@@ -102,7 +108,7 @@ const Page = () => {
                             name="enable"
                             checked={enable}
                             onChange={() => setEnable(!enable)}
-                            className="h-4 w-4 text-primary-950 focus:ring-primary-800 border-gray-300 rounded"
+                            className="h-4 w-4 text-primary-950 focus:ring-primary-800 border-gray-100 rounded"
                         />
                     </div>
                     <div className="flex gap-2 flex-wrap justify-start">

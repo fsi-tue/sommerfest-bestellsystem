@@ -1,9 +1,9 @@
-// Header.jsx
 'use client'
 
 import Link from 'next/link'
 import {useEffect, useState} from "react";
 import {getFromLocalStorage} from "@/lib/localStorage.js";
+import {Home, List, LogIn, Menu} from "lucide-react";
 
 const Header = () => {
 	const [authed, setAuthed] = useState(false);
@@ -26,10 +26,10 @@ const Header = () => {
 	}, []);
 
 	const adminLinks = [
-		{to: "/admin/prepare", text: "Prepare Foods"}, // does not work yet
+		{to: "/admin/prepare", text: "Prepare Items"}, // does not work yet
 		{to: "/admin/manage", text: "Manage DB"},
 		{to: "/admin/manage/order", text: "Manage Orders"},
-		{to: "/admin/manage/pizza", text: "Manage Foods"},
+		{to: "/admin/manage/pizza", text: "Manage Items"},
 		{to: "/admin/logout", text: "Logout"},
 	];
 
@@ -40,7 +40,7 @@ const Header = () => {
 
 	return (
 		// Sticky header container, responsive padding, background, shadow, rounded corners, max width
-		<header className="sticky top-0 bg-gray-50 shadow z-10 rounded-lg p-2 md:p-4 my-5 w-full max-w-7xl mx-auto">
+		<header className="sticky top-0 bg-white shadow z-10 rounded-2xl p-2 md:p-4 mb-5 w-full max-w-7xl mx-auto">
 			<div className="container mx-auto flex justify-between items-center px-2 md:px-4 py-4">
 				<h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
 					<Link href="/">
@@ -49,20 +49,36 @@ const Header = () => {
 				</h1>
 			</div>
 			{/* Navigation section */}
-			<nav className="bg-gray-50">
+			<nav>
 				<div className="container mx-auto flex justify-between items-center px-2 md:px-4 py-2">
 					{/* Basic navigation links */}
 					<div className="flex space-x-4 sm:space-x-6">
-						<Link href="/" className="text-gray-700 hover:text-gray-900 text-sm sm:text-base">Home</Link>
-						<Link href="/order/list" className="text-gray-700 hover:text-gray-900 text-sm sm:text-base">Your
-							Orders</Link>
+						<Link
+							href="/"
+							className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
+						>
+							<Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
+							<span className="font-medium">Home</span>
+						</Link>
+
+						<Link
+							href="/order/list"
+							className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
+						>
+							<List className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
+							<span className="font-medium">Your Orders</span>
+						</Link>
 					</div>
 
 					{/* Conditional rendering for Login/Admin links */}
 					{!authed && (
 						<div className="flex space-x-4 sm:space-x-6">
-							<Link href="/login" className="text-gray-700 hover:text-gray-900 text-sm sm:text-base">
-								Login
+							<Link
+								href="/login"
+								className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
+							>
+								<LogIn className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
+								<span className="font-medium">Login</span>
 							</Link>
 						</div>
 					)}
@@ -73,7 +89,9 @@ const Header = () => {
 							<div className="hidden md:flex space-x-4 lg:space-x-6">
 								{adminLinks.map(({to, text}) => (
 									<Link key={to} href={to}
-									      className="text-gray-700 hover:text-gray-900 text-sm lg:text-base">{text}</Link>
+									      className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group">
+										<span className="font-medium">{text}</span>
+									</Link>
 								))}
 							</div>
 							{/* Hamburger Menu Button: Visible only on small screens */}
@@ -84,11 +102,7 @@ const Header = () => {
 									aria-label="Toggle admin menu"
 									aria-expanded={menuOpen}
 								>
-									<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-									     xmlns="http://www.w3.org/2000/svg">
-										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-										      d="M4 6h16M4 12h16m-7 6h7"></path>
-									</svg>
+									<Menu/>
 								</button>
 							</div>
 						</>
@@ -97,16 +111,16 @@ const Header = () => {
 
 				{/* Mobile Menu Dropdown: Rendered conditionally */}
 				{menuOpen && authed && (
-					<div className="md:hidden border-t border-gray-200 bg-white shadow-md">
-						<nav className="px-4 py-3 space-y-2">
+					<div className="lg:hidden border-t border-white/20 bg-white/5 backdrop-blur-md">
+						<nav className="container mx-auto px-4 py-4 space-y-2">
 							{adminLinks.map(({to, text}) => (
 								<Link
 									key={to}
 									href={to}
-									className="block text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded px-2 py-1"
-									onClick={() => setMenuOpen(false)} // Close menu on link click
+									className="flex items-center space-y-3 text-black hover:text-primary-500 transition-colors duration-200 group"
+									onClick={() => setMenuOpen(false)}
 								>
-									{text}
+									<span className="font-medium">{text}</span>
 								</Link>
 							))}
 						</nav>

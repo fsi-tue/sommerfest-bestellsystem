@@ -1,4 +1,4 @@
-import { constants } from "@/config";
+import { CONSTANTS } from "@/config";
 import dbConnect from "@/lib/dbConnect";
 import { Session } from "@/model/session";
 
@@ -33,7 +33,7 @@ export async function POST(req: Request): Promise<Response> {
             const session = new Session();
             session.userId = 'admin';
             session.token = newToken;
-            session.expiresAt = moment().add(constants.LIFETIME_BEARER_HOURS, "hours").toDate();
+            session.expiresAt = moment().add(CONSTANTS.LIFETIME_BEARER_HOURS, "hours").toDate();
             await session.save();
             console.log('New token created', newToken, session.expiresAt.toISOString());
 

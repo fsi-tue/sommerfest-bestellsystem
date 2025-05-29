@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage.jsx";
 import { getDateFromTimeSlot } from "@/lib/time";
+import type { OrderDocument } from "@/model/order";
 import { ItemStatus } from "@/model/order";
-import type { OrderDocument, OrderModel } from "@/model/order";
 import WithAuth from "@/app/admin/WithAuth";
 import SearchInput from "@/app/components/SearchInput";
 import './Prepare.css';
+import { ListTodo, Wrench } from "lucide-react";
 
 
 const Page = () => {
@@ -66,7 +67,7 @@ const Page = () => {
                 order.status.toLowerCase().includes(filter.toLowerCase()) ||
                 order.totalPrice.toString().includes(filter) ||
                 order.timeslot.includes(filter) ||
-                (order.items || []).some((item) => item.food.name.toLowerCase().includes(filter.toLowerCase()))));
+                (order.items || []).some((item) => item.item.name.toLowerCase().includes(filter.toLowerCase()))));
         } else {
             setFilteredOrders(orders);
         }
@@ -95,20 +96,20 @@ const Page = () => {
         setOrdersByTimeslot(sortedOrdersByTimeslots)
     }, [filteredOrders])
 
-    const setFoodStatusFromLocalStorage = (orders: OrderDocument[]) => {
+    const setItemStatusFromLocalStorage = (orders: OrderDocument[]) => {
         // Get from local storage
         orders.map(order => {
-            let foodItems = getFromLocalStorage(`foodItems.${order._id.toString()}`, []);
-            if (!foodItems || foodItems.length === 0) {
+            let itemItems = getFromLocalStorage(`itemItems.${order._id.toString()}`, []);
+            if (!itemItems || itemItems.length === 0) {
                 return;
             }
-            foodItems = JSON.parse(foodItems);
+            itemItems = JSON.parse(itemItems);
 
             const newOrder = { ...order };
             newOrder.items = newOrder.items.map((item, index) => {
-                const foodItem = foodItems[index];
-                if (foodItem && foodItem.status) {
-                    item.status = foodItem.status;
+                const itemItem = itemItems[index];
+                if (itemItem && itemItem.status) {
+                    item.status = itemItem.status;
                 }
                 return item;
             })
@@ -175,13 +176,15 @@ const Page = () => {
 
     return (
         <div>
-            <div className="md:p-4 pb-1">
-                <h2 className="text-2xl mb-4">Orders</h2>
-                <h4 className="mb-2">Current Time: {currentTime.toLocaleTimeString()}</h4>
-            </div>
-
-            <div className="md:p-4 py-1">
-                <h3>
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                        <ListTodo className="w-4 h-4 text-primary-500"/>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-gray-900">Orders</h1>
+                </div>
+                <p className="text-gray-500 text-sm">Current Time: {currentTime.toLocaleTimeString()}</p>
+                <p className="text-gray-500 text-sm">
                     Open
                     orders: {[''].map(() => {
                     const openOrders = orders
@@ -191,13 +194,15 @@ const Page = () => {
                     return openOrders > 0 ? openOrders : 'No open orders 🎉'
                 })
                 }
-                </h3>
+                </p>
+            </div>
 
+            <div className="md:p-4 py-1">
                 {error && <ErrorMessage error={error}/>}
                 <SearchInput search={setFilter} searchValue={filter}/>
 
                 <div className="flex flex-col space-y-2">
-                    <table className="min-w-full bg-white overflow-hidden item-table rounded-lg shadow-md">
+                    <table className="min-w-full bg-white overflow-hidden item-table rounded-2xl shadow-md">
                         <thead className="bg-gray-200">
                         <tr>
                             <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/2">Item</th>
@@ -231,26 +236,27 @@ const Page = () => {
 
                                                     return (
                                                         <>
-                                                            {hasComment(order) && (<tr className="text-sm italic comment"
-                                                                                       key={`${order._id}-${item.food.name}-${orderIndex}-${itemIndex}-comment`}>
-                                                                <td className="px-4 py-2 text-xs md:text-sm font-medium text-gray-900 w-1/2">{order.comment}</td>
-                                                            </tr>)}
-                                                            <tr key={`${order._id}-${item.food.name}-${orderIndex}-${itemIndex}`}
-                                                                className={`border-t border-gray-200
+                                                            {hasComment(order) && (
+                                                                <tr className="text-sm italic comment"
+                                                                    key={`${order._id}-${item.item.name}-${orderIndex}-${itemIndex}-comment`}>
+                                                                    <td className="px-4 py-2 text-xs md:text-sm font-medium text-gray-900 w-1/2">{order.comment}</td>
+                                                                </tr>)}
+                                                            <tr key={`${order._id}-${item.item.name}-${orderIndex}-${itemIndex}`}
+                                                                className={`border-t border-gray-100
                                                             ${isTimeslotActive ? 'border border-gray-500' : ''}
                                                             ${tooLate ? 'bg-red-100 text-red-600' : 'text-gray-900'}
                                                             ${['readyToCook', 'cancelled', 'delivered'].includes(item.status) ? 'bg-green-100 text-green-600' : ''}
                                                             ${['cancelled', 'delivered'].includes(order.status) ? 'bg-gray-100 text-gray-600 select-none cursor-not-allowed opacity-10' : ''}
                                                             `}>
                                                                 <td className="px-4 py-2 text-xs md:text-sm font-medium text-gray-900 w-1/2">
-                                                                    {item.food.name}
+                                                                    {item.item.name}
                                                                     <div className="flex gap-1 mt-1">
-                                                                        {item.food.dietary && (
+                                                                        {item.item.dietary && (
                                                                             <span
-                                                                                className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{item.food.dietary}</span>
+                                                                                className="px-2 py-0.5 text-xs font-semibold text-white bg-blue-500 rounded-full">{item.item.dietary}</span>
                                                                         )}
                                                                         <span
-                                                                            className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{item.food.type}</span>
+                                                                            className="px-2 py-0.5 text-xs font-semibold text-white bg-green-500 rounded-full">{item.item.type}</span>
                                                                     </div>
                                                                 </td>
                                                                 <td className={`px-4 py-2 text-xs md:text-sm font-medium w-1/6`}>
@@ -259,7 +265,7 @@ const Page = () => {
                                                                 <td className="px-4 py-2 text-xs md:text-sm font-medium text-gray-900 w-1/6 hidden sm:block">{order.name}</td>
                                                                 <td className={`px-4 py-2 text-xs md:text-sm font-medium w-1/6`}>
                                                                     <button
-                                                                        className="p-1 rounded-md border border-gray-300 bg-white text-xs md:text-sm font-medium text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                                        className="p-1 rounded-md border border-gray-100 bg-white text-xs md:text-sm font-medium text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                                                         onClick={() => updateItemStatus(order._id.toString(), itemIndex, item.status === 'readyToCook' ? 'prepping' : 'readyToCook')}>
                                                                         {item.status === 'readyToCook' ? '✅ Done' : item.status}
                                                                     </button>

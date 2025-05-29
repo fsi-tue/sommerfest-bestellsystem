@@ -129,7 +129,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
             </div>
 
             {/* Rest of your UI */}
-            <div className="bg-white p-4 rounded-lg mb-4">
+            <div className="bg-white p-4 rounded-2xl mb-4">
                 <h3 className="text-lg font-light">{statusToText(order)}</h3>
                 {order.status !== 'cancelled' && (
                     <>
@@ -142,15 +142,15 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                 <p className="text-sm text-gray-700">Ship to: {order.name}</p>
 
                 {order?.items?.map((item, index) => (
-                    <div key={`${item.food._id?.toString() || index}`}>
-                        <div className="mt-2 border-b border-gray-200 last:border-b-0"/>
+                    <div key={`${item.item._id?.toString() || index}`}>
+                        <div className="mt-2 border-b border-gray-100 last:border-b-0"/>
                         <div className="py-4 flex items-center space-x-4">
                             <div>
-                                <h3 className="text-lg font-semibold">{item.food.name}</h3>
+                                <h3 className="text-lg font-semibold">{item.item.name}</h3>
                                 <div className="flex space-x-2">
-                                    {item.food.dietary && (
+                                    {item.item.dietary && (
                                         <span className="text-xs text-gray-500 font-light rounded-2xl border border-gray-100 px-2">
-                                            {item.food.dietary}
+                                            {item.item.dietary}
                                         </span>
                                     )}
                                     <span className="text-xs text-gray-500 font-light rounded-2xl border border-gray-100 px-2">
@@ -163,7 +163,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                 ))}
             </div>
 
-            <div className="bg-white p-4 rounded-lg mb-4">
+            <div className="bg-white p-4 rounded-2xl mb-4">
                 <h3 className="text-xl font-semibold mb-2">Details</h3>
                 <div className="flex justify-between text-sm text-gray-700 mb-2">
                     <span>Order Number</span>
@@ -171,7 +171,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                 </div>
                 <div className="flex justify-between text-sm text-gray-700 mt-2">
                     <span>Total</span>
-                    <span>{order?.items?.reduce((total, item) => total + item.food.price, 0).toFixed(2)}€</span>
+                    <span>{order?.items?.reduce((total, item) => total + item.item.price, 0).toFixed(2)}€</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-700 mt-2">
                     <span>Payment Status</span>

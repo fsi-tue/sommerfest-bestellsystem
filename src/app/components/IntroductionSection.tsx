@@ -1,31 +1,38 @@
+import { Clock, Euro, Search } from "lucide-react";
+
 const IntroductionSection = () => {
     return (
-        <div className="bg-white p-6 md:p-8 rounded-lg shadow-md mb-8">
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-6 text-center text-gray-900">
-                Order your pizza at Sommerfest 2024!
-            </h2>
-            <div
-                className="mb-8 font-light leading-relaxed text-gray-700 space-y-6"> {/* Adjusted text color/leading/spacing */}
-                <ol className="list-decimal list-inside space-y-3">
-                    <li>
-                        <p className="text-lg font-semibold inline">Choose Pizza: </p>
-                        <span>Select whole or halved from the list below (a whole pizza has a diameter of 12 inches / 30 cm).</span>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="font-light leading-relaxed text-gray-700 space-y-6">
+                <ol className="list-none space-y-6">
+                    <li className="flex flex-col md:flex-row md:items-baseline gap-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center">
+                                <Search className="w-4 h-4 text-primary-500"/>
+                            </div>
+                            <p className="text-lg font-bold text-gray-900">Choose your Item</p>
+                        </div>
                     </li>
-                    <li>
-                        <p className="text-lg font-semibold inline">Pick-Up Time: </p>
-                        <span>Choose a time (some slots may be full).</span>
+                    <li className="flex flex-col md:flex-row md:items-baseline gap-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center">
+                                <Clock className="w-4 h-4 text-primary-500"/>
+                            </div>
+                            <p className="text-lg font-bold text-gray-900">Pick-Up Time</p>
+                        </div>
                     </li>
-                    <li>
-                        <p className="text-lg font-semibold inline">Pay in Cash: </p>
-                        <span>Pay when collecting at the counter.</span>
+                    <li className="flex flex-col md:flex-row md:items-baseline gap-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center">
+                                <Euro className="w-4 h-4 text-primary-500"/>
+                            </div>
+                            <p className="text-lg font-bold text-gray-900">Pay in Cash at the counter</p>
+                        </div>
                     </li>
                 </ol>
-                <div className="mt-6 border-t pt-4"> {/* Added separator */}
-                    <p className="text-lg font-semibold">Order Times:</p>
-                    <p>Earliest pick-up: 17:25</p>
-                    <p>Latest order: 23:40</p>
-                </div>
-                <p className="mt-8 text-center text-lg md:text-xl text-gray-600">Enjoy your evening!</p>
+                <p className="mt-8 text-center text-xl font-medium text-gray-800 pt-4 border-t border-gray-100">
+                    Enjoy your evening!
+                </p>
             </div>
         </div>
     );
