@@ -65,7 +65,7 @@ const Header = () => {
 							className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
 						>
 							<Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-							<span className="font-medium">Home</span>
+							<span className="font-medium">{t('menu.home')}</span>
 						</Link>
 
 						<Link
@@ -73,7 +73,7 @@ const Header = () => {
 							className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
 						>
 							<List className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-							<span className="font-medium">Your Orders</span>
+							<span className="font-medium">{t('menu.orders')}</span>
 						</Link>
 					</div>
 
@@ -85,7 +85,7 @@ const Header = () => {
 								className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
 							>
 								<LogIn className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-								<span className="font-medium">Login</span>
+								<span className="font-medium">{t('menu.login')}</span>
 							</Link>
 						</div>
 					)}

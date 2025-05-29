@@ -33,8 +33,6 @@ export default function LanguageSelector(options: LanguageSelectorArgs) {
         setMenuOpen(false);
     };
 
-    console.log(i18n.languages)
-
     return (
         <div className="rounded-full border border-gray-300 p-2 w-10 h-10 flex items-center justify-center">
             {menuOpen ? null : <p onClick={() => setMenuOpen(!menuOpen)}>{t("lang_emoji", { lng: i18n.language })}</p>}

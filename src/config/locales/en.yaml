@@ -1,3 +1,35 @@
 translation:
   lang_emoji: 🇺🇸
   app_title: Get Your Byte of Pizza!
+  menu:
+    login: Login
+    home: Home
+    orders: Your Orders
+  order_view:
+    introduction:
+      choose_your_item: Choose your Item
+      pick_up_time: Pick-Up Time
+      pay_in_cash: Pay in Cash at the counter
+      closer: Enjoy your evening!
+    order:
+      name: Name
+      name_placeholder: Enter your name
+    timeslot:
+      title: Timeslot
+      subtitle: Select your preferred pick-up time.
+
+  cart:
+    title: Cart
+    messages:
+      empty_cart: Your cart is empty.
+      add_note: Add a note
+      add_more_products: Add more Products
+    items: Items
+    total_price: Total Price
+    total_price_format: nono
+    currency: "€"
+    timeslot: Timeslot
+    timeslot_not_selected: Not selected
+    open_order_summary: Open order summary
+    order_now: Order now
+

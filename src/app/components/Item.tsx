@@ -1,4 +1,5 @@
 import { ItemDocument } from '@/model/item';
+import { useTranslation } from 'react-i18next';
 
 interface ItemItemProps {
     item: ItemDocument;
@@ -16,6 +17,8 @@ const Item = ({ item, onAddClick }: ItemItemProps) => {
         };
         return styles[dietary.toLowerCase()] || 'bg-gray-50 text-gray-700 border border-gray-100';
     };
+
+    const [t, i18n] = useTranslation();
 
     return (
         <div
@@ -48,7 +51,7 @@ const Item = ({ item, onAddClick }: ItemItemProps) => {
                         onClick={onAddClick}
                         className="bg-white border-2 border-gray-100 text-gray-700 font-medium px-4 py-2 rounded-2xl hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 min-w-[80px] text-sm"
                     >
-                        Add
+                        {t('order_view.item.button.add')}
                     </button>
                 </div>
             </div>
