@@ -1,13 +1,19 @@
 'use client'
 
 import Link from 'next/link'
-import {useEffect, useState} from "react";
+import {useEffect, useState, useTransition} from "react";
 import {getFromLocalStorage} from "@/lib/localStorage.js";
 import {Home, List, LogIn, Menu} from "lucide-react";
+
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../LanguageSelector';
+
+import '@/lib/i18n';
 
 const Header = () => {
 	const [authed, setAuthed] = useState(false);
 	const [menuOpen, setMenuOpen] = useState(false);
+	const [t, i18n] = useTranslation();
 
 	useEffect(() => {
 		const token = getFromLocalStorage('token');
@@ -34,7 +40,7 @@ const Header = () => {
 	];
 
 	// --- New Header Text ---
-	const headerText = "Get Your Byte of Pizza!";
+	const headerText = t('app_title');
 	const headerEmoji = "🍕";
 	// -----------------------
 
@@ -48,6 +54,7 @@ const Header = () => {
 					</Link>
 				</h1>
 			</div>
+			<LanguageSelector />
 			{/* Navigation section */}
 			<nav>
 				<div className="container mx-auto flex justify-between items-center px-2 md:px-4 py-2">

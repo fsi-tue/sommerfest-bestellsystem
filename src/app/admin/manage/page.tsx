@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import { Database } from "lucide-react";
 
+import "@/lib/i18n";
+
 const Page = () => {
     const token = getFromLocalStorage('token', '');
 

@@ -11,6 +11,9 @@ import FloatingOrderSummary from '@/app/components/FloatingOrderSummary';
 import OrderSummary from "@/app/components/order/OrderSummary";
 import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
 
+
+import "@/lib/i18n";
+
 const EVERY_X_SECONDS = 60; // Keep constant here or move to config
 
 const Page: React.FC = () => {
