@@ -1,5 +1,5 @@
 // Fill the database
-import { FoodModel } from "@/model/food";
+import { ItemModel } from "@/model/item";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
@@ -25,7 +25,7 @@ export async function POST() {
         }, { status: 401 });
     }
 
-    await FoodModel.deleteMany({})
+    await ItemModel.deleteMany({})
     await OrderModel.deleteMany({})
 
     return Response.json({ message: 'Successfully deleted database' })

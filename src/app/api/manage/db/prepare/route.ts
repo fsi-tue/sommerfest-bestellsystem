@@ -1,10 +1,10 @@
 // Fill the database
-import { FoodModel } from "@/model/food";
+import { ItemModel } from "@/model/item";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import dbConnect from "@/lib/dbConnect";
 import { System } from "@/model/system";
-import { constants } from "@/config";
+import { CONSTANTS } from "@/config";
 import { NextResponse } from "next/server";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
@@ -14,11 +14,11 @@ export const fetchCache = "force-no-store";
 const pizzasByName = {
     Salami: ["Cheese 🧀", "Tomato Sauce 🍅", "Salami 🍕"],
     "Ham and mushrooms": ["Cheese 🧀", "Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"],
-    Capriccosa: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"],
+    Capricciosa: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"],
     Margherita: ["Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"],
     Veggies: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"],
     "Margherita vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"],
-    "Capriccosa vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
+    "Capricciosa vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
 };
 
 /**
@@ -55,11 +55,11 @@ export async function POST() {
             size: 1
         },
         {
-            name: 'Capriccosa full',
+            name: 'Capricciosa full',
             price: 8,
             type: 'pizza',
             dietary: 'meat',
-            ingredients: pizzasByName['Capriccosa'],
+            ingredients: pizzasByName['Capricciosa'],
             size: 1
         },
         { name: 'Margherita full', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 1 },
@@ -73,20 +73,20 @@ export async function POST() {
             size: 1
         },
         {
-            name: 'Capriccosa vegan full',
+            name: 'Capricciosa vegan full',
             price: 6,
             dietary: 'vegan',
             type: 'pizza',
-            ingredients: pizzasByName['Capriccosa vegan'],
+            ingredients: pizzasByName['Capricciosa vegan'],
             size: 1
         },
     ];
     for (const pizza of pizzas) {
-        await new FoodModel(pizza).save();
+        await new ItemModel(pizza).save();
     }
 
     // Add the system
-    const system = new System({ name: constants.SYSTEM_NAME, status: 'active' })
+    const system = new System({ name: CONSTANTS.SYSTEM_NAME, status: 'active' })
     await system.save()
 
     return Response.json({ message: 'Successfully filled database' })

@@ -1,4 +1,4 @@
-import { FoodModel } from "@/model/food";
+import { ItemModel } from "@/model/item";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     await dbConnect();
 
     try {
-        const pizzas = await FoodModel.find({ type: 'pizza' });
+        const pizzas = await ItemModel.find({ type: 'pizza' });
         return Response.json(pizzas)
     } catch (error) {
         console.error('Error fetching pizzas:', error);
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const newPizza = await req.json()
 
     try {
-        const pizza = new FoodModel(newPizza);
+        const pizza = new ItemModel(newPizza);
         await pizza.save();
         return Response.json(pizza);
     } catch (error) {
@@ -55,7 +55,7 @@ export async function PUT(req: Request) {
     const pizza = await req.json()
 
     try {
-        const updatedPizza = await FoodModel.findById(pizza._id);
+        const updatedPizza = await ItemModel.findById(pizza._id);
         if (!updatedPizza) {
             return NextResponse.json({
                 message: 'Pizza not found'

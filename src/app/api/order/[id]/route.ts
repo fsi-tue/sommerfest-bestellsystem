@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
 import { OrderModel } from "@/model/order";
-import { FoodModel, FoodDocument } from "@/model/food";
+import { ItemModel, ItemDocument } from "@/model/item";
 import { NextRequest } from "next/server";
 
 
@@ -33,14 +33,14 @@ export async function GET(request: NextRequest) {
         `, { status: 404 });
     }
 
-    // Get the foods for the order
-    const foodsDetails = await FoodModel
-        .find({ _id: { $in: order.items.map((item) => item.food) } })
+    // Get the items for the order
+    const itemsDetails = await ItemModel
+        .find({ _id: { $in: order.items.map((item) => item.item) } })
 
-    // Create a map of food details
-    const foodById = foodsDetails
-        .reduce((map: { [id: string]: FoodDocument }, food: any) => {
-            map[food._id.toString()] = food;
+    // Create a map of item details
+    const itemById = itemsDetails
+        .reduce((map: { [id: string]: ItemDocument }, item: any) => {
+            map[item._id.toString()] = item;
             return map;
         }, {});
 
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         name: order.name,
         comment: order.comment ?? "",
         items: order.items.map((item) => ({
-            food: foodById[item.food._id.toString()],
+            item: itemById[item.item._id.toString()],
             status: item.status
         })),
         orderDate: order.orderDate,

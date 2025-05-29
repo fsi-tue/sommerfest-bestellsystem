@@ -1,39 +1,26 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from "react"; // Added useCallback, useMemo
+import React, { useCallback, useEffect, useMemo, useState } from "react"; // Added useCallback, useMemo
 import WithSystemCheck from "@/app/WithSystemCheck"; // Keep HOC wrapper
-import { getDateFromTimeSlot } from "@/lib/time";
-import { ORDER } from "@/config";
-import { FoodDocument } from '@/model/food';
+import { ItemDocument } from '@/model/item';
 
 import IntroductionSection from '@/app/components/IntroductionSection';
 import MenuSection from '@/app/components/MenuSection';
 import OrderSection from '@/app/components/OrderSection';
 import FloatingOrderSummary from '@/app/components/FloatingOrderSummary';
 import OrderSummary from "@/app/components/order/OrderSummary";
+import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
 
 const EVERY_X_SECONDS = 60; // Keep constant here or move to config
 
-// Define OrderType interface (can be moved to a separate types file, e.g., @/types/order.ts)
-export interface OrderType {
-    name: string;
-    // Using a map where key is food._id and value is an array of identical food items
-    items: { [_id: string]: FoodDocument[] };
-    comment: string;
-    timeslot: string | null;
-}
-
-const Page = () => {
+const Page: React.FC = () => {
     const [error, setError] = useState('');
-    const [foods, setFoods] = useState<{ [_id: string]: FoodDocument[] }>({});
+    const [items, setItems] = useState<{ [_id: string]: ItemDocument[] }>({});
     const [isMenuLoading, setIsMenuLoading] = useState(true); // Add loading state for menu
     const [ordersOpen, openOrders] = useState(false);
-    const [order, setOrder] = useState<OrderType>({
-        name: '',
-        items: {},
-        comment: '',
-        timeslot: null,
-    })
+
+    const order = useCurrentOrder()
+    const orderActions = useOrderActions()
 
     // --- Data Fetching ---
     useEffect(() => {
@@ -46,7 +33,7 @@ const Page = () => {
                     throw new Error(error);
                 }
                 // Assuming data is already grouped by _id, otherwise group it here if needed
-                setFoods(data);
+                setItems(data);
             })
             .catch(error => {
                 console.error('Error fetching pizza menu:', error);
@@ -55,88 +42,12 @@ const Page = () => {
             .finally(() => {
                 setIsMenuLoading(false);
             });
-    }, []); // Empty dependency array ensures this runs once on mount
+    }, []);
 
     // --- State Update Handlers (Memoized) ---
     const clearError = useCallback(() => {
         setError('');
     }, []);
-
-    const updateOrder = useCallback((updatedOrder: Partial<OrderType>) => {
-        setOrder(prevOrder => ({ ...prevOrder, ...updatedOrder }));
-    }, []); // No dependencies needed
-
-    const addToOrder = useCallback((food: FoodDocument) => {
-        clearError(); // Clear any previous errors when adding items
-        const foodId = food._id.toString();
-        setOrder(prevOrder => {
-            const currentItems = prevOrder.items[foodId] ?? [];
-            const updatedItems = [...currentItems, food];
-            return {
-                ...prevOrder,
-                items: {
-                    ...prevOrder.items,
-                    [foodId]: updatedItems,
-                },
-            };
-        });
-    }, [clearError]);
-
-    const removeFromOrder = useCallback((food: FoodDocument) => {
-        clearError();
-        const foodId = food._id.toString();
-        setOrder(prevOrder => {
-            const currentItems = prevOrder.items[foodId] ?? [];
-            if (currentItems.length === 0) {
-                return prevOrder;
-            } // Should not happen with this structure, but safe check
-
-            const updatedItems = currentItems.slice(0, -1); // Remove the last item instance
-
-            const newItemsState = { ...prevOrder.items };
-            if (updatedItems.length === 0) {
-                delete newItemsState[foodId]; // Remove the key if no items of this type remain
-            } else {
-                newItemsState[foodId] = updatedItems;
-            }
-
-            return {
-                ...prevOrder,
-                items: newItemsState,
-            };
-        });
-    }, [clearError]);
-
-    const setTimeslot = useCallback((timeslot: string) => {
-        clearError();
-        const BUFFER = ORDER.TIMESLOT_DURATION; // Time buffer in minutes
-        const currentTimeWithBuffer = new Date();
-        currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER);
-
-        try {
-            const timeslotTime = getDateFromTimeSlot(timeslot).toDate(); // Ensure this function handles invalid formats gracefully
-
-            if (timeslotTime < currentTimeWithBuffer) {
-                setError('Selected timeslot is too soon or in the past.');
-                // Optionally clear the timeslot visually if invalid
-                // updateOrder({ timeslot: null });
-                setTimeout(() => clearError(), 5000); // Auto-clear error after 5s
-                return; // Prevent setting the invalid timeslot
-            }
-
-            updateOrder({ timeslot }); // Update if valid
-
-        } catch (e) {
-            console.error("Error parsing timeslot:", e);
-            setError("Invalid timeslot selected.");
-            setTimeout(() => clearError(), 5000);
-        }
-
-    }, [updateOrder, clearError]); // Dependencies
-
-    const setName = useCallback((name: string) => {
-        updateOrder({ name });
-    }, [updateOrder]);
 
     // --- Derived State / Calculations (Memoized) ---
     const { totalItems, totalPrice } = useMemo(() => {
@@ -166,31 +77,27 @@ const Page = () => {
     // --- Render ---
     return (
         // Using a fragment as the outer div is provided by layout.tsx
-        <>
+         <>
             {!ordersOpen ? (
                 <>
                     <IntroductionSection/>
 
                     <div
-                        className="bg-white p-6 md:p-8 rounded-lg shadow-md mb-24"> {/* Increased bottom margin for floating island */}
-                        {isMenuLoading && !Object.keys(foods).length ? (
-                            <div className="text-center p-10">Loading Menu...</div> // Show loading indicator until food is loaded
+                        className="bg-white p-6 md:p-8 rounded-2xl shadow-md mb-24"> {/* Increased bottom margin for floating island */}
+                        {isMenuLoading && !Object.keys(items).length ? (
+                            <div className="text-center p-10">Loading Menu...</div> // Show loading indicator until item is loaded
                         ) : (
                             <div
                                 className="flex flex-col md:flex-row justify-between gap-8 lg:gap-12"> {/* Added more gap */}
                                 <MenuSection
-                                    foods={foods}
-                                    onAddToOrder={addToOrder}
+                                    items={items}
+                                    onAddToOrder={orderActions.addToOrder}
                                 />
                                 <OrderSection
-                                    order={order}
-                                    error={error && !ordersOpen ? '' : error} // Only show error here if floating island is open or no error exists
+                                    error={error && !ordersOpen ? '' : error}
                                     start={start}
                                     end={end}
-                                    everyXSeconds={EVERY_X_SECONDS}
-                                    selectedTimeslot={order.timeslot}
-                                    onSetName={setName}
-                                    onSetTimeslot={setTimeslot}
+                                    every_x_seconds={EVERY_X_SECONDS}
                                 />
                             </div>
                         )}
@@ -198,19 +105,14 @@ const Page = () => {
 
                     {!isMenuLoading && (
                         <FloatingOrderSummary
-                            order={order}
                             isOpen={ordersOpen}
-                            error={error} // Pass error state directly
-                            totalItems={totalItems}
-                            totalPrice={totalPrice}
+                            error={error}
                             onToggleOpen={() => openOrders(true)}
-                            onRemoveFromOrder={removeFromOrder}
                         />
                     )}
                 </>
             ) : (
-                <OrderSummary order={order} totalItems={totalItems} totalPrice={totalPrice}
-                              onRemoveFromOrder={removeFromOrder} onClose={() => openOrders(false)}/> // Close button
+                <OrderSummary onClose={() => openOrders(false)}/> // Close button
             )}
         </>
     );

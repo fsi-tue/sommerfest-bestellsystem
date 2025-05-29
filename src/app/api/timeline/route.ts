@@ -1,9 +1,9 @@
 import dbConnect from "@/lib/dbConnect";
-import { constants } from '@/config';
+import { CONSTANTS } from '@/config';
 import { OrderModel } from '@/model/order';
 
 import moment from 'moment-timezone';
-import { FoodModel, FoodDocument } from "@/model/food";
+import { ItemModel, ItemDocument } from "@/model/item";
 import { getDateFromTimeSlot } from "@/lib/time";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
 
     const TIME_SLOT_SIZE_MINUTES = 10;
     const timeSlots = [];
-    let currentTime = moment().tz(constants.TIMEZONE_ORDERS)
+    let currentTime = moment().tz(CONSTANTS.TIMEZONE_ORDERS)
         .subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes')
         .subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES, "minutes")
         .set({
@@ -46,10 +46,10 @@ export async function GET(request: Request) {
         },
         status: { $ne: 'cancelled' }, // TODO: Check if this is needed
     });
-    const food = await FoodModel.find();
-    const foodById = food
-        .reduce((map: { [id: string]: FoodDocument }, food) => {
-            map[food._id.toString()] = food;
+    const items = await ItemModel.find();
+    const itemsById = items
+        .reduce((map: { [id: string]: ItemDocument }, item) => {
+            map[item._id.toString()] = item;
             return map;
         }, {});
 
@@ -58,8 +58,9 @@ export async function GET(request: Request) {
         orders.forEach(({ timeslot, items }) => {
             const timeSlot = getDateFromTimeSlot(timeslot);
             if (timeSlot >= startTime && timeSlot < stopTime) {
-                items.forEach(({ food }) => {
-                    totalAmount += foodById[food._id.toString()].size;
+                items.forEach(({ item }) => {
+                    console.log(itemsById)
+                    totalAmount += itemsById[item._id.toString()].size;
                 });
             }
         });

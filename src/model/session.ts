@@ -1,5 +1,5 @@
 import { type Document, Model, model, Schema } from "mongoose"
-import { constants } from "@/config";
+import { CONSTANTS } from "@/config";
 
 export interface SessionDocument extends Document {
     userId: string;
@@ -22,7 +22,7 @@ const sessionSchema = new Schema({
         type: Date,
         required: true,
         default: Date.now,
-        expires: constants.LIFETIME_BEARER_HOURS * 60 * 60
+        expires: CONSTANTS.LIFETIME_BEARER_HOURS * 60 * 60
     }
 });
 

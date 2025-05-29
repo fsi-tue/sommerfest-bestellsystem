@@ -1,10 +1,10 @@
 import { Document, model, Model, Schema, Types } from "mongoose";
-import { FOOD } from "@/config";
+import { ITEM_CONFIG } from "@/config";
 
-export interface Food {
+export interface Item {
     name: string;
     price: number;
-    type: string; // Type of food
+    type: string; // Type of item
     dietary?: string; // Dietary requirements
     ingredients?: string[];
     size: number; // Size, e.g., 0.5 for half a pizza
@@ -14,12 +14,12 @@ export interface Food {
 }
 
 // Extend the interface to include the MongoDB `_id` field
-export interface FoodDocument extends Food, Document {
+export interface ItemDocument extends Item, Document {
     _id: Types.ObjectId; // Explicitly define `_id` as ObjectId
 }
 
-// Define the schema for the Food model
-const foodSchema = new Schema<FoodDocument>(
+// Define the schema for the Item model
+export const itemSchema = new Schema<ItemDocument>(
     {
         name: { type: String, required: true },
         price: { type: Number, required: true, default: 0, min: 0, max: 100 },
@@ -27,7 +27,7 @@ const foodSchema = new Schema<FoodDocument>(
         dietary: { type: String },
         ingredients: { type: [String] },
         size: { type: Number, required: true, default: 1, min: 0.1, max: 1 },
-        max: { type: Number, default: FOOD.MAX_ITEMS },
+        max: { type: Number, default: ITEM_CONFIG.MAX_ITEMS },
         enabled: { type: Boolean, default: true },
         createdAt: { type: Date, default: Date.now },
     },
@@ -36,12 +36,12 @@ const foodSchema = new Schema<FoodDocument>(
     }
 );
 
-// Create the Food model
-let FoodModel: Model<FoodDocument>;
+// Create the Item model
+let ItemModel: Model<ItemDocument>;
 try {
-    FoodModel = model<FoodDocument>("Food");
+    ItemModel = model<ItemDocument>("Item");
 } catch (error) {
-    FoodModel = model<FoodDocument>("Food", foodSchema);
+    ItemModel = model<ItemDocument>("Item", itemSchema);
 }
 
-export { FoodModel };
+export { ItemModel };

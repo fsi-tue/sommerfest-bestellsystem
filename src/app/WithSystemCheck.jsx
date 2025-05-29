@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { Construction } from "lucide-react";
+import {useEffect, useState} from "react";
 
 const WithSystemCheck = (WrappedComponent) => {
 	return function WithSystemCheckComponent(props) {
@@ -54,16 +55,15 @@ const WithSystemCheck = (WrappedComponent) => {
 		}
 
 		return (
-			<div>
-				<div className="flex items-center justify-center">
-					<div className="text-center p-6">
-						<h2 className="text-2xl font-semibold text-gray-800 mb-4">System Inactive</h2>
-						<p className="text-gray-600 mb-4">
-							Our system is currently undergoing maintenance. We apologize for any
-							inconvenience this may cause. Please try again later.
-						</p>
+			<div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+				<div className="flex items-center gap-3 mb-2">
+					<div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+						<Construction className="w-4 h-4 text-red-400"/>
 					</div>
+					<h1 className="text-2xl font-semibold text-gray-900">System Inactive</h1>
 				</div>
+				<p className="text-gray-500 text-sm">Our system is currently undergoing maintenance. We apologize for any
+					inconvenience this may cause. Please try again later.</p>
 			</div>
 		);
 	};
