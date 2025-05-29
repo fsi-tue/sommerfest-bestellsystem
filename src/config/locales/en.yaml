@@ -33,3 +33,19 @@ translation:
     open_order_summary: Open order summary
     order_now: Order now
 
+  order_overview:
+    history:
+      title: Order History
+      subtitle: Track and manage your recent orders
+    recent:
+      title: Recent Orders
+      orders_found_singular: "{{orders}} order found"
+      orders_found_plural: "{{orders}} orders found"
+      no_orders_yet: No orders yet
+      messages:
+        first_order: When you place your first order, it will appear here for easy tracking.
+    timeline:
+      title: Order Timeline
+      subtitle: Real-time view of order activity and scheduling
+
+
