@@ -3,6 +3,7 @@ import { PlusIcon, TrashIcon, XMarkIcon, } from "@heroicons/react/24/outline";
 import OrderButton from "@/app/components/order/OrderButton";
 import React, { useState } from "react";
 import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
+import { useTranslation } from "react-i18next";
 
 interface OrderSummaryPageProps {
     onClose: () => void;
@@ -15,7 +16,8 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     const order = useCurrentOrder();
-    const orderActions = useOrderActions()
+    const orderActions = useOrderActions();
+    const [t, i18n] = useTranslation();
 
     // Use a structure that includes quantity for each unique item
     // This is a simplified example; you'll need logic to aggregate items
@@ -39,7 +41,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
 
             {/* 1. Header */}
             <div className="flex justify-between items-center p-4 border-b flex-shrink-0">
-                <h2 className="text-xl font-bold">Warenkorb</h2>
+                <h2 className="text-xl font-bold">{t('cart.title')}</h2>
                 <button
                     onClick={onClose}
                     className="text-gray-400 hover:text-gray-700 transition-colors"
@@ -52,7 +54,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
                 {/* Item List */}
                 {isEmpty ? (
-                    <p className="text-center text-gray-500 py-6">Dein Warenkorb ist leer.</p>
+                    <p className="text-center text-gray-500 py-6">{t('cart.messages.empty_cart')}</p>
                 ) : (
                     <div className="space-y-4">
                         {aggregatedItems.map(({ item, quantity }) => (
@@ -60,7 +62,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                  className="flex flex-col border-b border-gray-100 pb-4 last:border-b-0">
                                 <div className="flex justify-between items-start gap-2">
                                     <span className="font-semibold flex-grow">{item.name}</span>
-                                    <span className="font-semibold flex-shrink-0">{item.price.toFixed(2)} €</span>
+                                    <span className="font-semibold flex-shrink-0">{item.price.toFixed(2)} {t('cart.currency')}</span>
                                 </div>
                                 <div className="flex justify-between items-center mt-1">
                                     {/* Add Note Button */}
@@ -68,7 +70,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                         // onClick={() => onAddNote(item)} // Add handler
                                         className="text-sm text-blue-600 hover:underline focus:outline-none"
                                     >
-                                        Anmerkung hinzufügen
+                                        {t('cart.messages.add_note')}
                                     </button>
 
                                     {/* Quantity Controls */}
@@ -103,7 +105,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                         onClick={onClose} // Or navigate to menu
                         className="w-full bg-gray-200 text-gray-700 py-3 rounded-full font-semibold hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
                     >
-                        Weitere Produkte hinzufügen
+                        {t('cart.messages.add_more_products')}
                     </button>
                 ) : (
                     <OrderButton setError={setError}/>

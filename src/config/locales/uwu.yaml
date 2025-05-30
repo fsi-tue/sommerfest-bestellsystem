@@ -1,0 +1,50 @@
+translation:
+  lang_emoji: 🥹
+  app_title: 💖🍕✨🎀🎉 Get youw smol byte of nyummy pizza~!! 👉👈 🍰🍕 So dewicious nyaaa~!! 💖🌸🍭
+  menu:
+    login: 🔐✨💫 Wogin~ pwease! 🐾🌷🎶
+    home: 🏠💞🐾🌸 H-home sweet home~! *nuzzles* 💐🍃✨
+    orders: 📦🎀🍰🎉 Youw vewy own owo owdews~! *giggles* 🎀🌟🐰
+  order_view:
+    introduction:
+      choose_your_item: 🍕🥺💖🌟 Pwease choose youw favowite itewm~! 🎀🐾🍃
+      pick_up_time: 🕒🐱✨ Sewect a snuggwy pick-up time~ nyan~! 🌙🎶💫
+      pay_in_cash: 💸💰🐾✨ Pay in shiny cash at da cute countew~! 🍭🌸🎉
+      closer: 🌙💤✨💖 Enjoy youw supew cozy evewning~! *wuvs you* 🎀🐰💫
+    order:
+      name: 🥺🌸🎶 Pwetty nyame pwease~! 🍃💖🎉
+      name_placeholder: ✍️💌🐰🌷 Type youw nyame hewe~ *blushes* 🍭🎀🌟
+    timeslot:
+      title: ⏰✨🌟🎉 Timewot fow pick-up~! *sparkwes* 💫🐾🍃
+      subtitle: 🕰️💞🐾🌸 Pwease sewect youw most favowite pick-up time~ nya! 🎀🎶✨
+    item:
+      button:
+        add: 👉👈 💖🍕🥰✨🎉 Gimme 💖🍕🌸
+  cart:
+    title: 🛒🍰💖🍭🎉 full of wuv and yum yum~! 🍬🐾✨
+    messages:
+      empty_cart: 🥺💔😿🚫 Uh oh! Youw 🛒 is aww empties~ ;w; pwease add sumfing! 🎀🌸💫
+      add_note: 📝💌🐾🎶 Add a wittwe note~ owo ✨🎉💖
+      add_more_products: 🛍️💖🐰🌸 Add mowe cute pwoducts~! *wiggles* 🎶🎀🎉
+    items: 🎁💞🍬🌟 Cute itewms inside~! 🎀🐾🍭
+    total_price: 💰💸✨🐰 Totaw pwayce~ owo *counts coins* 🎉💖🍕
+    total_price_format: 🙈💖🐾🌸 nyaa~ no nyumbews hewe~! 🎀✨🎶
+    currency: "✨💶🍀🌷🎉"
+    timeslot: 🍕⏳💖🌸 Timeswot fow youw yummy pizza~! *sparkwy eyes* 🎀🐾✨
+    timeslot_not_selected: 🚫⏰😭🐾 Oh noes! ;w; 🎉🌸💫
+    open_order_summary: 📜✨🐰🎶 Pwease open youw owdew summawy~ 🎀💖🌟
+    order_now: 🍕💞🚀🐰 OwO Owdew nyow~! Don't be shy~! *blushes* 🎉🌸✨
+  order_overview:
+    history:
+      title: 📚💖🐱🎉 Owdwew histowy, wuvwy and safe~! *purrs* ✨🌸🐾
+      subtitle: 🐾🕵️‍♀️💞🌷 Twack and manage aww youw supew cute wecent owdews~ nya~! uwu 🎀🎶✨
+    recent:
+      title: 🎀📦✨🐰 Wecent owo owdews, just fow you~! 🎉💖🌸
+      orders_found_singular: "✨🎉🥳 UwU {{orders}} 💕✨🎉🌈💫 owdew found~! *sparkwes* 💫🐾🍃"
+      orders_found_plural: "🎉✨💖 UwU {{orders}} 💕✨🎉🌈💫 owdews found~! *giggles* owo 🎀🐰🌸"
+      no_orders_yet: 😿💔🐾🎶 Nya~ no owdews yet! Pwease make a cute one~ ;w; 🎉🌷✨
+      messages:
+        first_order: 🤗🐰💖🎶 When you pwace youw fiwst owo owdew, it wiww appeaw hewe fow easy twacking~! *huggwes* uwu 🌸🎀✨
+    timeline:
+      title: ⏰✨🎆💫🐾 OwO OwO OwO OwO owdew timewine~!! *sparkwe sparkwe* 🎉🌷💖
+      subtitle: 🐾📅💖✨🌸 Weaw-time cute view of owdew activity and scheduwing~ nyaaa~! uwu 🎶🎀💫

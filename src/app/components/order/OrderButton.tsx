@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { addToLocalStorage, getFromLocalStorage } from "../../../lib/localStorage";
 import { useCurrentOrder } from "@/app/zustand/order";
+import { useTranslation } from "react-i18next";
 
 interface OrderButtonProps {
     setError: (error: string) => void;
@@ -10,6 +11,7 @@ interface OrderButtonProps {
 const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
     const router = useRouter();
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [t, i18n] = useTranslation();
 
     const order = useCurrentOrder();
 
@@ -64,7 +66,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
             className={`w-full bg-green-700 text-white px-4 py-2 rounded-2xl md:w-auto  ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-800'}`}
             disabled={isButtonDisabled}
         >
-            Order now
+            {t('cart.ordere_now')}
         </button>
     );
 };

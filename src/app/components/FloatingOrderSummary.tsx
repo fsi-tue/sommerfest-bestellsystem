@@ -1,6 +1,7 @@
 import FloatingIslandElement from "@/app/components/FloatingIslandElement";
 import React from "react";
 import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
+import { useTranslation } from "react-i18next";
 
 interface FloatingOrderSummaryProps {
     isOpen: boolean;
@@ -14,7 +15,12 @@ const FloatingOrderSummary: React.FC<FloatingOrderSummaryProps> = ({
                                                                        onToggleOpen,
                                                                    }: FloatingOrderSummaryProps) => {
     const order = useCurrentOrder();
-    const orderActions = useOrderActions()
+    const orderActions = useOrderActions();
+    const [t, i18n] = useTranslation();
+
+    function format_price(currency: string, value: number): string {
+        return `${value.toFixed(2)}${currency}`;
+    }
 
     return (
         <div
@@ -22,16 +28,16 @@ const FloatingOrderSummary: React.FC<FloatingOrderSummaryProps> = ({
             <div className={`relative flex items-center justify-between h-full ${isOpen ? 'flex-col' : 'flex-row'}`}>
                 {!isOpen && !error && (
                     <>
-                        <FloatingIslandElement title="Items" content={orderActions.getTotalItemCount()}/>
+                        <FloatingIslandElement title={t('cart.items')} content={orderActions.getTotalItemCount()}/>
                         <div className="mx-1 md:mx-2 bg-white bg-opacity-30 w-px h-8 inline-block"/>
                         {/* Adjusted divider */}
-                        <FloatingIslandElement title="Total Price"
-                                               content={`${orderActions.getCurrentOrderTotal().toFixed(2)}€`}/> {/* Ensure 2 decimal places */}
+                        <FloatingIslandElement title={t('cart.total_price')}
+                                               content={format_price(t('cart.currency'), orderActions.getCurrentOrderTotal())}/> {/* Ensure 2 decimal places */}
                         <div className="mx-1 md:mx-2 bg-white bg-opacity-30 w-px h-8 inline-block"/>
-                        <FloatingIslandElement title="Timeslot" content={order.timeslot ?? 'Not selected'}/>
+                        <FloatingIslandElement title={t('cart.timeslot')} content={order.timeslot ?? t('cart.timeslot_not_selected')}/>
                         {/* Clickable area for opening */}
                         <button onClick={onToggleOpen} className="absolute inset-0 cursor-pointer"
-                                aria-label="Open order summary"></button>
+                                aria-label={t('cart.open_order_summary')}></button>
                     </>
                 )}
 
