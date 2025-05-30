@@ -4,7 +4,6 @@ import { getFromLocalStorage } from "@/lib/localStorage";
 import Timeline from "@/app/components/Timeline";
 import { ChevronRight, Clock, Package, Pizza } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import intl from "react-intl";
 
 const EVERY_X_SECONDS = 60;
 
