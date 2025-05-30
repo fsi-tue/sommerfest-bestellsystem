@@ -40,7 +40,7 @@ const Item = ({ item, onAddClick }: ItemItemProps) => {
                     {/* Price */}
                     <div className="flex items-baseline gap-1">
                         <span className="text-lg font-bold text-gray-900">
-                            €{item.price.toFixed(2)}
+                            {t('cart.currency')} {item.price.toFixed(2)}
                         </span>
                     </div>
                 </div>
