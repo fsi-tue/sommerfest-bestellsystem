@@ -1,3 +1,52 @@
 translation:
   lang_emoji: 🇩🇪
   app_title: Schnapp dir deinen Pizza-Byte
+  menu:
+    login: Anmelden
+    home: Startseite
+    orders: Deine Bestellungen
+  order_view:
+    introduction:
+      choose_your_item: Wähle dein Produkt
+      pick_up_time: Abholzeit
+      pay_in_cash: Barzahlung am Tresen
+      closer: Genieße deinen Abend!
+    order:
+      name: Name
+      name_placeholder: Gib deinen Namen ein
+    timeslot:
+      title: Zeitfenster
+      subtitle: Wähle deine bevorzugte Abholzeit.
+    item:
+      button:
+        add: Hinzufügen
+
+  cart:
+    title: Warenkorb
+    messages:
+      empty_cart: Dein Warenkorb ist leer.
+      add_note: Notiz hinzufügen
+      add_more_products: Weitere Produkte hinzufügen
+    items: Artikel
+    total_price: Gesamtpreis
+    total_price_format: nono
+    currency: "€"
+    timeslot: Zeitfenster
+    timeslot_not_selected: Nicht ausgewählt
+    open_order_summary: Bestellübersicht öffnen
+    order_now: Jetzt kaufen
+
+  order_overview:
+    history:
+      title: Bestellverlauf
+      subtitle: Verfolge und verwalte deine letzten Bestellungen
+    recent:
+      title: Letzte Bestellungen
+      orders_found_singular: "{{orders}} Bestellung gefunden"
+      orders_found_plural: "{{orders}} Bestellungen gefunden"
+      no_orders_yet: Noch keine Bestellungen
+      messages:
+        first_order: Wenn du deine erste Bestellung aufgibst, erscheint sie hier.
+    timeline:
+      title: Bestellzeitachse
+      subtitle: Echtzeitansicht der Bestellaktivität und -planung

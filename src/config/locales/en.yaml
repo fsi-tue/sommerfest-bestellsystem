@@ -17,6 +17,9 @@ translation:
     timeslot:
       title: Timeslot
       subtitle: Select your preferred pick-up time.
+    item:
+      button:
+        add: Add
 
   cart:
     title: Cart
