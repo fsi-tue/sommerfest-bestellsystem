@@ -1,10 +1,24 @@
 translation:
   lang_emoji: 🥹
   app_title: 💖🍕✨🎀🎉 Get youw smol byte of nyummy pizza~!! 👉👈 🍰🍕 So dewicious nyaaa~!! 💖🌸🍭
-  menu:
-    login: 🔐✨💫 Wogin~ pwease! 🐾🌷🎶
-    home: 🏠💞🐾🌸 H-home sweet home~! *nuzzles* 💐🍃✨
-    orders: 📦🎀🍰🎉 Youw vewy own owo owdews~! *giggles* 🎀🌟🐰
+  
+  header:
+    adminlinks:
+      prepare: Prepare Items
+      manage_db: Manage DB
+      manage_orders: Manage Orders
+      manage_items: Manage Items
+      logout: Logout
+    menu:
+      login: 🔐✨💫 Wogin~ pwease! 🐾🌷🎶
+      home: 🏠💞🐾🌸 H-home sweet home~! *nuzzles* 💐🍃✨
+      orders: 📦🎀🍰🎉 Youw vewy own owo owdews~! *giggles* 🎀🌟🐰
+
+  footer:
+    fuel: 🍕Piwuicsa🍕-mumwchin'🥺 cwode 🧑‍💻👩🏾‍💻👨🏼‍💻 fwom 🎀
+
+  
+
   order_view:
     introduction:
       choose_your_item: 🍕🥺💖🌟 Pwease choose youw favowite itewm~! 🎀🐾🍃

@@ -1,10 +1,24 @@
 translation:
   lang_emoji: 🇺🇸
   app_title: Get Your Byte of Pizza!
-  menu:
-    login: Login
-    home: Home
-    orders: Your Orders
+
+  header:
+    adminlinks:
+      prepare: Prepare Items
+      manage_db: Manage DB
+      manage_orders: Manage Orders
+      manage_items: Manage Items
+      logout: Logout
+    menu:
+      login: Login
+      home: Home
+      orders: Your Orders
+
+  footer:
+    fuel: Pizza-fueled code by
+
+
+
   order_view:
     introduction:
       choose_your_item: Choose your Item
@@ -69,3 +83,7 @@ translation:
       delivered: Your order has been delivered.
       cancelled: Your order has been cancelled.
       default: Order status unavailable.
+    
+    order_button:
+      order_now: 
+      

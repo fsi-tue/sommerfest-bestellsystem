@@ -66,7 +66,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
             className={`w-full bg-green-700 text-white px-4 py-2 rounded-2xl md:w-auto  ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-800'}`}
             disabled={isButtonDisabled}
         >
-            {t('cart.ordere_now')}
+            {t('cart.order_now')}
         </button>
     );
 };

@@ -32,11 +32,11 @@ const Header = () => {
 	}, []);
 
 	const adminLinks = [
-		{to: "/admin/prepare", text: "Prepare Items"}, // does not work yet
-		{to: "/admin/manage", text: "Manage DB"},
-		{to: "/admin/manage/order", text: "Manage Orders"},
-		{to: "/admin/manage/pizza", text: "Manage Items"},
-		{to: "/admin/logout", text: "Logout"},
+		{to: "/admin/prepare", text: t('header.adminlinks.prepare')}, // does not work yet
+		{to: "/admin/manage", text: t('header.adminlinks.manage_db')},
+		{to: "/admin/manage/order", text: t('header.adminlinks.manage_orders')},
+		{to: "/admin/manage/pizza", text: t('header.adminlinks.manage_items')},
+		{to: "/admin/logout", text: t('header.adminlinks.logout')},
 	];
 
 	// --- New Header Text ---
@@ -65,7 +65,7 @@ const Header = () => {
 							className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
 						>
 							<Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-							<span className="font-medium">{t('menu.home')}</span>
+							<span className="font-medium">{t('header.menu.home')}</span>
 						</Link>
 
 						<Link
@@ -73,7 +73,7 @@ const Header = () => {
 							className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
 						>
 							<List className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-							<span className="font-medium">{t('menu.orders')}</span>
+							<span className="font-medium">{t('header.menu.orders')}</span>
 						</Link>
 					</div>
 
@@ -85,7 +85,7 @@ const Header = () => {
 								className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
 							>
 								<LogIn className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-								<span className="font-medium">{t('menu.login')}</span>
+								<span className="font-medium">{t('header.menu.login')}</span>
 							</Link>
 						</div>
 					)}
