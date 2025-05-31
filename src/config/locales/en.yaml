@@ -51,4 +51,21 @@ translation:
       title: Order Timeline
       subtitle: Real-time view of order activity and scheduling
 
-
+  
+  order:
+    suspense:
+      loading: Loading...
+    thank_you:
+      qr:
+        title: Thank you for your order! 🍕
+        your_order_number: "Your order number is:"
+        instructions: Please proceed to pay at the counter.
+        order_again: Order again
+        view_orders: View orders
+    status:
+      ordered: We've received your order.
+      inPreparation: Your order is being prepared.
+      ready: Your order is ready for pickup!
+      delivered: Your order has been delivered.
+      cancelled: Your order has been cancelled.
+      default: Order status unavailable.

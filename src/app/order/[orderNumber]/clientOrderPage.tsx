@@ -6,6 +6,7 @@ import { getFromLocalStorage } from "@/lib/localStorage";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import { Order, OrderStatus } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
+import { useTranslation } from "react-i18next";
 
 // Client Component with the original logic
 export default function ClientOrderPage({ orderNumber }: { orderNumber: string }) {
@@ -14,6 +15,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const router = useRouter();
+    const [t, i18n] = useTranslation();
 
     // Check if logged in
     useEffect(() => {
@@ -74,17 +76,6 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
         );
     };
 
-    const statusToText = (order: { status: OrderStatus }) => {
-        switch (order.status) {
-            case 'ordered': return 'We\'ve received your order.';
-            case 'inPreparation': return 'Your order is being prepared.';
-            case 'ready': return 'Your order is ready for pickup!';
-            case 'delivered': return 'Your order has been delivered.';
-            case 'cancelled': return 'Your order has been cancelled.';
-            default: return 'Order status unavailable.';
-        }
-    };
-
     if (isLoading) {
         return (
             <div className="p-6 max-w-md mx-auto">
@@ -130,7 +121,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
 
             {/* Rest of your UI */}
             <div className="bg-white p-4 rounded-2xl mb-4">
-                <h3 className="text-lg font-light">{statusToText(order)}</h3>
+                <h3 className="text-lg font-light">{t(`order.status.${order.status}`) || t(`order.status.default`)}</h3>
                 {order.status !== 'cancelled' && (
                     <>
                         <h3 className="text-xl font-semibold mb-2">Arriving {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}</h3>

@@ -50,3 +50,22 @@ translation:
     timeline:
       title: Bestellzeitachse
       subtitle: Echtzeitansicht der Bestellaktivität und -planung
+  
+  
+  order:
+    suspense:
+      loading: Lädt...
+    thank_you:
+      qr:
+        title: Vielen Dank für deine Bestellung! 🍕
+        your_order_number: "Deine Bestellnummer ist:"
+        instructions: Bitte bezahl' am Counter.
+        order_again: Erneut bestellen
+        view_orders: Bestellungen anzeigen
+    status:
+      ordered: Wir haben die Bestellung aufgenommen.
+      inPreparation: Deine Bestellung wird zubereitet.
+      ready: Deine Bestellung ist bereit zum Abholen!
+      delivered: Deine Bestellung wurde abgeholt.
+      cancelled: Deine Bestellung wurde abgebrochen.
+      default: Order Status kaputt :(.
