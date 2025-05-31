@@ -2,7 +2,9 @@ import i18n, { InitOptions } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { loadResources } from './i18n.resources';
 
-export const resources: Record<string, any> = loadResources(require);
+export const resources: Record<string, any> = loadResources((id:string) => {
+  return require("@/config/locales/${id}.yaml")["default"] || {};
+});
 
 export const i18nConfig: InitOptions = {
   lng: process.env.NODE_ENV === 'development' ? 'dev' : 'en',

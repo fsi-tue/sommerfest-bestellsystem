@@ -13,11 +13,11 @@ export function flattenKeys(obj: Record<string, any>, prefix = ''): Record<strin
 }
 
 
-export function loadResources(requireFunc: (str: string) => any): Record<string, any> {
+export function loadResources(loadTranslation: (str: string) => any): Record<string, any> {
   let resources: Record<string, any> = {
-    "de": requireFunc("@/config/locales/de.yaml")["default"] || {},
-    "en": requireFunc("@/config/locales/en.yaml")["default"] || {},
-    "uwu": requireFunc("@/config/locales/uwu.yaml")["default"] || {},
+    "de": loadTranslation("de"),
+    "en": loadTranslation("en"),
+    "uwu": loadTranslation("uwu"),
   };
 
   if (process.env.NODE_ENV === 'development') {
