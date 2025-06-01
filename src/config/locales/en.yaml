@@ -43,12 +43,10 @@ translation:
       add_more_products: Add more Products
     items: Items
     total_price: Total Price
-    total_price_format: nono
     currency: "€"
     timeslot: Timeslot
     timeslot_not_selected: Not selected
     open_order_summary: Open order summary
-    order_now: Order now
 
   order_overview:
     history:

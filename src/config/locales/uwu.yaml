@@ -42,12 +42,10 @@ translation:
       add_more_products: 🛍️💖🐰🌸 Add mowe cute pwoducts~! *wiggles* 🎶🎀🎉
     items: 🎁💞🍬🌟 Cute itewms inside~! 🎀🐾🍭
     total_price: 💰💸✨🐰 Totaw pwayce~ owo *counts coins* 🎉💖🍕
-    total_price_format: 🙈💖🐾🌸 nyaa~ no nyumbews hewe~! 🎀✨🎶
     currency: "✨💶🍀🌷🎉"
     timeslot: 🍕⏳💖🌸 Timeswot fow youw yummy pizza~! *sparkwy eyes* 🎀🐾✨
     timeslot_not_selected: 🚫⏰😭🐾 Oh noes! ;w; 🎉🌸💫
     open_order_summary: 📜✨🐰🎶 Pwease open youw owdew summawy~ 🎀💖🌟
-    order_now: 🍕💞🚀🐰 OwO Owdew nyow~! Don't be shy~! *blushes* 🎉🌸✨
   order_overview:
     history:
       title: 📚💖🐱🎉 Owdwew histowy, wuvwy and safe~! *purrs* ✨🌸🐾
@@ -82,4 +80,4 @@ translation:
       default: Order status unavailable.
     
     order_button:
-      order_now: Order now
+      order_now: 🍕💞🚀🐰 OwO Owdew nyow~! Don't be shy~! *blushes* 🎉🌸✨
