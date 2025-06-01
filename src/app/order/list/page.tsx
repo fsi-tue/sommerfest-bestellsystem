@@ -20,17 +20,6 @@ const Page = () => {
 
     const [t, i18n] = useTranslation();
 
-    function format_subtitle(key_singular: string, key_plural: string, value:number): string {
-        // {localStorageOrders.length} order{localStorageOrders.length !== 1 ? 's' : ''} found
-        if(value == 1) {
-            return t(key_singular, {orders: value});
-        }
-        else{
-            return t(key_plural, {orders: value});
-        }
-    }
-
-
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
@@ -50,11 +39,7 @@ const Page = () => {
                     <div className="p-6 border-b border-gray-100">
                         <h2 className="text-lg font-semibold text-gray-900">{t('order_overview.recent.title')}</h2>
                         <p className="text-sm text-gray-500 mt-1">
-                            {format_subtitle(
-                                'order_overview.recent.orders_found_singular', 
-                                'order_overview.recent.orders_found_plural', 
-                                localStorageOrders.length
-                            )}
+                            {t('order_overview.recent.orders_found', {count: localStorageOrders.length })}
                         </p>
                     </div>
 

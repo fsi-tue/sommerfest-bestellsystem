@@ -56,7 +56,7 @@ translation:
       subtitle: Track and manage your recent orders
     recent:
       title: Recent Orders
-      orders_found_singular: "{{orders}} order found"
+      orders_found: "{{orders}} order found"
       orders_found_plural: "{{orders}} orders found"
       no_orders_yet: No orders yet
       messages:
@@ -85,5 +85,4 @@ translation:
       default: Order status unavailable.
     
     order_button:
-      order_now: 
-      
+      order_now: Order now

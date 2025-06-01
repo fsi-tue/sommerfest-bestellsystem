@@ -56,7 +56,7 @@ translation:
       subtitle: Verfolge und verwalte deine letzten Bestellungen
     recent:
       title: Letzte Bestellungen
-      orders_found_singular: "{{orders}} Bestellung gefunden"
+      orders_found: "{{orders}} Bestellung gefunden"
       orders_found_plural: "{{orders}} Bestellungen gefunden"
       no_orders_yet: Noch keine Bestellungen
       messages:
@@ -83,3 +83,7 @@ translation:
       delivered: Deine Bestellung wurde abgeholt.
       cancelled: Deine Bestellung wurde abgebrochen.
       default: Order Status kaputt :(.
+    
+    order_button:
+      order_now: Jetzt kaufen
+      
