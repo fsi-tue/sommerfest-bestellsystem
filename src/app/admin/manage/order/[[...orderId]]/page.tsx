@@ -9,6 +9,7 @@ import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import SearchInput from "@/app/components/SearchInput";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { QrCodeIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Page = ({ params }: { params: { orderId: string } }) => {
     const [error, setError] = useState('');
@@ -18,6 +19,8 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     const [filter, setFilter] = useState(''); // state to hold order status
 
     const [noFinished, setNoFinished] = useState(true);
+
+    const [t, i18n] = useTranslation();
 
     // Order states
     const orderStates = ORDER_STATUS_VALUES
@@ -89,7 +92,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     const updateOrderStatus = (_id: string, status: OrderStatus) => {
         const order = orders.find(order => order._id.toString() === _id);
         if (!order) {
-            setError('Order not found');
+            setError(t('admin.manage.errors.order_not_found'));
             return;
         }
 
@@ -150,7 +153,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         const linkToOrder = barcode[0].rawValue
         const extractedId = linkToOrder.split('/').pop()
         if (!extractedId) {
-            setError('Could not extract order id from barcode');
+            setError(t('admin.manage.errors.barcode_fail'));
             return;
         }
         setFilter(extractedId);
@@ -173,11 +176,11 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <QrCodeIcon className="w-4 h-4 text-primary-500"/>
+                        <QrCodeIcon className="w-4 h-4 text-primary-500" />
                     </div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Order History</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">{t('admin.manage.order_history')}</h1>
                 </div>
-                <p className="text-gray-500 text-sm">Scan the QR Code to search for an order</p>
+                <p className="text-gray-500 text-sm">{t('admin.manage.scan_qr_code_text')}</p>
                 <div className="flex items-center justify-between">
                     <div className="w-32 h-32">
                         <Scanner
@@ -188,19 +191,19 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 </div>
             </div>
 
-            {error && <ErrorMessage error={error}/>}
+            {error && <ErrorMessage error={error} />}
 
             <div className="md:p-4">
-                <SearchInput search={setFilter} searchValue={filter}/>
+                <SearchInput search={setFilter} searchValue={filter} />
             </div>
 
             <div className="py-2 md:p-4">
                 <button className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200
     ${noFinished ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
-                        onClick={() => setNoFinished(!noFinished)}
+                    onClick={() => setNoFinished(!noFinished)}
                 >
-                    {noFinished ? 'Show Finished' : 'Hide Finished'}
+                    {noFinished ? t('admin.manage.show_finished') : t('admin.manage.hide_finished')}
                 </button>
             </div>
 
@@ -210,35 +213,35 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                     .toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
                     .map((order, index) => ( // Map the orders
                         <div key={order._id.toString() + index}
-                             className="w-full px-4 py-4 bg-white rounded-2xl shadow-sm">
+                            className="w-full px-4 py-4 bg-white rounded-2xl shadow-sm">
                             <div className="mb-4 p-4 bg-white rounded-2xl shadow-sm">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-lg font-semibold text-gray-800">{order.name}</span>
                                     <a className="text-xs font-light text-gray-500"
-                                       href={order_url(order._id.toString())}>
+                                        href={order_url(order._id.toString())}>
                                         {order._id.toString()}
                                     </a>
                                 </div>
 
                                 <div className="mb-2 grid grid-cols-1 gap-1 text-sm text-gray-700">
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Status:</span>
+                                        <span className="font-medium">{t('admin.manage.status')}</span>
                                         <span>{order.status}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Price:</span>
+                                        <span className="font-medium">{t('admin.manage.price')}</span>
                                         <span>{order.totalPrice}€</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Items:</span>
+                                        <span className="font-medium">{t('admin.manage.items')}</span>
                                         <span>{order.items.length}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Order Date:</span>
+                                        <span className="font-medium">{t('admin.manage.order_date')}</span>
                                         <span>{formatDateTime(new Date(order.orderDate))}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">Timeslot:</span>
+                                        <span className="font-medium">{t('admin.manage.timeslot')}</span>
                                         <span>{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}</span>
                                     </div>
                                 </div>
@@ -247,7 +250,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                             {order.comment && (
                                 <div className="mb-4">
                                     <div className="text-sm font-light text-gray-600">
-                                        <span className="font-bold">Comment:</span>
+                                        <span className="font-bold">{t('admin.manage.comment')}</span>
                                         <span className="pl-4 italic">{order.comment}</span>
                                     </div>
                                 </div>
@@ -292,7 +295,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
                                     onClick={() => setOrderAsPaid(order._id.toString(), !order.isPaid)}
                                 >
-                                    {order.isPaid ? 'Paid' : 'Not Paid'}
+                                    {order.isPaid ? t('admin.manage.paid') : t('admin.manage.not_paid')}
                                 </button>
                             </div>
                         </div>

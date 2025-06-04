@@ -63,6 +63,24 @@ translation:
       title: Order Timeline
       subtitle: Real-time view of order activity and scheduling
 
+  admin:
+    logout:
+    manage:
+      errors:
+        order_not_found: Order not found
+        barcode_fail: Could not extract order id from barcode
+      order_history: Order History
+      scan_qr_code_text: Scan the QR Code to search for an order
+      show_finished: Show Finished
+      hide_finished: Hide Finished
+      status: "Status:"
+      price: "Price:"
+      items: "Items:"
+      order_date: "Order Date:"
+      timeslot: "Timeslot:"
+      comment: "Comment:"
+      paid: Paid
+      not_paid: Not Paid
   
   order:
     suspense:
