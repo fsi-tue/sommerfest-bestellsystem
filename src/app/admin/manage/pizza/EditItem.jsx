@@ -85,7 +85,7 @@ const ItemPage = ({item, isNew}) => {
 					{localItem.dietary && <span
 						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localItem.dietary}</span>}
 					<span className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">
-        {localItem.max} items available
+		{t('admin.manage.pizza.edit_item.items_available', {items: localItem.max})}
       </span>
 				</div>
 				<div className="flex gap-2 mb-4">

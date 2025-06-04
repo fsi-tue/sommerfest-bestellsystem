@@ -66,21 +66,36 @@ translation:
   admin:
     logout:
     manage:
-      errors:
-        order_not_found: Order not found
-        barcode_fail: Could not extract order id from barcode
-      order_history: Order History
-      scan_qr_code_text: Scan the QR Code to search for an order
-      show_finished: Show Finished
-      hide_finished: Hide Finished
-      status: "Status:"
-      price: "Price:"
-      items: "Items:"
-      order_date: "Order Date:"
-      timeslot: "Timeslot:"
-      comment: "Comment:"
-      paid: Paid
-      not_paid: Not Paid
+      order:
+        errors:
+          order_not_found: Order not found
+          barcode_fail: Could not extract order id from barcode
+        order_history: Order History
+        scan_qr_code_text: Scan the QR Code to search for an order
+        show_finished: Show Finished
+        hide_finished: Hide Finished
+        status: "Status:"
+        price: "Price:"
+        items: "Items:"
+        order_date: "Order Date:"
+        timeslot: "Timeslot:"
+        comment: "Comment:"
+        paid: Paid
+        not_paid: Not Paid
+      pizza:
+        errors:
+          error_fetching: Error fetching pizzas
+        title: Manage Items
+        subtitle: Add, remove and disable items
+        new_pizza_name: New Pizza
+        edit_item:
+          enabled: Enabled
+          disabled: Disabled
+          items_available: "{{items}} items available"
+    prepare:
+
+  components:
+  login:
   
   order:
     suspense:
@@ -102,3 +117,7 @@ translation:
     
     order_button:
       order_now: Order now
+
+  zustand:
+    todo: TODO
+    # tbd: 
