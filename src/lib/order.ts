@@ -1,19 +1,17 @@
 import { OrderDocument } from "@/model/order";
 import { ItemDocument } from "@/model/item";
 import { getDateFromTimeSlot } from "@/lib/time";
-import moment from "moment-timezone";
-import { CONSTANTS } from "@/config";
 
 export function ordersSortedByTimeslots(orders: OrderDocument[]): OrderDocument[] {
-    const currentTime = moment().tz(CONSTANTS.TIMEZONE_ORDERS)
+    const currentTime = new Date().getTime()
     const priorityByOrderId = new Map<OrderDocument, number>();
 
     // Filter orders
     const filteredOrders = orders.filter(order => order.status !== "cancelled" && order.status !== "delivered");
 
     for (const order of filteredOrders) {
-        const tsDate = getDateFromTimeSlot(order.timeslot)
-        const diff = tsDate.diff(currentTime);
+        const tsDate = getDateFromTimeSlot(order.timeslot).getTime()
+        const diff = tsDate - currentTime;
         priorityByOrderId.set(order, diff)
     }
 
