@@ -104,7 +104,7 @@ const useOrderStore = create<OrderState>()((set, get) => ({
             currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER)
 
             try {
-                const timeslotTime = getDateFromTimeSlot(timeslot).toDate()
+                const timeslotTime = getDateFromTimeSlot(timeslot)
 
                 if (timeslotTime < currentTimeWithBuffer) {
                     setError('Selected timeslot is too soon or in the past.')

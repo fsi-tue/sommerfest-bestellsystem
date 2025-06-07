@@ -2,8 +2,8 @@ import { CONSTANTS } from "@/config";
 import dbConnect from "@/lib/dbConnect";
 import { Session } from "@/model/session";
 
-import moment from 'moment-timezone';
 import crypto from 'crypto';
+import { addHours, getUnixTime } from "date-fns";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request): Promise<Response> {
@@ -33,13 +33,13 @@ export async function POST(request: Request): Promise<Response> {
             const session = new Session();
             session.userId = 'admin';
             session.token = newToken;
-            session.expiresAt = moment().add(CONSTANTS.LIFETIME_BEARER_HOURS, "hours").toDate();
+            session.expiresAt = addHours(new Date(), CONSTANTS.LIFETIME_BEARER_HOURS);
             await session.save();
             console.log('New token created', newToken, session.expiresAt.toISOString());
 
             // Create a new bearer
             bearer.token = newToken;
-            bearer.expires = moment(session.expiresAt).unix();
+            bearer.expires = getUnixTime(session.expiresAt);
         } else {
             return NextResponse.json({
                 message: 'Invalid token'
