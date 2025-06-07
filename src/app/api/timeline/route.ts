@@ -2,7 +2,15 @@ import dbConnect from "@/lib/dbConnect";
 import { CONSTANTS } from '@/config';
 import { OrderModel } from '@/model/order';
 
-import moment from 'moment-timezone';
+import {
+    format,
+    subMinutes,
+    addMinutes,
+    setSeconds,
+    setMilliseconds,
+    isAfter,
+    isBefore
+} from 'date-fns';
 import { ItemDocument, ItemModel } from "@/model/item";
 import { getDateFromTimeSlot } from "@/lib/time";
 
@@ -22,30 +30,34 @@ export async function GET(request: Request) {
 
     const TIME_SLOT_SIZE_MINUTES = 10;
     const timeSlots = [];
-    let currentTime = moment().tz(CONSTANTS.TIMEZONE_ORDERS)
-        .subtract(5 * TIME_SLOT_SIZE_MINUTES, 'minutes')
-        .subtract(moment().minutes() % TIME_SLOT_SIZE_MINUTES, "minutes")
-        .set({
-            second: 0,
-            millisecond: 0
-        });
+
+    // Get current time and align to slot boundaries
+    const now = new Date();
+    let currentTime = subMinutes(now, 5 * TIME_SLOT_SIZE_MINUTES);
+    currentTime = subMinutes(currentTime, currentTime.getMinutes() % TIME_SLOT_SIZE_MINUTES);
+    currentTime = setSeconds(setMilliseconds(currentTime, 0), 0);
 
     for (let i = -5; i < 15; i++) {
+        const startTime = currentTime;
+        const stopTime = addMinutes(currentTime, TIME_SLOT_SIZE_MINUTES);
+
         timeSlots.push({
-            time: currentTime.format('HH:mm'),
-            startTime: currentTime,
-            stopTime: currentTime.clone().add(TIME_SLOT_SIZE_MINUTES, 'minutes')
+            time: format(currentTime, 'HH:mm'),
+            startTime: startTime,
+            stopTime: stopTime
         });
-        currentTime = moment(currentTime).add(TIME_SLOT_SIZE_MINUTES, 'minutes');
+
+        currentTime = addMinutes(currentTime, TIME_SLOT_SIZE_MINUTES);
     }
 
     const orders = await OrderModel.find({
         orderDate: {
-            $gte: moment().utc().subtract(10 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
-            $lt: moment().utc().add(20 * TIME_SLOT_SIZE_MINUTES, 'minutes'),
+            $gte: subMinutes(now, 10 * TIME_SLOT_SIZE_MINUTES),
+            $lt: addMinutes(now, 20 * TIME_SLOT_SIZE_MINUTES),
         },
         status: { $ne: 'cancelled' }, // TODO: Check if this is needed
     });
+
     const items = await ItemModel.find();
     const itemsById = items
         .reduce((map: { [id: string]: ItemDocument }, item) => {
@@ -57,7 +69,8 @@ export async function GET(request: Request) {
         let totalAmount = 0.0;
         orders.forEach(({ timeslot, items }) => {
             const timeSlot = getDateFromTimeSlot(timeslot);
-            if (timeSlot >= startTime && timeSlot < stopTime) {
+            if ((isAfter(timeSlot, startTime) || timeSlot.getTime() === startTime.getTime()) &&
+                isBefore(timeSlot, stopTime)) {
                 items.forEach(({ item }) => {
                     totalAmount += itemsById[item._id.toString()].size;
                 });

@@ -210,7 +210,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             <div className="flex flex-col space-y-4">
                 {filteredOrders && filteredOrders.length > 0 && filteredOrders
                     .filter(order => noFinished ? !['delivered', 'cancelled'].includes(order.status) : true) // Filter by finished
-                    .toSorted((a, b) => getDateFromTimeSlot(a.timeslot).toDate().getTime() - getDateFromTimeSlot(b.timeslot).toDate().getTime()) // Sort by date
+                    .toSorted((a, b) => getDateFromTimeSlot(a.timeslot).getTime() - getDateFromTimeSlot(b.timeslot).getTime()) // Sort by date
                     .map((order, index) => (
                         <div key={order._id.toString() + index}
                              className="w-full px-4 py-4 bg-white rounded-2xl shadow-sm">
@@ -242,7 +242,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="font-medium">{t('admin.manage.order.timeslot')}</span>
-                                        <span>{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}</span>
+                                        <span>{formatDateTime(getDateFromTimeSlot(order.timeslot))}</span>
                                     </div>
                                 </div>
                             </div>
