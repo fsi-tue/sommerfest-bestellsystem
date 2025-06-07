@@ -8,7 +8,7 @@ interface LanguageSelectorProps {
 }
 
 export default function LanguageSelector({ className = '' }: Readonly<LanguageSelectorProps>) {
-    const { t, i18n, ready } = useT();
+    const { t, i18n } = useT();
 
     const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const newLanguage = event.target.value;
@@ -16,33 +16,9 @@ export default function LanguageSelector({ className = '' }: Readonly<LanguageSe
     };
 
     const getLanguageLabel = (lang: string): string => {
-        if (!ready) {
-            return lang.toUpperCase();
-        }
-
-        try {
-            const emoji = t('lang_emoji', { lng: lang });
-            return emoji ? `${emoji} ${lang.toUpperCase()}` : lang.toUpperCase();
-        } catch (error) {
-            return lang.toUpperCase();
-        }
+        const emoji = t('lang_emoji', { lng: lang });
+        return emoji ? `${emoji} ${lang.toUpperCase()}` : lang.toUpperCase();
     };
-
-    // Show loading state while i18n is initializing
-    if (!ready) {
-        return (
-            <select
-                disabled
-                className={`
-                    rounded-full border border-gray-300 
-                    bg-gray-100 px-3 py-2 text-sm opacity-50
-                    ${className}
-                `}
-            >
-                <option>Loading...</option>
-            </select>
-        );
-    }
 
     // Get available languages from your i18n config
     const availableLanguages = i18nSettings.languages

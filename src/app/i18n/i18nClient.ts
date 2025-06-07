@@ -1,33 +1,43 @@
 'use client'
 
-import i18next from './i18n'
-import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, UseTranslationOptions } from 'react-i18next'
+import { useParams, usePathname } from 'next/navigation'
+import i18next from "i18next";
 
-const runsOnServerSide = typeof window === 'undefined'
+export function useT(
+    ns?: string | string[],
+    options?: UseTranslationOptions<any>
+) {
+    const params = useParams()
+    const pathname = usePathname()
+    const [isClient, setIsClient] = useState(false)
 
-export function useT(ns?: any, options?: any) {
-    const lng = useParams()?.lng
-    if (typeof lng !== 'string') {
-        throw new Error('useT is only available inside /app/[lng]')
+    // Extract language from URL or use default
+    const lng = (params?.lng as string) || extractLangFromPath(pathname) || 'en'
+
+    const translation = useTranslation(ns, {
+        ...options,
+        lng
+    })
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
+
+    // Return safe defaults during SSR
+    if (!isClient) {
+        return {
+            t: i18next.getFixedT(lng ?? i18next.resolvedLanguage, Array.isArray(ns) ? ns[0] : ns, options?.keyPrefix),
+            i18n: i18next
+        }
     }
-    if (runsOnServerSide && i18next.resolvedLanguage !== lng) {
-        i18next.changeLanguage(lng)
-    } else {
-        const [activeLng, setActiveLng] = useState(i18next.resolvedLanguage)
-        useEffect(() => {
-            if (activeLng === i18next.resolvedLanguage) {
-                return
-            }
-            setActiveLng(i18next.resolvedLanguage)
-        }, [activeLng, i18next.resolvedLanguage])
-        useEffect(() => {
-            if (!lng || i18next.resolvedLanguage === lng) {
-                return
-            }
-            i18next.changeLanguage(lng)
-        }, [lng, i18next])
-    }
-    return useTranslation(ns, options)
+
+    return translation
+}
+
+function extractLangFromPath(pathname: string): string | null {
+    const segments = pathname.split('/')
+    const supportedLangs = ['en', 'de', 'fr', 'it']
+    return supportedLangs.includes(segments[1]) ? segments[1] : null
 }
