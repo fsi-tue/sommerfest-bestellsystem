@@ -28,6 +28,7 @@
     "@tailwindcss/postcss": "^4.1.8",
     "@types/js-yaml": "^4.0.9",
     "@yudiel/react-qr-scanner": "^2.3.1",
+    "accept-language": "^3.0.20",
     "caniuse-lite": "^1.0.30001718",
     "framer-motion": "^12.16.0",
     "i18next": "^25.2.1",

@@ -40,7 +40,7 @@ async function dbConnect() {
 
             // Additional performance settings
             maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
-            compressors: ['zlib'], // Enable compression
+            compressors: 'zlib',
 
             // Retry settings
             retryWrites: true,

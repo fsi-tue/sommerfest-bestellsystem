@@ -39,7 +39,7 @@ export function extractBearerFromHeaders(headers: Headers): string {
     const authHeader = headers.get('Authorization');
     // Single regex check instead of multiple string operations
     const match = authHeader?.match(/^Bearer\s+(.+)$/);
-    return match?.[1] || '';
+    return match?.[1] ?? '';
 }
 
 export async function validateToken(token: string): Promise<boolean> {

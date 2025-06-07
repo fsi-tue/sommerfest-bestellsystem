@@ -3,7 +3,7 @@ import { CONSTANTS } from '@/config';
 import { OrderModel } from '@/model/order';
 
 import moment from 'moment-timezone';
-import { ItemModel, ItemDocument } from "@/model/item";
+import { ItemDocument, ItemModel } from "@/model/item";
 import { getDateFromTimeSlot } from "@/lib/time";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d

@@ -1,4 +1,4 @@
-import { flattenKeys, loadResources } from "@/lib/i18n.resources";
+import { flattenKeys, loadResources } from "@/app/i18n/i18n.resources";
 import { expect, test, mock } from "bun:test";
 import { Project, SyntaxKind } from 'ts-morph';
 import fs from "fs";
@@ -8,7 +8,7 @@ import path from "path";
 
 function collectAllUsedKeys(): string[] {
     let ret: string[] = [];
-    mock('react-i18next', () => ({
+    mock('next-i18next', () => ({
         useTranslation: () => ({
             t: (key: string, ...args: any[]) => { ret.push(key || ""); },
             i18n: {
@@ -167,7 +167,6 @@ test('that each file is translated', () => {
     const sourceDir: string = "src"
     const AmountOfTInFiles = new Set();
     const project = new Project();
-    const extractedKeys: ExtractedKey[] = [];
 
     // Add source files to project
     project.addSourceFilesAtPaths(`${sourceDir}/**/*.{ts,tsx,js,jsx}`);
@@ -199,6 +198,9 @@ test('that each file is translated', () => {
         "src/app/layout",
         "src/app/zustand",
         // now individual
+        "src/app/components/Button.tsx",
+        "src/app/components/Loading.tsx",
+        "src/app/components/LoadingSpinner.tsx",
         "src/app/WithSystemCheck.tsx",
         "src/app/admin/logout/",
         "src/app/admin/WithAuth.jsx",

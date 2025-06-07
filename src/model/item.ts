@@ -10,7 +10,7 @@ export interface Item {
     size: number;
     max: number;
     enabled: boolean;
-    createdAt: Date;
+    createdAt?: Date;
 }
 
 // Extend the interface to include the MongoDB `_id` field

@@ -144,7 +144,7 @@ translation:
     title: Helfi-Anmeldung
     fsik_token: FSI/K-Token
     authenticating: Authentifizierung läuft...
-    login: Anmelden  
+    login: Anmelden
 
   order:
     suspense:

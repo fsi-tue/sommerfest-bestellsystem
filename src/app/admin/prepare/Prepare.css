@@ -1,9 +1,0 @@
-.item-table tr:not(.comment) {
-    counter-increment: rowNumber;
-}
-
-.item-table tr:not(.comment) td:first-child::before {
-    content: counter(rowNumber);
-    min-width: 1em;
-    margin-right: 0.5em;
-}
