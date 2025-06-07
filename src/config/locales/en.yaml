@@ -1,0 +1,167 @@
+translation:
+  lang_emoji: 🇺🇸
+  app_title: Get Your Byte of Pizza!
+  loading_menu: Loading Menu...
+
+  errors:
+    failed_to_load_menu: 'Failed to load menu: {{message}}'
+
+
+  header:
+    adminlinks:
+      prepare: Prepare Items
+      manage_db: Manage DB
+      manage_orders: Manage Orders
+      manage_items: Manage Items
+      logout: Logout
+    menu:
+      login: Login
+      home: Home
+      orders: Your Orders
+
+  footer:
+    fuel: Pizza-fueled code by
+
+
+
+  order_view:
+    introduction:
+      choose_your_item: Choose your Item
+      pick_up_time: Pick-Up Time
+      pay_in_cash: Pay in Cash at the counter
+      closer: Enjoy your evening!
+    order:
+      name: Name
+      name_placeholder: Enter your name
+    timeslot:
+      title: Timeslot
+      subtitle: Select your preferred pick-up time.
+    item:
+      button:
+        add: Add
+
+  cart:
+    title: Cart
+    messages:
+      empty_cart: Your cart is empty.
+      add_note: Add a note
+      add_more_products: Add more Products
+    items: Items
+    total_price: Total Price
+    currency: €
+    timeslot: Timeslot
+    timeslot_not_selected: Not selected
+    open_order_summary: Open order summary
+
+  order_overview:
+    history:
+      title: Order History
+      subtitle: Track and manage your recent orders
+    recent:
+      title: Recent Orders
+      orders_found: '{{orders}} order found'
+      orders_found_plural: '{{orders}} orders found'
+      no_orders_yet: No orders yet
+      messages:
+        first_order: When you place your first order, it will appear here for easy
+          tracking.
+    timeline:
+      title: Order Timeline
+      subtitle: Real-time view of order activity and scheduling
+
+  admin:
+    manage:
+      title: Manage Database
+      enable_system: Enable System
+      prepare_database: Prepare Database
+      delete_database: Delete Database
+      system_state: System {{state}}
+
+      order:
+        errors:
+          order_not_found: Order not found
+          barcode_fail: Could not extract order id from barcode
+        order_history: Order History
+        scan_qr_code_text: Scan the QR Code to search for an order
+        show_finished: Show Finished
+        hide_finished: Hide Finished
+        status: 'Status:'
+        price: 'Price:'
+        items: 'Items:'
+        order_date: 'Order Date:'
+        timeslot: 'Timeslot:'
+        comment: 'Comment:'
+        paid: Paid
+        not_paid: Not Paid
+      pizza:
+        errors:
+          error_fetching: Error fetching pizzas
+        title: Manage Items
+        subtitle: Add, remove and disable items
+        new_pizza_name: New Pizza
+        edit_item:
+          enabled: Enabled
+          disabled: Disabled
+          disable: Disable
+          enable: Enable
+          items_available: '{{items}} items available'
+          update: Update
+          create: Create
+          name: Name
+          type: Type
+          dietary: Dietary
+          price: Price
+          max_items_available: Max items available
+    prepare:
+      title: Orders
+      current_time: 'Current Time: {{currentTime}}'
+      open_orders: 'Open orders: '
+      no_open_orders: No open orders 🎉
+      item: Item
+      timeslot: Timeslot
+      name: Name
+      status: Status
+      is_done: ✅ Done
+
+  withsystemcheck:
+    check_system_status: Checking system status...
+    system_inactive: System Inactive
+    system_unavailable_message: Our system is currently undergoing maintenance. We
+      apologize for any inconvenience this may cause. Please try again later.
+  components:
+    menusection:
+      loading: Loading menu...
+    timeline:
+      loading: Loading timeline...
+      warning: 'Warning: {{error}}. Showing fallback data.'
+    errormessage:
+      please_try_again: Please try again.
+    searchinput:
+      placeholder: Search...
+
+  login:
+    title: Helfi Login
+    fsik_token: FSI/K Token
+    authenticating: Authenticating...
+    login: Login
+
+  order:
+    suspense:
+      loading: Loading...
+    thank_you:
+      qr:
+        title: Thank you for your order! 🍕
+        your_order_number: 'Your order number is:'
+        instructions: Please proceed to pay at the counter.
+        order_again: Order again
+        view_orders: View orders
+    status:
+      ordered: We've received your order.
+      inPreparation: Your order is being prepared.
+      ready: Your order is ready for pickup!
+      delivered: Your order has been delivered.
+      cancelled: Your order has been cancelled.
+      default: Order status unavailable.
+    
+    order_button:
+      order_now: Order now

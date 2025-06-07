@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import { Database } from "lucide-react";
 
+import "@/lib/i18n";
+import { useTranslation } from "react-i18next";
+
 const Page = () => {
     const token = getFromLocalStorage('token', '');
 
@@ -11,6 +14,7 @@ const Page = () => {
     const [enable, setEnable] = useState(false)
     const states: ('active' | 'inactive' | 'maintenance')[] = ['active', 'inactive']
     const [status, setStatus] = useState<'active' | 'inactive' | 'maintenance'>('active')
+    const [t, i18n] = useTranslation();
 
     const headers = {
         'Content-Type': 'application/json',
@@ -91,7 +95,7 @@ const Page = () => {
                     <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                         <Database className="w-4 h-4 text-primary-500"/>
                     </div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Manage Database</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">{t('admin.manage.title')}</h1>
                 </div>
                 <p className="text-red-500 text-sm">{message}</p>
             </div>
@@ -100,7 +104,7 @@ const Page = () => {
                 <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-4 relative">
                     <div className="mb-4 flex items-center gap-4">
                         <label htmlFor="enable" className="block text-sm font-medium text-gray-700 mb-2">
-                            Enable
+                            {t('admin.manage.enable_system')}
                         </label>
                         <input
                             type="checkbox"
@@ -115,12 +119,12 @@ const Page = () => {
                         <button
                             onClick={prepareDatabase}
                             className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            Prepare Database
+                            {t('admin.manage.prepare_database')}
                         </button>
                         <button
                             onClick={deleteDatabase}
                             className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-red-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            Delete Database
+                            {t('admin.manage.delete_database')}
                         </button>
                     </div>
                     <div className="flex gap-2 flex-wrap justify-start mt-4">
@@ -131,7 +135,7 @@ const Page = () => {
                                 className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 ${state === status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 onClick={() => updateSystemStatus(state)}
                             >
-                                System {state}
+                                {t('admin.manage.system_state', {state:state})}
                             </button>
                         ))}
                     </div>

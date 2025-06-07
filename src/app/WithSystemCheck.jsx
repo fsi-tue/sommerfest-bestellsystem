@@ -43,7 +43,7 @@ const WithSystemCheck = (WrappedComponent) => {
 								<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
 								<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8V12H4z"></path>
 							</svg>
-							<p className="text-gray-700">Checking system status...</p>
+							<p className="text-gray-700">{t('withsystemcheck.check_system_status')}</p>
 						</div>
 					</div>
 				</div>
@@ -60,10 +60,9 @@ const WithSystemCheck = (WrappedComponent) => {
 					<div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
 						<Construction className="w-4 h-4 text-red-400"/>
 					</div>
-					<h1 className="text-2xl font-semibold text-gray-900">System Inactive</h1>
+					<h1 className="text-2xl font-semibold text-gray-900">{t('withsystemcheck.system_inactive')}</h1>
 				</div>
-				<p className="text-gray-500 text-sm">Our system is currently undergoing maintenance. We apologize for any
-					inconvenience this may cause. Please try again later.</p>
+				<p className="text-gray-500 text-sm">{t('withsystemcheck.system_unavailable_message')}</p>
 			</div>
 		);
 	};

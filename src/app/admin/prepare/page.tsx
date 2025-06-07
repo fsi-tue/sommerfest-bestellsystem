@@ -10,6 +10,7 @@ import WithAuth from "@/app/admin/WithAuth";
 import SearchInput from "@/app/components/SearchInput";
 import './Prepare.css';
 import { ListTodo, Wrench } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 
 const Page = () => {
@@ -22,6 +23,8 @@ const Page = () => {
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isClient, setIsClient] = useState(false);
+
+    const [t, i18n] = useTranslation();
 
     const token = getFromLocalStorage('token', '');
     const headers = {
@@ -181,34 +184,43 @@ const Page = () => {
                     <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                         <ListTodo className="w-4 h-4 text-primary-500"/>
                     </div>
-                    <h1 className="text-2xl font-semibold text-gray-900">Orders</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">{t('admin.prepare.title')}</h1>
                 </div>
-                <p className="text-gray-500 text-sm">Current Time: {currentTime.toLocaleTimeString()}</p>
                 <p className="text-gray-500 text-sm">
-                    Open
-                    orders: {[''].map(() => {
+                    {t('admin.prepare.current_time', {currentTime: currentTime.toLocaleTimeString()})}
+                </p>
+                <p className="text-gray-500 text-sm">
+                    {t('admin.prepare.open_orders')}{[''].map(() => {
                     const openOrders = orders
                         .flatMap(order => order.items)
                         .reduce((number, item) => number + (['prepping'].includes(item.status) ? 1 : 0), 0)
 
-                    return openOrders > 0 ? openOrders : 'No open orders 🎉'
+                    return openOrders > 0 ? openOrders : t('admin.prepare.no_open_orders')
                 })
                 }
                 </p>
             </div>
 
             <div className="md:p-4 py-1">
-                {error && <ErrorMessage error={error}/>}
+                {error && <ErrorMessage error={error} t={t} />}
                 <SearchInput search={setFilter} searchValue={filter}/>
 
                 <div className="flex flex-col space-y-2">
                     <table className="min-w-full bg-white overflow-hidden item-table rounded-2xl shadow-md">
                         <thead className="bg-gray-200">
                         <tr>
-                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/2">Item</th>
-                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/6">Timeslot</th>
-                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider hidden sm:block">Name</th>
-                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/6">Status</th>
+                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/2">
+                                {t('admin.prepare.item')}
+                            </th>
+                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/6">
+                                {t('admin.prepare.timeslot')}
+                            </th>
+                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider hidden sm:block">
+                                {t('admin.prepare.name')}
+                            </th>
+                            <th className="px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wider w-1/6">
+                                {t('admin.prepare.status')}
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -239,7 +251,9 @@ const Page = () => {
                                                             {hasComment(order) && (
                                                                 <tr className="text-sm italic comment"
                                                                     key={`${order._id}-${item.item.name}-${orderIndex}-${itemIndex}-comment`}>
-                                                                    <td className="px-4 py-2 text-xs md:text-sm font-medium text-gray-900 w-1/2">{order.comment}</td>
+                                                                    <td className="px-4 py-2 text-xs md:text-sm font-medium text-gray-900 w-1/2">
+                                                                        {order.comment}
+                                                                    </td>
                                                                 </tr>)}
                                                             <tr key={`${order._id}-${item.item.name}-${orderIndex}-${itemIndex}`}
                                                                 className={`border-t border-gray-100
@@ -267,7 +281,7 @@ const Page = () => {
                                                                     <button
                                                                         className="p-1 rounded-md border border-gray-100 bg-white text-xs md:text-sm font-medium text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                                                         onClick={() => updateItemStatus(order._id.toString(), itemIndex, item.status === 'readyToCook' ? 'prepping' : 'readyToCook')}>
-                                                                        {item.status === 'readyToCook' ? '✅ Done' : item.status}
+                                                                        {item.status === 'readyToCook' ? t('admin.prepare.is_done') : item.status}
                                                                     </button>
                                                                 </td>
                                                             </tr>

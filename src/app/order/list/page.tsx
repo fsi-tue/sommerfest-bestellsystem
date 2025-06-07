@@ -3,6 +3,7 @@
 import { getFromLocalStorage } from "@/lib/localStorage";
 import Timeline from "@/app/components/Timeline";
 import { ChevronRight, Clock, Package, Pizza } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const EVERY_X_SECONDS = 60;
 
@@ -17,6 +18,8 @@ const Page = () => {
 
     const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) ?? [];
 
+    const [t, i18n] = useTranslation();
+
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
@@ -26,17 +29,17 @@ const Page = () => {
                         <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                             <Pizza className="w-4 h-4 text-yellow-500"/>
                         </div>
-                        <h1 className="text-2xl font-semibold text-gray-900">Order History</h1>
+                        <h1 className="text-2xl font-semibold text-gray-900">{t('order_overview.history.title')}</h1>
                     </div>
-                    <p className="text-gray-500 text-sm">Track and manage your recent orders</p>
+                    <p className="text-gray-500 text-sm">{t('order_overview.history.subtitle')}</p>
                 </div>
 
                 {/* Orders Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100">
-                        <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+                        <h2 className="text-lg font-semibold text-gray-900">{t('order_overview.recent.title')}</h2>
                         <p className="text-sm text-gray-500 mt-1">
-                            {localStorageOrders.length} order{localStorageOrders.length !== 1 ? 's' : ''} found
+                            {t('order_overview.recent.orders_found', {count: localStorageOrders.length })}
                         </p>
                     </div>
 
@@ -46,9 +49,9 @@ const Page = () => {
                                 className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Package className="w-8 h-8 text-gray-400"/>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('order_overview.recent.no_orders_yet')}</h3>
                             <p className="text-gray-500 max-w-sm mx-auto">
-                                When you place your first order, it will appear here for easy tracking.
+                                {t('order_overview.recent.messages.first_order')}
                             </p>
                         </div>
                     ) : (
@@ -116,10 +119,10 @@ const Page = () => {
                             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                                 <Clock className="w-4 h-4 text-purple-600"/>
                             </div>
-                            <h2 className="text-lg font-semibold text-gray-900">Order Timeline</h2>
+                            <h2 className="text-lg font-semibold text-gray-900">{t('order_overview.timeline.title')}</h2>
                         </div>
                         <p className="text-sm text-gray-500">
-                            Real-time view of order activity and scheduling
+                            {t('order_overview.timeline.subtitle')}
                         </p>
                     </div>
 

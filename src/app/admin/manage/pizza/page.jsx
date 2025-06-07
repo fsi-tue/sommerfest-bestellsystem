@@ -7,6 +7,7 @@ import WithAuth from "../../WithAuth.jsx";
 import {Wrench} from "lucide-react";
 import EditItem from "./EditItem.jsx";
 import {ITEM_CONFIG} from "@/config/index.ts";
+import { useTranslation } from "react-i18next";
 
 const Page = () => {
 	const token = getFromLocalStorage('token', '');
@@ -14,6 +15,7 @@ const Page = () => {
 	const [items, setItems] = useState([]);
 	const [error, setError] = useState('');
 	const [loading, setLoading] = useState(true);
+	const [t, i18n] = useTranslation();
 
 	const headers = {
 		'Content-Type': 'application/json',
@@ -38,13 +40,13 @@ const Page = () => {
 			})
 			.catch(() => {
 				console.error('Error fetching pizzas');
-				setError('Error fetching pizzas');
+				setError(t('admin.manage.pizza.errors.error_fetching'));
 				setLoading(false);
 			});
 	}, [token]);
 
 	if (loading) return <div>Loading...</div>;
-	if (error) return (<ErrorMessage error={error}/>);
+	if (error) return (<ErrorMessage error={error} t={t} />);
 
 	return (
 		<div>
@@ -53,13 +55,13 @@ const Page = () => {
 					<div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
 						<Wrench className="w-4 h-4 text-primary-500"/>
 					</div>
-					<h1 className="text-2xl font-semibold text-gray-900">Manage Items</h1>
+					<h1 className="text-2xl font-semibold text-gray-900">{t('admin.manage.pizza.title')}</h1>
 				</div>
-				<p className="text-gray-500 text-sm">Add, remove and disable items</p>
+				<p className="text-gray-500 text-sm">{t('admin.manage.pizza.subtitle')}</p>
 			</div>
 
 			{/* New Item */}
-			<EditItem key="new" item={{name: 'New Pizza', price: 0, enabled: true, max: ITEM_CONFIG.MAX_ITEMS}} isNew={true}/>
+			<EditItem key="new" item={{name: t('admin.manage.pizza.new_pizza_name'), price: 0, enabled: true, max: ITEM_CONFIG.MAX_ITEMS}} isNew={true}/>
 
 			{/* Items */}
 			<div className="flex flex-col space-y-4">

@@ -65,7 +65,7 @@ const ItemPage = ({item, isNew}) => {
 			.catch(error => setError(error.message));
 	}
 
-	if (error) return (<ErrorMessage error={error}/>);
+	if (error) return (<ErrorMessage error={error} t={t} />);
 
 	return (
 		<div className="w-full px-4 py-6">
@@ -74,7 +74,7 @@ const ItemPage = ({item, isNew}) => {
 				<div className="flex flex-wrap gap-2 mb-4">
       <span
 	      className={`text-sm font-medium text-white py-1 px-3 rounded-full ${localItem.enabled ? 'bg-green-500' : 'bg-gray-500'}`}>
-        {localItem.enabled ? 'Enabled' : 'Disabled'}
+        {localItem.enabled ? t('admin.manage.pizza.edit_item.enabled') : t('admin.manage.pizza.edit_item.disabled')}
       </span>
 					{localItem._id && <span
 						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localItem._id}</span>}
@@ -85,7 +85,7 @@ const ItemPage = ({item, isNew}) => {
 					{localItem.dietary && <span
 						className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localItem.dietary}</span>}
 					<span className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">
-        {localItem.max} items available
+		{t('admin.manage.pizza.edit_item.items_available', {items: localItem.max})}
       </span>
 				</div>
 				<div className="flex gap-2 mb-4">
@@ -94,14 +94,14 @@ const ItemPage = ({item, isNew}) => {
 							onClick={() => updateItem(localItem)}
 							className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-full transition duration-200"
 						>
-							Update
+							{t('admin.manage.pizza.edit_item.update')}
 						</button>
 					) : (
 						<button
 							onClick={() => createPizza(localItem)}
 							className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-full transition duration-200"
 						>
-							Create
+							{t('admin.manage.pizza.edit_item.create')}
 						</button>
 					)}
 					{!isNew && (
@@ -112,13 +112,13 @@ const ItemPage = ({item, isNew}) => {
 							})}
 							className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-full transition duration-200"
 						>
-							{localItem.enabled ? 'Disable' : 'Enable'}
+							{localItem.enabled ? t('admin.manage.pizza.edit_item.disable') : t('admin.manage.pizza.edit_item.enable')}
 						</button>
 					)}
 				</div>
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div className="flex flex-col">
-						<label className="text-sm font-semibold mb-1">Name</label>
+						<label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.name')}</label>
 						<input
 							type="text"
 							value={localItem.name}
@@ -128,7 +128,7 @@ const ItemPage = ({item, isNew}) => {
 						/>
 					</div>
 					<div className="flex flex-col">
-						<label className="text-sm font-semibold mb-1">Type</label>
+						<label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.type')}</label>
 						<input
 							type="text"
 							value={localItem.type}
@@ -138,7 +138,7 @@ const ItemPage = ({item, isNew}) => {
 						/>
 					</div>
 					<div className="flex flex-col">
-						<label className="text-sm font-semibold mb-1">Dietary</label>
+						<label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.dietary')}</label>
 						<input
 							type="text"
 							value={localItem.dietary}
@@ -148,7 +148,7 @@ const ItemPage = ({item, isNew}) => {
 						/>
 					</div>
 					<div className="flex flex-col">
-						<label className="text-sm font-semibold mb-1">Price</label>
+						<label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.price')}</label>
 						<div className="flex items-center">
 							<input
 								type="number"
@@ -162,7 +162,7 @@ const ItemPage = ({item, isNew}) => {
 						</div>
 					</div>
 					<div className="flex flex-col">
-						<label className="text-sm font-semibold mb-1">Max. Items available</label>
+						<label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.max_items_available')}</label>
 						<input
 							type="number"
 							value={localItem.max}
