@@ -1,6 +1,11 @@
 translation:
   lang_emoji: 🇺🇸
   app_title: Get Your Byte of Pizza!
+  loading_menu: Loading Menu...
+
+  errors:
+    failed_to_load_menu: 'Failed to load menu: {{message}}'
+
 
   header:
     adminlinks:
@@ -43,7 +48,7 @@ translation:
       add_more_products: Add more Products
     items: Items
     total_price: Total Price
-    currency: "€"
+    currency: €
     timeslot: Timeslot
     timeslot_not_selected: Not selected
     open_order_summary: Open order summary
@@ -54,18 +59,24 @@ translation:
       subtitle: Track and manage your recent orders
     recent:
       title: Recent Orders
-      orders_found: "{{orders}} order found"
-      orders_found_plural: "{{orders}} orders found"
+      orders_found: '{{orders}} order found'
+      orders_found_plural: '{{orders}} orders found'
       no_orders_yet: No orders yet
       messages:
-        first_order: When you place your first order, it will appear here for easy tracking.
+        first_order: When you place your first order, it will appear here for easy
+          tracking.
     timeline:
       title: Order Timeline
       subtitle: Real-time view of order activity and scheduling
 
   admin:
-    logout:
     manage:
+      title: Manage Database
+      enable_system: Enable System
+      prepare_database: Prepare Database
+      delete_database: Delete Database
+      system_state: System {{state}}
+
       order:
         errors:
           order_not_found: Order not found
@@ -74,12 +85,12 @@ translation:
         scan_qr_code_text: Scan the QR Code to search for an order
         show_finished: Show Finished
         hide_finished: Hide Finished
-        status: "Status:"
-        price: "Price:"
-        items: "Items:"
-        order_date: "Order Date:"
-        timeslot: "Timeslot:"
-        comment: "Comment:"
+        status: 'Status:'
+        price: 'Price:'
+        items: 'Items:'
+        order_date: 'Order Date:'
+        timeslot: 'Timeslot:'
+        comment: 'Comment:'
         paid: Paid
         not_paid: Not Paid
       pizza:
@@ -91,19 +102,47 @@ translation:
         edit_item:
           enabled: Enabled
           disabled: Disabled
-          items_available: "{{items}} items available"
+          items_available: '{{items}} items available'
     prepare:
+      title: Orders
+      current_time: 'Current Time: {{currentTime}}'
+      open_orders: 'Open orders: '
+      no_open_orders: No open orders 🎉
+      item: Item
+      timeslot: Timeslot
+      name: Name
+      status: Status
+      is_done: ✅ Done
 
+  withsystemcheck:
+    check_system_status: Checking system status...
+    system_inactive: System Inactive
+    system_unavailable_message: Our system is currently undergoing maintenance. We
+      apologize for any inconvenience this may cause. Please try again later.
   components:
+    menusection:
+      loading: Loading menu...
+    timeline:
+      loading: Loading timeline...
+      warning: 'Warning: {{error}}. Showing fallback data.'
+    errormessage:
+      please_try_again: Please try again.
+    searchinput:
+      placeholder: Search...
+
   login:
-  
+    title: Helfi Login
+    fsik_token: FSI/K Token
+    authenticating: Authenticating...
+    login: Login
+
   order:
     suspense:
       loading: Loading...
     thank_you:
       qr:
         title: Thank you for your order! 🍕
-        your_order_number: "Your order number is:"
+        your_order_number: 'Your order number is:'
         instructions: Please proceed to pay at the counter.
         order_again: Order again
         view_orders: View orders
@@ -117,7 +156,3 @@ translation:
     
     order_button:
       order_now: Order now
-
-  zustand:
-    todo: TODO
-    # tbd: 
