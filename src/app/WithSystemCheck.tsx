@@ -2,11 +2,13 @@
 
 import { Construction } from "lucide-react";
 import {useEffect, useState} from "react";
+import { useTranslation } from "react-i18next";
 
-const WithSystemCheck = (WrappedComponent) => {
-	return function WithSystemCheckComponent(props) {
+const WithSystemCheck = (WrappedComponent: any) => {
+	return function WithSystemCheckComponent(props: any) {
 		const [systemStatus, setSystemStatus] = useState('checking');
 		const [loading, setLoading] = useState(true);
+		const [t, i18n] = useTranslation();
 
 		const checkSystemStatus = () => {
 			setLoading(true);

@@ -1,3 +1,5 @@
+"use client";
+
 import { Suspense } from 'react';
 import ClientOrderPage from './clientOrderPage';
 import { useTranslation } from 'react-i18next';

@@ -1,3 +1,5 @@
+"use client";
+
 import { Suspense } from 'react';
 import QRCodePage from './qrCodePage';
 import { useTranslation } from 'react-i18next';
