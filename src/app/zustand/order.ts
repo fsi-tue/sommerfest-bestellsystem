@@ -2,6 +2,7 @@ import { ApiOrder, OrderDocument } from '@/model/order'
 import { ItemDocument } from '@/model/item'
 import { getDateFromTimeSlot } from '@/lib/time'
 import { create } from 'zustand'
+import { ORDER_CONFIG } from '@/config'
 
 interface OrderState {
     orders: OrderDocument[]
@@ -123,13 +124,18 @@ const useOrderStore = create<OrderState>()((set, get) => ({
 
         // Add item item to current order
         addToOrder: (item) => {
-            const { clearError } = get().actions
+            const { setError, clearError, getTotalItemCount } = get().actions
             clearError() // Clear any previous errors when adding items
 
             set((state) => {
                 const itemId = item._id.toString()
                 const currentItems = state.currentOrder.items[itemId] ?? []
                 const updatedItems = [...currentItems, item]
+
+                if (getTotalItemCount() >= ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT) {
+                    setError('Max. amount of items reached')
+                    return state
+                }
 
                 return {
                     ...state,
@@ -206,7 +212,7 @@ const useOrderStore = create<OrderState>()((set, get) => ({
             }, 0)
         },
 
-        // Get count of specific item item in current order
+        // Get count of specific item in current order
         getItemCount: (itemId) => {
             const state = get()
             return state.currentOrder.items[itemId]?.length || 0

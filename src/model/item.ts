@@ -4,18 +4,18 @@ import { ITEM_CONFIG } from "@/config";
 export interface Item {
     name: string;
     price: number;
-    type: string; // Type of item
-    dietary?: string; // Dietary requirements
+    type: string;
+    dietary?: string;
     ingredients?: string[];
-    size: number; // Size, e.g., 0.5 for half a pizza
-    max: number; // Maximum number of items available
+    size: number;
+    max: number;
     enabled: boolean;
     createdAt: Date;
 }
 
 // Extend the interface to include the MongoDB `_id` field
 export interface ItemDocument extends Item, Document {
-    _id: Types.ObjectId; // Explicitly define `_id` as ObjectId
+    _id: Types.ObjectId;
 }
 
 // Define the schema for the Item model

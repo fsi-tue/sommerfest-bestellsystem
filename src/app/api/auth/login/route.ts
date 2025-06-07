@@ -6,10 +6,10 @@ import moment from 'moment-timezone';
 import crypto from 'crypto';
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request): Promise<Response> {
+export async function POST(request: Request): Promise<Response> {
     await dbConnect()
 
-    const { token } = await req.json();
+    const { token } = await request.json();
     if (!token) {
         return NextResponse.json({
             message: 'Token not set'

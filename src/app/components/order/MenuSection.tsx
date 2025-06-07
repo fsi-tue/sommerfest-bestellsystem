@@ -4,11 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 interface MenuSectionProps {
     items: { [_id: string]: ItemDocument[] };
-    onAddToOrder: (item: ItemDocument) => void;
 }
 
-const MenuSection = ({ items, onAddToOrder }: MenuSectionProps) => {
-    // Flatten and filter enabled items once
+const MenuSection = ({ items }: MenuSectionProps) => {
     const availableItems = Object.values(items)
         .flatMap(itemList => itemList)
         .filter(item => item.enabled);
@@ -16,16 +14,13 @@ const MenuSection = ({ items, onAddToOrder }: MenuSectionProps) => {
     const [t, i18n] = useTranslation();
 
     return (
-        <div className="md:w-1/2 w-full">
-            <a id="selectorder" className="block -mt-20 pt-20"></a>
+        <div className="w-full">
             <ul className="space-y-3"> {/* Adjusted spacing */}
                 {availableItems.length > 0 ? (
                     availableItems.map((item) => (
                         <Item
-                            // Use a more stable key if possible, e.g., item._id if unique and stable
                             key={item._id?.toString() || item.name}
                             item={item}
-                            onAddClick={() => onAddToOrder(item)}
                         />
                     ))
                 ) : (

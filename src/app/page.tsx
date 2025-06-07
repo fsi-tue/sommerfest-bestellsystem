@@ -1,31 +1,23 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState, useTransition } from "react"; // Added useCallback, useMemo
+import React, { useEffect, useState } from "react"; // Added useCallback, useMemo
 import WithSystemCheck from "@/app/WithSystemCheck"; // Keep HOC wrapper
 import { ItemDocument } from '@/model/item';
 
 import IntroductionSection from '@/app/components/IntroductionSection';
-import MenuSection from '@/app/components/MenuSection';
-import OrderSection from '@/app/components/OrderSection';
-import FloatingOrderSummary from '@/app/components/FloatingOrderSummary';
+import MenuSection from '@/app/components/order/MenuSection';
+import FloatingOrderSummary from '@/app/components/order/FloatingOrderSummary';
 import OrderSummary from "@/app/components/order/OrderSummary";
-import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
-
 
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
-
-const EVERY_X_SECONDS = 60; // Keep constant here or move to config
 
 const Page: React.FC = () => {
     const [error, setError] = useState('');
     const [items, setItems] = useState<{ [_id: string]: ItemDocument[] }>({});
     const [isMenuLoading, setIsMenuLoading] = useState(true); // Add loading state for menu
-    const [ordersOpen, openOrders] = useState(false);
+    const [ordersOpen, setOrdersOpen] = useState(false);
     const [t, i18n] = useTranslation();
-
-    const order = useCurrentOrder()
-    const orderActions = useOrderActions()
 
     // --- Data Fetching ---
     useEffect(() => {
@@ -50,60 +42,24 @@ const Page: React.FC = () => {
             });
     }, []);
 
-    // --- State Update Handlers (Memoized) ---
-    const clearError = useCallback(() => {
-        setError('');
-    }, []);
-
-    // --- Derived State / Calculations (Memoized) ---
-    const { totalItems, totalPrice } = useMemo(() => {
-        let itemsCount = 0;
-        let priceTotal = 0;
-        Object.values(order.items).forEach(itemList => {
-            itemsCount += itemList.length;
-            itemList.forEach(item => {
-                priceTotal += item.price;
-            });
-        });
-        return { totalItems: itemsCount, totalPrice: priceTotal };
-    }, [order.items]);
-
-    // Timeline date range calculation (can be done outside component if static)
-    const { start, end } = useMemo(() => {
-        const startDate = new Date();
-        startDate.setHours(startDate.getHours() - 1);
-        startDate.setMinutes(0, 0, 0);
-
-        const endDate = new Date();
-        endDate.setHours(endDate.getHours() + 1);
-        endDate.setMinutes(59, 59, 999);
-        return { start: startDate, end: endDate };
-    }, []); // Calculate once
 
     // --- Render ---
     return (
         // Using a fragment as the outer div is provided by layout.tsx
-         <>
+        <div>
             {!ordersOpen ? (
-                <>
+                <div className="max-w-4xl mx-auto space-y-6">
                     <IntroductionSection/>
 
                     <div
-                        className="bg-white p-6 md:p-8 rounded-2xl shadow-md mb-24"> {/* Increased bottom margin for floating island */}
+                        className="bg-white p-6 md:p-8 rounded-2xl shadow-md mb-24">
                         {isMenuLoading && !Object.keys(items).length ? (
                             <div className="text-center p-10">{t('loading_menu')}</div> // Show loading indicator until item is loaded
                         ) : (
                             <div
-                                className="flex flex-col md:flex-row justify-between gap-8 lg:gap-12"> {/* Added more gap */}
+                                className="flex flex-col md:flex-row justify-between">
                                 <MenuSection
                                     items={items}
-                                    onAddToOrder={orderActions.addToOrder}
-                                />
-                                <OrderSection
-                                    error={error && !ordersOpen ? '' : error}
-                                    start={start}
-                                    end={end}
-                                    every_x_seconds={EVERY_X_SECONDS}
                                 />
                             </div>
                         )}
@@ -111,16 +67,15 @@ const Page: React.FC = () => {
 
                     {!isMenuLoading && (
                         <FloatingOrderSummary
-                            isOpen={ordersOpen}
                             error={error}
-                            onToggleOpen={() => openOrders(true)}
+                            onToggleOpen={() => setOrdersOpen(true)}
                         />
                     )}
-                </>
+                </div>
             ) : (
-                <OrderSummary onClose={() => openOrders(false)}/> // Close button
+                <OrderSummary onClose={() => setOrdersOpen(false)}/>
             )}
-        </>
+        </div>
     );
 };
 

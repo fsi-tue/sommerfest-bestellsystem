@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import { Database } from "lucide-react";
+import Button from "@/app/components/Button";
+import { Heading } from "@/app/components/layout/Heading";
 
 import "@/lib/i18n";
 import { useTranslation } from "react-i18next";
@@ -90,15 +92,8 @@ const Page = () => {
 
     return (
         <div>
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <Database className="w-4 h-4 text-primary-500"/>
-                    </div>
-                    <h1 className="text-2xl font-semibold text-gray-900">{t('admin.manage.title')}</h1>
-                </div>
-                <p className="text-red-500 text-sm">{message}</p>
-            </div>
+            <Heading title={t('admin.manage.title')} description={message}
+                     icon={<Database className="w-10 h-10 text-primary-500"/>}/>
 
             <div className="w-full px-2 py-2">
                 <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-4 relative">
@@ -116,27 +111,27 @@ const Page = () => {
                         />
                     </div>
                     <div className="flex gap-2 flex-wrap justify-start">
-                        <button
+                        <Button
                             onClick={prepareDatabase}
-                            className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                             {t('admin.manage.prepare_database')}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={deleteDatabase}
-                            className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-red-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-red-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                             {t('admin.manage.delete_database')}
-                        </button>
+                        </Button>
                     </div>
                     <div className="flex gap-2 flex-wrap justify-start mt-4">
                         {states.map(state => (
-                            <button
+                            <Button
                                 key={state}
                                 disabled={state === status}
-                                className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 ${state === status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 ${state === status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 onClick={() => updateSystemStatus(state)}
                             >
                                 {t('admin.manage.system_state', {state:state})}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>

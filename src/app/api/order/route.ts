@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ItemDocument, ItemModel } from "@/model/item";
+import { ItemModel } from "@/model/item";
 import dbConnect from "@/lib/dbConnect";
 import { headers } from "next/headers";
 import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
@@ -20,42 +20,14 @@ export async function GET(request: Request) {
                 { status: 401 }
             );
         }
+        const [system, orders] = await Promise.all([
+            System.findOne({ name: CONSTANTS.SYSTEM_NAME }).lean(),
+            OrderModel.find()
+                .select('name comment items orderDate timeslot totalPrice status isPaid finishedAt')
+                .lean()
+                .exec()
+        ]);
 
-        // Use populate to efficiently join item data
-        const orders = await OrderModel.find()
-
-        const transformedOrders = orders.map(order => ({
-            _id: order._id,
-            name: order.name,
-            comment: order.comment ?? "",
-            items: order.items.map(item => ({
-                item: item.item,
-                status: item.status
-            })),
-            orderDate: order.orderDate,
-            timeslot: order.timeslot,
-            totalPrice: order.totalPrice,
-            status: order.status,
-            isPaid: order.isPaid,
-            finishedAt: order.finishedAt,
-        }));
-
-        return NextResponse.json(transformedOrders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-        return NextResponse.json(
-            { message: 'Internal server error' },
-            { status: 500 }
-        );
-    }
-}
-
-// #### POST - Create a new order
-export async function POST(request: Request) {
-    try {
-        await dbConnect();
-
-        const system = await System.findOne({ name: CONSTANTS.SYSTEM_NAME });
         if (system?.status !== 'active') {
             console.error('System is not active:', system?.status);
             return NextResponse.json(
@@ -63,6 +35,29 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
+
+        const transformedOrders = orders.map(order => ({
+            ...order,
+            comment: order.comment ?? "",
+            items: order.items.map(item => ({
+                item: item.item,
+                status: item.status
+            }))
+        }));
+
+        return NextResponse.json(transformedOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        return NextResponse.json(
+            { message: 'There was an error on our side' },
+            { status: 500 }
+        );
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        await dbConnect();
 
         const { items, name, comment, timeslot } = await request.json() as ApiOrder;
 
@@ -82,40 +77,77 @@ export async function POST(request: Request) {
 
         if (currentOrderItemsTotal > ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT) {
             return NextResponse.json(
-                { message: 'Too many items in order' },
+                { message: 'You have too many items in your order' },
                 { status: 400 }
             );
         }
 
         // Validate item items exist
-        const itemIds = flatItems.map(item => item._id);
-        const existingItems = await ItemModel.find({
-            _id: { $in: itemIds }
-        }).lean();
+        const itemIds = [...new Set(flatItems.map(item => item._id.toString()))]
 
-        if (existingItems.length !== itemIds.length) {
+        const [system, existingItems, existingOrders] = await Promise.all([
+            System.findOne({ name: CONSTANTS.SYSTEM_NAME }).lean(),
+            ItemModel.find({ _id: { $in: itemIds } }).select('_id price size').lean(),
+            OrderModel.find({
+                timeslot: timeslot,
+                status: { $nin: ['cancelled'] }
+            }).select('items').lean()
+        ]);
+
+        if (system?.status !== 'active') {
+            console.error('System is not active:', system?.status);
             return NextResponse.json(
-                { message: 'Some item items do not exist' },
+                { message: 'System is not active' },
                 { status: 400 }
             );
         }
 
+
+        if (existingItems.length !== itemIds.length) {
+            return NextResponse.json(
+                { message: `These items exist: ` + existingItems.map(item => item._id) + ' but the following were ordered: ' + itemIds },
+                { status: 400 }
+            );
+        }
+
+        const capacityCheck = await OrderModel.aggregate([
+            {
+                $match: {
+                    timeslot: timeslot,
+                    status: { $nin: ['cancelled'] }
+                }
+            },
+            {
+                $unwind: '$items'
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalSize: { $sum: '$items.item.size' }
+                }
+            }
+        ]);
+        let existingItemsTotal = 0
+        if (capacityCheck.length > 0) {
+            existingItemsTotal = capacityCheck[0].totalSize as number
+        }
+
         // Check timeslot capacity
-        const existingOrders = await OrderModel.find({
+        /* const existingOrders = await OrderModel.find({
             timeslot: timeslot,
             status: { $nin: ['cancelled'] }
-        }).populate('items.item').lean();
+        }).lean();
 
         const existingItemsTotal = existingOrders
             .flatMap(order => order.items)
             .reduce((total, orderItem) => {
                 const item = orderItem.item as ItemDocument;
                 return total + (item?.size ?? 0);
-            }, 0);
+            }, 0); */
 
         if (existingItemsTotal + currentOrderItemsTotal > ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT) {
             return NextResponse.json({
-                message: 'Time slot is full. Please choose another time slot.'
+                message: 'The time slot is already full. Please choose another time slot.'
             }, { status: 400 });
         }
 
@@ -146,17 +178,15 @@ export async function POST(request: Request) {
         await order.save();
 
         return NextResponse.json({ orderId: order._id });
-
     } catch (error) {
         console.error('Error creating order:', error);
         return NextResponse.json(
-            { message: 'Internal server error' },
+            { message: 'There was an error on our side' },
             { status: 500 }
         );
     }
 }
 
-// #### PUT - Update an existing order
 export async function PUT(request: Request) {
     try {
         await dbConnect();
@@ -209,7 +239,7 @@ export async function PUT(request: Request) {
     } catch (error) {
         console.error('Error updating order:', error);
         return NextResponse.json(
-            { message: 'Internal server error' },
+            { message: 'There was an error on our side' },
             { status: 500 }
         );
     }

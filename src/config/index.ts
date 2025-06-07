@@ -1,7 +1,8 @@
 export const CONSTANTS = {
     SYSTEM_NAME: process.env.SYSTEM_NAME ?? "fsi",
     LIFETIME_BEARER_HOURS: parseInt(process.env.LIFETIME_BEARER_HOURS ?? "8"),
-    TIMEZONE_ORDERS: 'Europe/Berlin'
+    TIMEZONE_ORDERS: 'Europe/Berlin',
+    EVERY_X_SECONDS: 60
 }
 
 export const MONGO_CONFIG = {

@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
-import { OrderModel } from "@/model/order";
+import { ORDER_STATUSES, OrderModel } from "@/model/order";
 import { NextRequest } from "next/server";
 
 /**
@@ -8,12 +8,11 @@ import { NextRequest } from "next/server";
  * @constructor
  * @param request
  */
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
 
     // Get the ID from the URL
-    const searchParams = request.nextUrl.searchParams
-    const id = searchParams.get('id')
+    const { id } = await params
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {
@@ -21,8 +20,6 @@ export async function PUT(request: NextRequest) {
             The ID is not valid.
             Please provide a valid ID.
             We can't find anything with this ID.
-            Don't you know how to copy and paste?
-            Seek help from someone who knows how to copy and paste.
         `, { status: 400 });
     }
 
@@ -35,7 +32,7 @@ export async function PUT(request: NextRequest) {
         }
 
         // Check if the order is already delivered or ready
-        if (['delivered', 'ready'].includes(foundOrder.status)) {
+        if (ORDER_STATUSES.DELIVERED === foundOrder.status || ORDER_STATUSES.READY === foundOrder.status || ORDER_STATUSES.CANCELLED === foundOrder.status) {
             console.log('Order was already cancelled:', foundOrder.status)
             return new Response(`Order was already ${foundOrder.status}. Cannot cancel!`, { status: 400 });
         }

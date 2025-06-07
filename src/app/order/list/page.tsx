@@ -16,7 +16,8 @@ const Page = () => {
     end.setHours(end.getHours() + 1);
     end.setMinutes(59, 59, 999);
 
-    const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) ?? [];
+    const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) ?? []
+
 
     const [t, i18n] = useTranslation();
 
@@ -57,7 +58,9 @@ const Page = () => {
                     ) : (
                         <div className="divide-y divide-gray-100">
                             {localStorageOrders.map((order: {
-                                id: string, items: string[], timeslot: string
+                                id: string,
+                                items: string[],
+                                timeslot: number,
                             }, index: number) => (
                                 <a
                                     key={index}
@@ -68,12 +71,12 @@ const Page = () => {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <div
-                                                    className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                                                    <Package className="w-5 h-5 text-green-600"/>
+                                                    className="w-10 h-10 bg-yellow-100 rounded-2xl flex items-center justify-center shrink-0">
+                                                    <Pizza className="w-5 h-5 text-yellow-600"/>
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <p className="text-sm font-medium text-gray-900 truncate">
-                                                        Order #{order.id.slice(-6)}
+                                                        Order #{order.id}
                                                     </p>
                                                     <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                                                         <Clock className="w-3 h-3"/>
@@ -82,9 +85,6 @@ const Page = () => {
                                                 </div>
                                             </div>
                                             <div className="ml-13">
-                                                <p className="text-sm text-gray-600 line-clamp-2">
-                                                    {(order.items ?? []).join(', ')}
-                                                </p>
                                                 <div className="flex flex-wrap gap-1 mt-2">
                                                     {(order.items ?? []).slice(0, 3).map((item, itemIndex) => (
                                                         <span
@@ -104,7 +104,7 @@ const Page = () => {
                                             </div>
                                         </div>
                                         <ChevronRight
-                                            className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors flex-shrink-0 ml-4"/>
+                                            className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors shrink-0 ml-4"/>
                                     </div>
                                 </a>
                             ))}

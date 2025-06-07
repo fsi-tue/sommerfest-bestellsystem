@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
  * POST /logout
  * Logout endpoint
  */
-export async function POST(req: Request) {
+export async function POST(request: Request) {
     await dbConnect()
 
     // Authenticate the user

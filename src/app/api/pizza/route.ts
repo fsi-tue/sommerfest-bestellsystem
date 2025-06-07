@@ -5,11 +5,11 @@ import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
     await dbConnect();
 
     try {
-        const pizzas = await ItemModel.find({ type: 'pizza' });
+        const pizzas = await ItemModel.find({ type: 'pizza' }).lean();
         return Response.json(pizzas)
     } catch (error) {
         console.error('Error fetching pizzas:', error);
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     return new Response('Error fetching pizzas', { status: 500 })
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
     await dbConnect();
 
     // Authenticate the user
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         }, { status: 401 });
     }
 
-    const newPizza = await req.json()
+    const newPizza = await request.json()
 
     try {
         const pizza = new ItemModel(newPizza);
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     }
 }
 
-export async function PUT(req: Request) {
+export async function PUT(request: Request) {
     await dbConnect();
 
     // Authenticate the user
@@ -52,7 +52,7 @@ export async function PUT(req: Request) {
         }, { status: 401 });
     }
 
-    const pizza = await req.json()
+    const pizza = await request.json()
 
     try {
         const updatedPizza = await ItemModel.findById(pizza._id);

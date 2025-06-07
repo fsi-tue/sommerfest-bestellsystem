@@ -19,9 +19,9 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body>
-        <main className="max-h-full flex flex-col bg-gray-50">
+        <main className="max-h-fit flex flex-col bg-gray-50">
             <Header/>
-            <div className="p-1 md:p-6 my-5 w-full max-w-7xl mx-auto min-h-screen ">
+            <div className="p-4 md:p-8 my-5 w-full max-w-7xl mx-auto min-h-screen">
                 {children}
             </div>
             <Footer/>

@@ -1,7 +1,8 @@
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { addToLocalStorage, getFromLocalStorage } from "../../../lib/localStorage";
-import { useCurrentOrder } from "@/app/zustand/order";
+import React, { useEffect, useState } from "react";
+import { addToLocalStorage, getFromLocalStorage } from "@/lib/localStorage";
+import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
+import Button from "@/app/components/Button";
 import { useTranslation } from "react-i18next";
 
 interface OrderButtonProps {
@@ -10,10 +11,27 @@ interface OrderButtonProps {
 
 const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
     const router = useRouter();
+    // TODO: reintegrate the text
+    const [text, setText] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
     const [t, i18n] = useTranslation();
 
     const order = useCurrentOrder();
+    const orderActions = useOrderActions();
+    useEffect(() => {
+        setIsButtonDisabled(true)
+        if (orderActions.getTotalItemCount() === 0) {
+            setText("Choose Items")
+        } else if (order.name === '') {
+            setText("Set Name");
+        } else if (!order.timeslot) {
+            setText("Set Timeslot")
+        } else {
+            setText("Order Now")
+            setIsButtonDisabled(false)
+        }
+    }, [order])
 
     // Function to order the pizzas
     const orderPizza = () => {
@@ -36,7 +54,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
                     console.log('Error placing order:', error);
                     throw new Error(error);
                 }
-                return data;
+                return data as { orderId: string };
             })
             .then(data => {
                 if (data.orderId) {
@@ -44,8 +62,8 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
                     const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) ?? [];
                     localStorageOrders.push({
                         id: data.orderId,
-                        items: Object.values(data.orderItems),
-                        timeslot: order?.timeslot,
+                        items: Object.values(order.items).flat().map((item) => item.name),
+                        timeslot: order.timeslot,
                     });
                     addToLocalStorage('localStorageOrders', JSON.stringify(localStorageOrders));
 
@@ -56,18 +74,18 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
             .catch(error => {
                 console.log(error)
                 setError(error.message);
-                setIsButtonDisabled(false); // Re-enable the button in case of error
+                setIsButtonDisabled(false); // Re-enable the Button in case of error
             });
     };
 
     return (
-        <button
+        <Button
             onClick={orderPizza}
-            className={`w-full bg-green-700 text-white px-4 py-2 rounded-2xl md:w-auto  ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-800'}`}
+            className={`w-full md:w-auto font-semibold px-4 py-3 rounded-2xl bg-orange-500 text-white shadow-lg transition-all duration-300 ease-out ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-400'}`}
             disabled={isButtonDisabled}
         >
             {t('order.order_button.order_now')}
-        </button>
+        </Button>
     );
 };
 

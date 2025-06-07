@@ -10,12 +10,11 @@ import { NextRequest, NextResponse } from "next/server";
  * @constructor
  * @param request
  */
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
 
     // Get the ID from the URL
-    const searchParams = request.nextUrl.searchParams
-    const id = searchParams.get('id')
+    const { id } = await params
 
     // Check if the ID is valid and ObjectId
     if (!id || !mongoose.isValidObjectId(id)) {
@@ -42,12 +41,11 @@ export async function GET(request: NextRequest) {
  * @constructor
  * @param request
  */
-export async function PUT(request: NextRequest) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
 
     // Get the ID from the URL
-    const searchParams = request.nextUrl.searchParams
-    const id = searchParams.get('id')
+    const { id } = await params
 
     // Authenticate the user
     const headersList = await headers()
@@ -82,7 +80,6 @@ export async function PUT(request: NextRequest) {
         // Save the updated order
         await foundOrder.save();
 
-        // console.log('Order updated:', foundOrder)
         return Response.json(foundOrder);
     } catch (error) {
         console.error(`Error setting order as paid`)

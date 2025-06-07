@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { getFromLocalStorage } from "@/lib/localStorage";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import { Order, OrderStatus } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
+import { Loading } from "@/app/components/Loading";
+import Button from "@/app/components/Button";
+import ErrorMessage from "@/app/components/ErrorMessage";
 import { useTranslation } from "react-i18next";
 
 // Client Component with the original logic
@@ -14,19 +15,11 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
     const [order, setOrder] = useState<Order | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const router = useRouter();
     const [t, i18n] = useTranslation();
 
-    // Check if logged in
-    useEffect(() => {
-        const token = getFromLocalStorage('token');
-        if (token) {
-            router.push(`/admin/manage/order/${orderNumber}`);
-        }
-    }, [orderNumber, router]);
 
     // Fetch order data
-    useEffect(() => {
+    const fetchOrder = () => {
         fetch(`/api/order/${orderNumber}`)
             .then(async response => {
                 const data = await response.json();
@@ -36,19 +29,30 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                 }
                 return data;
             })
-            .then(data => {
-                setOrder(data);
+            .then(order => {
+                setOrder({ ...order });
                 setIsLoading(false);
             })
             .catch(error => {
                 setError(error.message || "An error occurred");
                 setIsLoading(false);
             });
+    }
+
+    useEffect(() => {
+        fetchOrder()
     }, [orderNumber]);
+
+    useEffect(() => {
+        const interval = setInterval(fetchOrder, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     // Rest of your component logic
     const cancelOrder = () => {
-        if (!order) return;
+        if (!order) {
+            return;
+        }
 
         fetch(`/api/order/${orderNumber}/cancel`, {
             method: 'PUT',
@@ -56,7 +60,10 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
         })
             .then(response => {
                 if (response.ok) {
-                    setOrder({ ...order, status: 'cancelled' });
+                    setOrder({
+                        ...order,
+                        status: 'cancelled' as OrderStatus
+                    });
                 } else {
                     throw new Error("Failed to cancel order");
                 }
@@ -67,7 +74,9 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
     };
 
     const hasComment = () => {
-        if (!order) return false;
+        if (!order) {
+            return false;
+        }
 
         return (
             typeof order.comment === "string" &&
@@ -76,110 +85,126 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
         );
     };
 
+    const statusToText = (order: { status: OrderStatus }) => {
+        switch (order.status) {
+            case 'ordered':
+                return 'We\'ve received your order.';
+            case 'inPreparation':
+                return 'Your order is being prepared.';
+            case 'ready':
+                return 'Your order is ready for pickup!';
+            case 'delivered':
+                return 'Your order has been delivered 🎉';
+            case 'cancelled':
+                return 'Your order has been cancelled.';
+            default:
+                return 'Order status unavailable.';
+        }
+    }
+    const getStatusColor = (status: OrderStatus) => {
+        switch (status) {
+            case 'ordered':
+                return 'bg-primary-100 text-primary-800';
+            case 'inPreparation':
+                return 'bg-orange-100 text-orange-800';
+            case 'ready':
+                return 'bg-green-100 text-green-800';
+            case 'delivered':
+                return 'bg-gray-100 text-gray-800';
+            case 'cancelled':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+
     if (isLoading) {
-        return (
-            <div className="p-6 max-w-md mx-auto">
-                <h1 className="text-2xl font-semibold">Loading...</h1>
-            </div>
-        );
+        return <Loading message="Loading Order..."/>;
     }
-
-    if (error) {
-        return (
-            <div className="p-6 max-w-md mx-auto">
-                <h1 className="text-2xl font-semibold text-red-600">Error</h1>
-                <p>{error}</p>
-            </div>
-        );
-    }
-
     if (!order) {
-        return (
-            <div className="p-6 max-w-md mx-auto">
-                <h1 className="text-2xl font-semibold">Order not found</h1>
-            </div>
-        );
+        return <div className="p-6 text-center"><h1 className="text-xl">Order not found</h1></div>;
     }
 
-    // Return your original JSX
     return (
-        <div className="p-6 max-w-md md:max-w-2xl mx-auto">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                    <span className="w-12 h-12 rounded-full mr-3 bg-white flex items-center justify-center">
-                        🍕
-                    </span>
-                    <div>
-                        <h2 className="text-2xl font-semibold">Order Status</h2>
-                        <p className="text-sm text-gray-500">Ordered {formatDateTime(new Date(order.orderDate))}</p>
-                    </div>
-                </div>
-                <div className="flex justify-center items-center">
-                    <OrderQR orderId={orderNumber}/>
-                </div>
-            </div>
-
-            {/* Rest of your UI */}
-            <div className="bg-white p-4 rounded-2xl mb-4">
-                <h3 className="text-lg font-light">{t(`order.status.${order.status}`) || t(`order.status.default`)}</h3>
-                {order.status !== 'cancelled' && (
-                    <>
-                        <h3 className="text-xl font-semibold mb-2">Arriving {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}</h3>
-                        <div className="bg-green-200 h-2 rounded-full mb-2 relative overflow-hidden">
-                            <div className="bg-green-500 h-full rounded-full w-1/2"></div>
-                        </div>
-                    </>
+        <div className="p-6 max-w-md mx-auto rounded-2xl bg-white shadow-xl">
+            {/* Status Hero Section */}
+            <div className="px-6 py-12 text-center">
+                {error && (
+                    <ErrorMessage error={error} />
                 )}
-                <p className="text-sm text-gray-700">Ship to: {order.name}</p>
 
-                {order?.items?.map((item, index) => (
-                    <div key={`${item.item._id?.toString() || index}`}>
-                        <div className="mt-2 border-b border-gray-100 last:border-b-0"/>
-                        <div className="py-4 flex items-center space-x-4">
-                            <div>
-                                <h3 className="text-lg font-semibold">{item.item.name}</h3>
-                                <div className="flex space-x-2">
-                                    {item.item.dietary && (
-                                        <span className="text-xs text-gray-500 font-light rounded-2xl border border-gray-100 px-2">
-                                            {item.item.dietary}
-                                        </span>
-                                    )}
-                                    <span className="text-xs text-gray-500 font-light rounded-2xl border border-gray-100 px-2">
-                                        {item.status}
-                                    </span>
+                {!error && (
+                    <>
+                        <div
+                            className={`inline-flex px-4 py-2 rounded-full text-sm font-medium mb-4 ${getStatusColor(order.status)}`}>
+                            {t(`order.status.${order.status}`) || t(`order.status.default`)}
+                        </div>
+
+                        <h1 className="text-2xl font-semibold mb-6 text-gray-900 max-w-sm mx-auto">
+                            {statusToText(order)}
+                        </h1>
+                    </>)
+                }
+
+                {order.status !== 'cancelled' && (
+                    <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
+                        <p className="text-sm text-gray-600 mb-1">Ready by</p>
+                        <p className="text-3xl font-light text-blue-600">
+                            {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate()).split(' ')[1]}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                            {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate()).split(' ')[0]}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            <div className="px-6 pb-6">
+                <div className="max-w-sm mx-auto space-y-4">
+
+                    <div className="p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-sm text-gray-500">Order #{orderNumber.slice(-8)}</span>
+                            <span className={`text-sm font-medium ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
+                                {order.isPaid ? '✓ Paid' : '⚠ Unpaid'}
+                            </span>
+                        </div>
+
+                        <div className="space-y-3">
+                            {order?.items?.map((item, index) => (
+                                <div key={index} className="flex justify-between">
+                                    <span className="text-gray-900">{item.item.name}</span>
+                                    <span className="text-gray-600">€{item.item.price.toFixed(2)}</span>
                                 </div>
-                            </div>
+                            ))}
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between text-lg font-semibold">
+                            <span>Total</span>
+                            <span>€{order?.items?.reduce((total, item) => total + item.item.price, 0).toFixed(2)}</span>
                         </div>
                     </div>
-                ))}
-            </div>
 
-            <div className="bg-white p-4 rounded-2xl mb-4">
-                <h3 className="text-xl font-semibold mb-2">Details</h3>
-                <div className="flex justify-between text-sm text-gray-700 mb-2">
-                    <span>Order Number</span>
-                    <span>{orderNumber}</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-700 mt-2">
-                    <span>Total</span>
-                    <span>{order?.items?.reduce((total, item) => total + item.item.price, 0).toFixed(2)}€</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-700 mt-2">
-                    <span>Payment Status</span>
-                    <span className={order.isPaid ? 'text-green-500' : 'text-red-500'}>
-                        {order.isPaid ? 'Paid' : 'Unpaid'}
-                    </span>
+                    {/* QR Code Card */}
+                    <div className="p-6 text-center">
+                        <p className="text-sm text-gray-600 mb-4">Show this at pickup</p>
+                        <div className="flex justify-center">
+                            <OrderQR orderId={orderNumber}/>
+                        </div>
+                    </div>
+
+                    {/* Cancel Button */}
+                    {order.status !== 'cancelled' && (
+                        <Button
+                            onClick={cancelOrder}
+                            className="w-full py-4 text-red-600 bg-white border border-red-200 rounded-2xl font-medium hover:bg-red-50 transition-colors"
+                        >
+                            Cancel Order
+                        </Button>
+                    )}
                 </div>
             </div>
-
-            {order.status !== 'cancelled' && (
-                <button
-                    className="block w-full text-center text-blue-600 text-lg py-2 border border-blue-600 rounded hover:bg-blue-50"
-                    onClick={cancelOrder}
-                >
-                    Cancel Order
-                </button>
-            )}
         </div>
     );
 }

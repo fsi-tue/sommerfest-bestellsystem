@@ -30,7 +30,7 @@ export const ITEM_STATUS_VALUES = Object.values(ITEM_STATUSES);
  * Order item interface.
  */
 export interface OrderItem {
-    item: ItemDocument; // Reference to ItemDocument
+    item: ItemDocument;
     status: ItemStatus;
 }
 
@@ -61,7 +61,7 @@ export interface ApiOrder {
  * Includes the `_id` field explicitly.
  */
 export interface OrderDocument extends Order, Document {
-    _id: Types.ObjectId; // Explicitly include the `_id` field
+    _id: Types.ObjectId;
 }
 
 /**
@@ -109,7 +109,7 @@ orderSchema.pre("save", function (next) {
     // If the order is cancelled or delivered, set all items to the same status
     if (this.status === "cancelled" || this.status === "delivered") {
         this.items.forEach((item) => {
-            item.status = this.status as ItemStatus; // Safe cast
+            item.status = this.status as ItemStatus;
         });
         return next();
     }
@@ -141,4 +141,4 @@ try {
     OrderModel = model<OrderDocument>("Order", orderSchema);
 }
 
-export { OrderModel };
+export { OrderModel }

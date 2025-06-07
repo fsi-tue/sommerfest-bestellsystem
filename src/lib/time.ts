@@ -1,5 +1,6 @@
 import moment from "moment-timezone";
 import { CONSTANTS } from "@/config";
+import { Moment } from "moment";
 
 /**
  * Get the current time slot
@@ -7,7 +8,7 @@ import { CONSTANTS } from "@/config";
  */
 export const formatDateTime = (date: Date) => {
     if (!date) {
-        return null;
+        return ''
     }
 
     const options: any = {
@@ -26,7 +27,7 @@ export const formatDateTime = (date: Date) => {
  * Get the current time slot
  * @param timeslot
  */
-export const getDateFromTimeSlot = (timeslot: string) => {
+export const getDateFromTimeSlot = (timeslot: string): Moment => {
     if (!timeslot) {
         return moment().tz(CONSTANTS.TIMEZONE_ORDERS);
     }

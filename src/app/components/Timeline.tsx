@@ -115,7 +115,7 @@ const Timeline: React.FC<TimelineProps> = ({
                         {timeslots.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}`}
-                                fill={entry.color || "#007bff"}
+                                fill={entry.color ?? "#007bff"}
                                 stroke={entry.border}
                                 strokeWidth={entry.borderwidth || 0}
                             />

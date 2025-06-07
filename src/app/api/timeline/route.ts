@@ -59,7 +59,6 @@ export async function GET(request: Request) {
             const timeSlot = getDateFromTimeSlot(timeslot);
             if (timeSlot >= startTime && timeSlot < stopTime) {
                 items.forEach(({ item }) => {
-                    console.log(itemsById)
                     totalAmount += itemsById[item._id.toString()].size;
                 });
             }

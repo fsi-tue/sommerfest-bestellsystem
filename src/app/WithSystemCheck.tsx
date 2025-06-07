@@ -1,73 +1,72 @@
 'use client'
 
 import { Construction } from "lucide-react";
-import {useEffect, useState} from "react";
+import { ComponentType, useEffect, useState } from "react";
+import { Loading } from "@/app/components/Loading";
 import { useTranslation } from "react-i18next";
 
-const WithSystemCheck = (WrappedComponent: any) => {
-	return function WithSystemCheckComponent(props: any) {
-		const [systemStatus, setSystemStatus] = useState('checking');
-		const [loading, setLoading] = useState(true);
-		const [t, i18n] = useTranslation();
+// Define the system status type
+type SystemStatus = 'checking' | 'active' | 'inactive';
 
-		const checkSystemStatus = () => {
-			setLoading(true);
-			fetch('/api/manage/system/status')
-				.then(async response => {
-					const data = await response.json();
-					if (!response.ok) {
-						const error = (data && data.message) || response.statusText;
-						throw new Error(error);
-					}
-					return data;
-				})
-				.then(data => {
-					setSystemStatus(data.status);
-					setLoading(false);
-				})
-				.catch(error => {
-					console.error('Error fetching system status:', error.message);
-					setLoading(false);
-				});
-		};
+// Define the HOC function with proper TypeScript generics
+const WithSystemCheck = <P extends object>(
+    WrappedComponent: ComponentType<P>
+): ComponentType<P> => {
+    const [t, i18n] = useTranslation();
 
-		useEffect(() => {
-			checkSystemStatus();
-		}, []);
+    return function WithSystemCheckComponent(props: P) {
+        const [systemStatus, setSystemStatus] = useState<SystemStatus>('checking');
+        const [loading, setLoading] = useState<boolean>(true);
 
-		if (loading) {
-			return (
-				<div>
-					<div className="flex items-center justify-center">
-						<div className="text-center">
-							<svg className="animate-spin h-10 w-10 text-blue-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg"
-							     fill="none" viewBox="0 0 24 24">
-								<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-								<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8V12H4z"></path>
-							</svg>
-							<p className="text-gray-700">{t('withsystemcheck.check_system_status')}</p>
-						</div>
-					</div>
-				</div>
-			);
-		}
+        const checkSystemStatus = (): void => {
+            setLoading(true);
+            fetch('/api/manage/system/status')
+                .then(async (response: Response) => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.statusText;
+                        throw new Error(error);
+                    }
+                    return data;
+                })
+                .then((data: { status: SystemStatus }) => {
+                    setSystemStatus(data.status);
+                    setLoading(false);
+                })
+                .catch((error: Error) => {
+                    console.error('Error fetching system status:', error.message);
+                    setLoading(false);
+                });
+        };
 
-		if (systemStatus === 'active') {
-			return <WrappedComponent {...props} />;
-		}
+        useEffect(() => {
+            checkSystemStatus();
+        }, []);
 
-		return (
-			<div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-				<div className="flex items-center gap-3 mb-2">
-					<div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-						<Construction className="w-4 h-4 text-red-400"/>
-					</div>
-					<h1 className="text-2xl font-semibold text-gray-900">{t('withsystemcheck.system_inactive')}</h1>
-				</div>
-				<p className="text-gray-500 text-sm">{t('withsystemcheck.system_unavailable_message')}</p>
-			</div>
-		);
-	};
+        if (loading) {
+            return (
+                <Loading message={t('withsystemcheck.check_system_status')}/>
+            );
+        }
+
+        if (systemStatus === 'active') {
+            return <WrappedComponent {...props} />;
+        }
+
+        return (
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                        <Construction className="w-4 h-4 text-red-400"/>
+                    </div>
+                    <h1 className="text-2xl font-semibold text-gray-900">{t('withsystemcheck.system_inactive')}</h1>
+                </div>
+                <p className="text-gray-500 text-sm">
+                    {t('withsystemcheck.system_unavailable_message')}
+                </p>
+            </div>
+        );
+    };
 };
 
 export default WithSystemCheck;

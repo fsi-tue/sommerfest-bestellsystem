@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
+import Button from "@/app/components/Button";
 import { useTranslation } from 'react-i18next';
 
 interface SearchInputProps {
@@ -53,7 +54,7 @@ const SearchInput = ({
                      hover:border-gray-100"
                 />
                 {value && (
-                    <button
+                    <Button
                         type="button"
                         onClick={handleClear}
                         className="absolute right-3 top-1/2 -translate-y-1/2
@@ -63,7 +64,7 @@ const SearchInput = ({
                         aria-label="Clear search"
                     >
                         <X className="w-4 h-4"/>
-                    </button>
+                    </Button>
                 )}
             </div>
         </div>
