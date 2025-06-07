@@ -3,7 +3,8 @@ import { initReactI18next } from 'react-i18next';
 import { loadResources } from './i18n.resources';
 
 export const resources: Record<string, any> = loadResources((lang:string, ns:string="") => {
-  return import(`@/config/locales/${lang}.yaml`).then((m) => m.default) || {};
+  debugger;
+  return require(`@/config/locales/${lang}.yaml`).default || {};
 });
 
 export const i18nConfig: InitOptions = {
