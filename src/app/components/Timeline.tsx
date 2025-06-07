@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useOrderActions } from "@/app/zustand/order";
+import { useTranslation } from 'react-i18next';
 
 
 interface TimeSlot {
@@ -44,6 +45,7 @@ const Timeline: React.FC<TimelineProps> = ({
     const [timeslots, setTimeslots] = useState<TimeSlot[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [t, i18n] = useTranslation();
 
     const orderActions = useOrderActions();
 
@@ -87,7 +89,7 @@ const Timeline: React.FC<TimelineProps> = ({
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-[300px]">
-                <div className="text-gray-500">Loading timeline...</div>
+                <div className="text-gray-500">{t('components.timeline.loading')}</div>
             </div>
         );
     }
@@ -96,7 +98,7 @@ const Timeline: React.FC<TimelineProps> = ({
         <div className="w-full">
             {error && (
                 <div className="mb-2 p-2 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-                    Warning: {error}. Showing fallback data.
+                    {t('components.timeline.warning', {error:error})}
                 </div>
             )}
 

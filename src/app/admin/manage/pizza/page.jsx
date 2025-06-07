@@ -46,7 +46,7 @@ const Page = () => {
 	}, [token]);
 
 	if (loading) return <div>Loading...</div>;
-	if (error) return (<ErrorMessage error={error}/>);
+	if (error) return (<ErrorMessage error={error} t={t} />);
 
 	return (
 		<div>

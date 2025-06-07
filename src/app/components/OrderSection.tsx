@@ -25,7 +25,7 @@ const OrderSection: React.FC<OrderSectionProps> = ({
     return (
         <div className="md:w-1/2 w-full">
             <a id="order" className="block -mt-20 pt-20"></a>
-            {error && <ErrorMessage error={error}/>}
+            {error && <ErrorMessage error={error} t={t} />}
 
             {/* Form Inputs */}
             <div className="mb-6 space-y-4">

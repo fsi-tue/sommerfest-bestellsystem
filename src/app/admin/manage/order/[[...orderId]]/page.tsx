@@ -191,7 +191,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                 </div>
             </div>
 
-            {error && <ErrorMessage error={error} />}
+            {error && <ErrorMessage error={error} t={t} />}
 
             <div className="md:p-4">
                 <SearchInput search={setFilter} searchValue={filter} />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from "react"; // Added useCallback, useMemo
+import React, { useCallback, useEffect, useMemo, useState, useTransition } from "react"; // Added useCallback, useMemo
 import WithSystemCheck from "@/app/WithSystemCheck"; // Keep HOC wrapper
 import { ItemDocument } from '@/model/item';
 
@@ -13,6 +13,7 @@ import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
 
 
 import "@/lib/i18n";
+import { useTranslation } from "react-i18next";
 
 const EVERY_X_SECONDS = 60; // Keep constant here or move to config
 
@@ -21,6 +22,7 @@ const Page: React.FC = () => {
     const [items, setItems] = useState<{ [_id: string]: ItemDocument[] }>({});
     const [isMenuLoading, setIsMenuLoading] = useState(true); // Add loading state for menu
     const [ordersOpen, openOrders] = useState(false);
+    const [t, i18n] = useTranslation();
 
     const order = useCurrentOrder()
     const orderActions = useOrderActions()
@@ -39,8 +41,9 @@ const Page: React.FC = () => {
                 setItems(data);
             })
             .catch(error => {
-                console.error('Error fetching pizza menu:', error);
-                setError(`Failed to load menu: ${error.message}`); // Provide more context
+                const msg = t('errors.failed_to_load_menu',{message:error.message});
+                console.error(msg, error);
+                setError(msg); // Provide more context
             })
             .finally(() => {
                 setIsMenuLoading(false);
@@ -88,7 +91,7 @@ const Page: React.FC = () => {
                     <div
                         className="bg-white p-6 md:p-8 rounded-2xl shadow-md mb-24"> {/* Increased bottom margin for floating island */}
                         {isMenuLoading && !Object.keys(items).length ? (
-                            <div className="text-center p-10">Loading Menu...</div> // Show loading indicator until item is loaded
+                            <div className="text-center p-10">{t('loading_menu')}</div> // Show loading indicator until item is loaded
                         ) : (
                             <div
                                 className="flex flex-col md:flex-row justify-between gap-8 lg:gap-12"> {/* Added more gap */}

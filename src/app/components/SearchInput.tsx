@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SearchInputProps {
     search: (value: string) => void;
@@ -11,11 +12,13 @@ interface SearchInputProps {
 const SearchInput = ({
                          search,
                          searchValue = '',
-                         placeholder = 'Search...',
+                         placeholder = '',
                          className = ''
                      }: SearchInputProps) => {
     const [value, setValue] = useState(searchValue);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [t, i18n] = useTranslation();
+    placeholder = placeholder || t('components.searchinput.placeholder');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;

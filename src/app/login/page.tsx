@@ -3,11 +3,13 @@
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {addToLocalStorage} from "@/lib/localStorage.js";
+import { useTranslation } from "react-i18next";
 
 const Page = () => {
 	const [token, setToken] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [t, i18n] = useTranslation();
 
 	const router = useRouter();
 
@@ -63,12 +65,11 @@ const Page = () => {
 				<div className="px-6 py-8 shadow-2xl rounded-xl sm:px-10">
 					<form onSubmit={handleSubmit} className="space-y-6">
 						<div className="text-center">
-							<h2 className="text-3xl font-bold tracking-tight text-gray-900">Admin Login</h2>
+							<h2 className="text-3xl font-bold tracking-tight text-gray-900">{t('login.title')}</h2>
 						</div>
-
 						<div>
 							<label htmlFor="token" className="block text-sm font-medium text-gray-700">
-								FSI/K Token
+								{t('login.fsik_token')}
 							</label>
 							<div className="mt-1">
 								<input
@@ -93,7 +94,7 @@ const Page = () => {
                 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
                 disabled:opacity-75 disabled:cursor-not-allowed transition-all duration-200"
 							>
-								{isLoading ? 'Authenticating...' : 'Login'}
+								{isLoading ? t('login.authenticating') : t('login.login')}
 							</button>
 						</div>
 

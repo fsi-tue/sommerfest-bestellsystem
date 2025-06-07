@@ -65,7 +65,7 @@ const ItemPage = ({item, isNew}) => {
 			.catch(error => setError(error.message));
 	}
 
-	if (error) return (<ErrorMessage error={error}/>);
+	if (error) return (<ErrorMessage error={error} t={t} />);
 
 	return (
 		<div className="w-full px-4 py-6">
