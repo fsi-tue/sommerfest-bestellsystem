@@ -59,8 +59,8 @@ translation:
       subtitle: Verfolge und verwalte deine letzten Bestellungen
     recent:
       title: Letzte Bestellungen
-      orders_found: '{{orders}} Bestellung gefunden'
-      orders_found_plural: '{{orders}} Bestellungen gefunden'
+      orders_found: '{{count}} Bestellung gefunden'
+      orders_found_plural: '{{count}} Bestellungen gefunden'
       no_orders_yet: Noch keine Bestellungen
       messages:
         first_order: Wenn du deine erste Bestellung aufgibst, erscheint sie hier.

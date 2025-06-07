@@ -58,8 +58,8 @@ translation:
       subtitle: 🐾🕵️‍♀️💞🌷✨ Twack and manage aww youw supew cute wecent owdews~ nya nya~!! uwu 🎀🎶✨💖
     recent:
       title: 🎀📦✨🐰💕 Wecent owo owdews, just fow you cutie~!! 🎉💖🌸✨
-      orders_found: "✨🎉🥳💫 UwU {{orders}} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
-      orders_found_plural: "🎉✨💖🦄 UwU {{orders}} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
+      orders_found: "✨🎉🥳💫 UwU {{count}} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
+      orders_found_plural: "🎉✨💖🦄 UwU {{count}} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
       no_orders_yet: 😿💔🐾🎶💫 Nya nya~ no owdews yet!! Pwease make a supew cute one~ ;w; 🎉🌷✨💖
       messages:
         first_order: 🤗🐰💖🎶✨ When you pwace youw vewy fiwst owo owdew, it wiww appeaw wight hewe fow easy twacking~!! *gives biggest huggwes* uwu 🌸🎀✨💕

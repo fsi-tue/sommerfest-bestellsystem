@@ -59,8 +59,8 @@ translation:
       subtitle: Track and manage your recent orders
     recent:
       title: Recent Orders
-      orders_found: '{{orders}} order found'
-      orders_found_plural: '{{orders}} orders found'
+      orders_found: '{{count}} order found'
+      orders_found_plural: '{{count}} orders found'
       no_orders_yet: No orders yet
       messages:
         first_order: When you place your first order, it will appear here for easy
