@@ -123,7 +123,7 @@ orderSchema.pre("save", function (next) {
         this.status = "inPreparation";
 
         // If the timeslot has passed, mark the order as ready
-        if (getDateFromTimeSlot(this.timeslot).toDate().getTime() <= new Date().getTime()) {
+        if (getDateFromTimeSlot(this.timeslot).getTime() <= new Date().getTime()) {
             this.status = "ready";
         }
     } else if (uniqueStatuses.size === 1 && uniqueStatuses.has("ready")) {

@@ -9,11 +9,10 @@ import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/mode
 import { getDateFromTimeSlot } from '@/lib/time';
 import SearchInput from '@/app/[lng]/components/SearchInput';
 import Button from '@/app/[lng]/components/Button';
-import moment from 'moment-timezone';
-import { CONSTANTS } from '@/config';
 import { ItemDocument } from "@/model/item";
 import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/[lng]/components/layout/Heading";
+import { format } from "date-fns";
 
 interface ItemType {
     id: string;
@@ -178,7 +177,7 @@ const OrderCard = ({
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                     isOverdue ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
                 }`}>
-                    {timeslotDate.format('HH:mm')}
+                    {format(timeslotDate, 'HH:mm')}
                 </div>
             </div>
 
@@ -512,18 +511,18 @@ const OrderManagerDashboard = () => {
 
         // Sort by timeslot
         return filtered.sort((a, b) => {
-            const timeA = getDateFromTimeSlot(a.timeslot).toDate().getTime();
-            const timeB = getDateFromTimeSlot(b.timeslot).toDate().getTime();
+            const timeA = getDateFromTimeSlot(a.timeslot).getTime();
+            const timeB = getDateFromTimeSlot(b.timeslot).getTime();
             return timeA - timeB;
         });
     }, [orders, activeTab, searchFilter]);
 
     // Check for overdue orders
     const overdueOrders = useMemo(() => {
-        const now = moment().tz(CONSTANTS.TIMEZONE_ORDERS);
+        const now = Date.now()
         return filteredOrders.filter(order =>
             (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED) &&
-            getDateFromTimeSlot(order.timeslot).isBefore(now)
+            getDateFromTimeSlot(order.timeslot).getTime() < now
         );
     }, [filteredOrders]);
 
@@ -606,9 +605,9 @@ const OrderManagerDashboard = () => {
             {/* Orders Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredOrders.map(order => {
-                    const now = moment().tz(CONSTANTS.TIMEZONE_ORDERS);
+                    const now = Date.now()
                     const isOverdue = (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED)
-                        && getDateFromTimeSlot(order.timeslot).isBefore(now)
+                        && getDateFromTimeSlot(order.timeslot).getTime() < now
 
                     return (
                         <OrderCard

@@ -150,10 +150,10 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                     <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
                         <p className="text-sm text-gray-600 mb-1">Ready by</p>
                         <p className="text-3xl font-light text-blue-600">
-                            {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate()).split(' ')[1]}
+                            {formatDateTime(getDateFromTimeSlot(order.timeslot)).split(' ')[1]}
                         </p>
                         <p className="text-sm text-gray-600">
-                            {formatDateTime(getDateFromTimeSlot(order.timeslot).toDate()).split(' ')[0]}
+                            {formatDateTime(getDateFromTimeSlot(order.timeslot)).split(' ')[0]}
                         </p>
                     </div>
                 )}
