@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react'
 import React, { useCallback, useState } from 'react'
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import Button from "@/app/components/Button";
+import { useTranslations } from "next-intl";
 
 interface ItemProps {
     item: ItemDocument
