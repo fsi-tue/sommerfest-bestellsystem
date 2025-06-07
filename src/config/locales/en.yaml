@@ -77,9 +77,6 @@ translation:
       delete_database: Delete Database
       system_state: System {{state}}
 
-      errors:
-        order_not_found: Order not found
-
       order:
         errors:
           order_not_found: Order not found
@@ -105,7 +102,16 @@ translation:
         edit_item:
           enabled: Enabled
           disabled: Disabled
+          disable: Disable
+          enable: Enable
           items_available: '{{items}} items available'
+          update: Update
+          create: Create
+          name: Name
+          type: Type
+          dietary: Dietary
+          price: Price
+          max_items_available: Max items available
     prepare:
       title: Orders
       current_time: 'Current Time: {{currentTime}}'

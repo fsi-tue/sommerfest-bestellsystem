@@ -3,70 +3,70 @@ translation:
   app_title: 💖🍕✨🎀🎉 Get youw smowwest wittle byte of nyummy wummy pizza~!! 👉👈🥺 🍰🍕 So dewicious and adowabwe nyaaa~!! 💖🌸🍭✨🦄
   loading_menu: ✨🔄💫 Woading Menu... pwease wait cutie~!! 🥺💖🌸
 
-errors:
-  failed_to_load_menu: "😿💔🌧️ UwU!! Uh oh oh oh! Faiwed to woad da pwecious menu~!! 🥺😭 : {{message}} 🥺🍕✨💫 Pwease pwease twy again watew, my sweet angel~!! 🌸🌈💖🦄✨🎀"
+  errors:
+    failed_to_load_menu: "😿💔🌧️ UwU!! Uh oh oh oh! Faiwed to woad da pwecious menu~!! 🥺😭 : {{message}} 🥺🍕✨💫 Pwease pwease twy again watew, my sweet angel~!! 🌸🌈💖🦄✨🎀"
 
-header:
-  adminlinks:
-    prepare: 🛠️💞✨🌟 Pwepawe Itewmz~!! *bounces supew excitedwy with spwarkly eyes* 🍕🌸🎊💖🦄🎀
-    manage_db: 🗄️✨💫🌈 Manage da supew special Database~ owo uwu~!! 🎀💻💖🌸✨
-    manage_orders: 📦🎉💖✨ Manage OwOwdews~!! *owganizes so so cutewy* 🐾💖🌟🦄🎀💫
-    manage_items: 🍕🧺💕✨ Manage Itewmz~ supew duper cute~!! ✨🌈🎊💖🦄🎀
-    logout: 🚪👋💫✨ Wog out~ byebye fow nyow, my pwecious~!! *gives biggest huggwes evew* 😿🎀💖🌸💕
+  header:
+    adminlinks:
+      prepare: 🛠️💞✨🌟 Pwepawe Itewmz~!! *bounces supew excitedwy with spwarkly eyes* 🍕🌸🎊💖🦄🎀
+      manage_db: 🗄️✨💫🌈 Manage da supew special Database~ owo uwu~!! 🎀💻💖🌸✨
+      manage_orders: 📦🎉💖✨ Manage OwOwdews~!! *owganizes so so cutewy* 🐾💖🌟🦄🎀💫
+      manage_items: 🍕🧺💕✨ Manage Itewmz~ supew duper cute~!! ✨🌈🎊💖🦄🎀
+      logout: 🚪👋💫✨ Wog out~ byebye fow nyow, my pwecious~!! *gives biggest huggwes evew* 😿🎀💖🌸💕
 
-  menu:
-    login: 🔐✨💫🌟 Wogin~ pwease pwease! My sweet cutie pie~!! 🐾🌷🎶💖🦄✨
-    home: 🏠💞🐾🌸✨ H-hwome sweet sweet hwome~!! *nuzzwes so softwy* 💐🍃✨🎀💖🌈
-    orders: 📦🎀🍰🎉💖 Youw vewy vewy own owo owdews~!! *giggwes and wiggwes* 🎀🌟🐰💕✨
+    menu:
+      login: 🔐✨💫🌟 Wogin~ pwease pwease! My sweet cutie pie~!! 🐾🌷🎶💖🦄✨
+      home: 🏠💞🐾🌸✨ H-hwome sweet sweet hwome~!! *nuzzwes so softwy* 💐🍃✨🎀💖🌈
+      orders: 📦🎀🍰🎉💖 Youw vewy vewy own owo owdews~!! *giggwes and wiggwes* 🎀🌟🐰💕✨
 
-footer:
-  fuel: 🍕✨Piwuicsa✨🍕-mumwchin'🥺💖 cwode wif wots of wuv 🧑‍💻👩🏾‍💻👨🏼‍💻✨💕 fwom da most pwecious devs~!! 🎀💖🌸
+  footer:
+    fuel: 🍕✨Piwuicsa✨🍕-mumwchin'🥺💖 cwode wif wots of wuv 🧑‍💻👩🏾‍💻👨🏼‍💻✨💕 fwom da most pwecious devs~!! 🎀💖🌸
 
-order_view:
-  introduction:
-    choose_your_item: 🍕🥺💖🌟✨ Pwease pwease choose youw most favowite adowabwe itewm~!! 🎀🐾🍃💕🦄🌈
-    pick_up_time: 🕒🐱✨💫🌟 Sewect a supew snuggwy cozy pick-up time~ nyan nyan~!! 🌙🎶💫🎀💖
-    pay_in_cash: 💸💰🐾✨🌸 Pay in supew shiny pwetty cash at da most cute countew~!! 🍭🌸🎉💖🦄
-    closer: 🌙💤✨💖🌟 Enjoy youw supew duper cozy wondewful evewning~!! *sends infinite wuvs* 🎀🐰💫💕🌈
-  order:
-    name: 🥺🌸🎶💖✨ Youw pwettiest nyame pwease pwease~!! 🍃💖🎉🦄🌈
-    name_placeholder: ✍️💌🐰🌷✨ Type youw adowabwe nyame wight hewe~ *bwushes so hawd* 🍭🎀🌟💫
+  order_view:
+    introduction:
+      choose_your_item: 🍕🥺💖🌟✨ Pwease pwease choose youw most favowite adowabwe itewm~!! 🎀🐾🍃💕🦄🌈
+      pick_up_time: 🕒🐱✨💫🌟 Sewect a supew snuggwy cozy pick-up time~ nyan nyan~!! 🌙🎶💫🎀💖
+      pay_in_cash: 💸💰🐾✨🌸 Pay in supew shiny pwetty cash at da most cute countew~!! 🍭🌸🎉💖🦄
+      closer: 🌙💤✨💖🌟 Enjoy youw supew duper cozy wondewful evewning~!! *sends infinite wuvs* 🎀🐰💫💕🌈
+    order:
+      name: 🥺🌸🎶💖✨ Youw pwettiest nyame pwease pwease~!! 🍃💖🎉🦄🌈
+      name_placeholder: ✍️💌🐰🌷✨ Type youw adowabwe nyame wight hewe~ *bwushes so hawd* 🍭🎀🌟💫
 
-  timeslot:
-    title: ⏰✨🎆💫🐾 Timewot fow pick-up~!! *spwarkwe spwarkwe* 🎉🌷💖
-    subtitle: 🕰️💞🐾🌸✨ Pwease sewect youw most most favowite pick-up time~ nya nya~!! 🎀🎶✨💕🦄
-  item:
-    button:
-      add: 👉👈💖🍕🥰✨🎉 Gimme pwease gimme~!! 💖🍕🌸🦄
+    timeslot:
+      title: ⏰✨🎆💫🐾 Timewot fow pick-up~!! *spwarkwe spwarkwe* 🎉🌷💖
+      subtitle: 🕰️💞🐾🌸✨ Pwease sewect youw most most favowite pick-up time~ nya nya~!! 🎀🎶✨💕🦄
+    item:
+      button:
+        add: 👉👈💖🍕🥰✨🎉 Gimme pwease gimme~!! 💖🍕🌸🦄
 
-cart:
-  title: 🛒🍰💖🍭🎉✨ Fuww of wuv and yum yum~!! 🍬🐾✨💕🌟
-  messages:
-    empty_cart: 🥺💔😿🚫 Uwu oh oh! Youw 🛒 is aww empties~ ;w; pwease add sumfing cute~!! 🎀🌸💫✨
-    add_note: 📝💌🐾🎶✨ Add a wittle wittle nyote~ owo uwu~!! ✨🎉💖🌸
-    add_more_products: 🛍️💖🐰🌸✨ Add mowe supew cute pwoducts~!! *wiggwes excitedwy* 🎶🎀🎉💕
-  items: 🎁💞🍬🌟✨ Cute wittle itewms inside~!! 🎀🐾🍭💖
-  total_price: 💰💸✨🐰💕 Totaw pwayce~ owo *counts shiny coins* 🎉💖🍕🌟
-  currency: "✨💶🍀🌷🎉💫"
-  timeslot: 🍕⏳💖🌸✨ Timeswot fow youw yummy wummy pizza~!! *supew spwarkwy eyes* 🎀🐾✨💕
-  timeslot_not_selected: 🚫⏰😭🐾💔 Oh noes noes!! No timeswot sewected~!! 🎉🌸💫✨
-  open_order_summary: 📜✨🐰🎶💖 Pwease open youw adowabwe owdew summawy~ uwu~!! 🎀💖🌟✨
-
-order_overview:
-  history:
-    title: 📚💖🐱🎉✨ Owdew histowy, so wuvwy and safe~!! *puwws contentwy* ✨🌸🐾💕
-    subtitle: 🐾🕵️‍♀️💞🌷✨ Twack and manage aww youw supew cute wecent owdews~ nya nya~!! uwu 🎀🎶✨💖
-  recent:
-    title: 🎀📦✨🐰💕 Wecent owo owdews, just fow you cutie~!! 🎉💖🌸✨
-    orders_found: "✨🎉🥳💫 UwU {{orders}} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
-    orders_found_plural: "🎉✨💖🦄 UwU {{orders}} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
-    no_orders_yet: 😿💔🐾🎶💫 Nya nya~ no owdews yet!! Pwease make a supew cute one~ ;w; 🎉🌷✨💖
+  cart:
+    title: 🛒🍰💖🍭🎉✨ Fuww of wuv and yum yum~!! 🍬🐾✨💕🌟
     messages:
-      first_order: 🤗🐰💖🎶✨ When you pwace youw vewy fiwst owo owdew, it wiww appeaw wight hewe fow easy twacking~!! *gives biggest huggwes* uwu 🌸🎀✨💕
+      empty_cart: 🥺💔😿🚫 Uwu oh oh! Youw 🛒 is aww empties~ ;w; pwease add sumfing cute~!! 🎀🌸💫✨
+      add_note: 📝💌🐾🎶✨ Add a wittle wittle nyote~ owo uwu~!! ✨🎉💖🌸
+      add_more_products: 🛍️💖🐰🌸✨ Add mowe supew cute pwoducts~!! *wiggwes excitedwy* 🎶🎀🎉💕
+    items: 🎁💞🍬🌟✨ Cute wittle itewms inside~!! 🎀🐾🍭💖
+    total_price: 💰💸✨🐰💕 Totaw pwayce~ owo *counts shiny coins* 🎉💖🍕🌟
+    currency: "✨💶🍀🌷🎉💫"
+    timeslot: 🍕⏳💖🌸✨ Timeswot fow youw yummy wummy pizza~!! *supew spwarkwy eyes* 🎀🐾✨💕
+    timeslot_not_selected: 🚫⏰😭🐾💔 Oh noes noes!! No timeswot sewected~!! 🎉🌸💫✨
+    open_order_summary: 📜✨🐰🎶💖 Pwease open youw adowabwe owdew summawy~ uwu~!! 🎀💖🌟✨
 
-  timeline:
-    title: ⏰✨🎆💫🐾 OwO OwO OwO owdew timewine~!! *spwarkwe spwarkwe evewywhewe* 🎉🌷💖✨
-    subtitle: 🐾📅💖✨🌸 Weaw-time supew cute view of owdew activity and scheduwing~ nyaaa nyaaa~!! uwu 🎶🎀💫💕
+  order_overview:
+    history:
+      title: 📚💖🐱🎉✨ Owdew histowy, so wuvwy and safe~!! *puwws contentwy* ✨🌸🐾💕
+      subtitle: 🐾🕵️‍♀️💞🌷✨ Twack and manage aww youw supew cute wecent owdews~ nya nya~!! uwu 🎀🎶✨💖
+    recent:
+      title: 🎀📦✨🐰💕 Wecent owo owdews, just fow you cutie~!! 🎉💖🌸✨
+      orders_found: "✨🎉🥳💫 UwU {{orders}} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
+      orders_found_plural: "🎉✨💖🦄 UwU {{orders}} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
+      no_orders_yet: 😿💔🐾🎶💫 Nya nya~ no owdews yet!! Pwease make a supew cute one~ ;w; 🎉🌷✨💖
+      messages:
+        first_order: 🤗🐰💖🎶✨ When you pwace youw vewy fiwst owo owdew, it wiww appeaw wight hewe fow easy twacking~!! *gives biggest huggwes* uwu 🌸🎀✨💕
+
+    timeline:
+      title: ⏰✨🎆💫🐾 OwO OwO OwO owdew timewine~!! *spwarkwe spwarkwe evewywhewe* 🎉🌷💖✨
+      subtitle: 🐾📅💖✨🌸 Weaw-time supew cute view of owdew activity and scheduwing~ nyaaa nyaaa~!! uwu 🎶🎀💫💕
 
   admin:
     manage:
@@ -102,7 +102,17 @@ order_overview:
         edit_item:
           enabled: ✅🌈🌸 Enabwed~ uwu uwu!! 🌈🌸✨💖
           disabled: ❌💔😿✨ Disabwed... so sowwy nya nya~!! 😿💔💫
+          disable: ❌💔😿✨ Disabwe 😿💔💫
+          enable: ✅🌈🌸 Enabwe~ uwu uwu!! 🌈🌸✨💖
           items_available: '{{items}} supew duper cute itewms avaiwabwe~!! 🍕🎀✨💖'
+          update: Upwate~! ✨🐾
+          create: Cweate~ nya! 🌸🎉
+          name: Nyame~ 💖✨
+          type: Type~ uwu 🐰
+          dietary: Dietwawy~ 🍓🌈
+          price: Pwice~ 💰💫
+          max_items_available: Max itewms avaiwabwe~!! 🥳🍬
+          
 
     prepare:
       title: ✨📦💖🎉 Owdews to pwepawe~!!

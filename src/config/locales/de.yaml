@@ -102,7 +102,16 @@ translation:
         edit_item:
           enabled: Aktiviert
           disabled: Deaktiviert
+          disable: Deaktivieren
+          enable: Aktivieren
           items_available: '{{items}} Artikel verfügbar'
+          update: Aktualisieren
+          create: Erstellen
+          name: Name
+          type: Typ
+          dietary: Ernährung
+          price: Price
+          max_items_available: Max items available
 
     prepare:
       title: Bestellungen

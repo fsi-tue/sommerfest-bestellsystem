@@ -92,7 +92,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     const updateOrderStatus = (_id: string, status: OrderStatus) => {
         const order = orders.find(order => order._id.toString() === _id);
         if (!order) {
-            setError(t('admin.manage.errors.order_not_found'));
+            setError(t('admin.manage.order.errors.order_not_found'));
             return;
         }
 
@@ -153,7 +153,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
         const linkToOrder = barcode[0].rawValue
         const extractedId = linkToOrder.split('/').pop()
         if (!extractedId) {
-            setError(t('admin.manage.errors.barcode_fail'));
+            setError(t('admin.manage.order.errors.barcode_fail'));
             return;
         }
         setFilter(extractedId);
@@ -178,9 +178,9 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                     <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
                         <QrCodeIcon className="w-4 h-4 text-primary-500" />
                     </div>
-                    <h1 className="text-2xl font-semibold text-gray-900">{t('admin.manage.order_history')}</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">{t('admin.manage.order.order_history')}</h1>
                 </div>
-                <p className="text-gray-500 text-sm">{t('admin.manage.scan_qr_code_text')}</p>
+                <p className="text-gray-500 text-sm">{t('admin.manage.order.scan_qr_code_text')}</p>
                 <div className="flex items-center justify-between">
                     <div className="w-32 h-32">
                         <Scanner
@@ -203,7 +203,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
                     onClick={() => setNoFinished(!noFinished)}
                 >
-                    {noFinished ? t('admin.manage.show_finished') : t('admin.manage.hide_finished')}
+                    {noFinished ? t('admin.manage.order.show_finished') : t('admin.manage.order.hide_finished')}
                 </button>
             </div>
 
@@ -225,23 +225,23 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 
                                 <div className="mb-2 grid grid-cols-1 gap-1 text-sm text-gray-700">
                                     <div className="flex justify-between">
-                                        <span className="font-medium">{t('admin.manage.status')}</span>
+                                        <span className="font-medium">{t('admin.manage.order.status')}</span>
                                         <span>{order.status}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">{t('admin.manage.price')}</span>
+                                        <span className="font-medium">{t('admin.manage.order.price')}</span>
                                         <span>{order.totalPrice}€</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">{t('admin.manage.items')}</span>
+                                        <span className="font-medium">{t('admin.manage.order.items')}</span>
                                         <span>{order.items.length}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">{t('admin.manage.order_date')}</span>
+                                        <span className="font-medium">{t('admin.manage.order.order_date')}</span>
                                         <span>{formatDateTime(new Date(order.orderDate))}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-medium">{t('admin.manage.timeslot')}</span>
+                                        <span className="font-medium">{t('admin.manage.order.timeslot')}</span>
                                         <span>{formatDateTime(getDateFromTimeSlot(order.timeslot).toDate())}</span>
                                     </div>
                                 </div>
@@ -250,7 +250,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
                             {order.comment && (
                                 <div className="mb-4">
                                     <div className="text-sm font-light text-gray-600">
-                                        <span className="font-bold">{t('admin.manage.comment')}</span>
+                                        <span className="font-bold">{t('admin.manage.order.comment')}</span>
                                         <span className="pl-4 italic">{order.comment}</span>
                                     </div>
                                 </div>
@@ -295,7 +295,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed`}
                                     onClick={() => setOrderAsPaid(order._id.toString(), !order.isPaid)}
                                 >
-                                    {order.isPaid ? t('admin.manage.paid') : t('admin.manage.not_paid')}
+                                    {order.isPaid ? t('admin.manage.order.paid') : t('admin.manage.order.not_paid')}
                                 </button>
                             </div>
                         </div>
