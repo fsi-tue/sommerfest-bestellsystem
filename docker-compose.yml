@@ -19,7 +19,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - "6000:3000"
+      - "3000:3000"
     networks:
       - app
     restart: unless-stopped
