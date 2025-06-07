@@ -63,6 +63,12 @@ This app is powered by a robust tech stack:
 - Docker
 - MongoDB
 - Next.js
+- bun:test
+
+### test with bun
+just run `bun test`, but currently testing only
+- i18n integration
+
 
 ## Authors
 
