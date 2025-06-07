@@ -22,7 +22,7 @@ const Page = () => {
 		}
 	}, []);
 
-	const handleAuthentication = (tokenToUse) => {
+	const handleAuthentication = (tokenToUse: string) => {
 		setIsLoading(true);
 		setErrorMessage('');
 
@@ -51,7 +51,7 @@ const Page = () => {
 			});
 	};
 
-	const handleSubmit = (event) => {
+	const handleSubmit = (event: any) => {
 		event.preventDefault();
 		const submittedToken = token || event.target.token.value;
 		handleAuthentication(submittedToken);
@@ -97,7 +97,7 @@ const Page = () => {
 							</button>
 						</div>
 
-						{errorMessage && (
+						{errorMessage && /* TODO: maybe use error message component?*/(
 							<div className="rounded-md bg-red-50 p-4 mt-4">
 								<div className="flex">
 									<div className="text-sm text-red-700">
