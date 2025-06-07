@@ -163,6 +163,63 @@ const defined_keys_per_translation: Record<string, string[]> = Object.fromEntrie
     })
 );
 
+test('that each file is translated', () => {
+    const sourceDir: string = "src"
+    const AmountOfTInFiles = new Set();
+    const project = new Project();
+    const extractedKeys: ExtractedKey[] = [];
+
+    // Add source files to project
+    project.addSourceFilesAtPaths(`${sourceDir}/**/*.{ts,tsx,js,jsx}`);
+
+    const sourceFiles = project.getSourceFiles();
+
+    sourceFiles.forEach(sourceFile => {
+        // Find all call expressions
+        sourceFile.forEachDescendant(node => {
+            if (node.getKind() === SyntaxKind.CallExpression) {
+                const expression = node.asKind(SyntaxKind.CallExpression)?.getExpression();
+                // Check if it's a 't' function call
+                if (expression?.getKind() === SyntaxKind.Identifier) {
+                    const identifier = expression.asKind(SyntaxKind.Identifier);
+                    if (identifier && identifier.getText() === 't') {
+                        AmountOfTInFiles.add(sourceFile.getFilePath());
+                    }
+                }
+            }
+        });
+    });
+
+    const excludes = [
+        // folders
+        "src/config",
+        "src/lib",
+        "src/app/api",
+        "src/model",
+        "src/app/layout",
+        "src/app/zustand",
+        // now individual
+        "src/app/WithSystemCheck.tsx",
+        "src/app/admin/logout/",
+        "src/app/admin/WithAuth.jsx",
+        'src/app/components/FloatingIslandElement.tsx',
+        'src/app/components/order/OrderQR.jsx',
+    ];
+
+    const tFileList = [...AmountOfTInFiles];
+    for(const sourceFile of sourceFiles) {
+        const filepath = sourceFile.getFilePath();
+        // whole groups excluded
+        if(excludes.some(exclude => filepath.indexOf(exclude)>0)) {
+            continue;
+        }
+       
+        if(!tFileList.includes(filepath)){
+            console.error("- ❌ could not find t() in", path.relative(path.join(sourceDir,".."), filepath));
+        }
+    }
+});
+
 test('that each translation has each key', () => {
     const allDefinedKeys = new Set(
         Object.values(defined_keys_per_translation).flat()
@@ -174,7 +231,6 @@ test('that each translation has each key', () => {
         for (const key of allDefinedKeys) {
             if (!keys.includes(key)) {
                 flaws.push(`❌ key "${key}" is not present in translation "${lang}"`);
-                console.log("flaws:", flaws.length)
             }
         }
     }
