@@ -1,4 +1,4 @@
-import { flattenKeys, loadResources } from "@/app/i18n/i18n.resources";
+import { flattenKeys, loadResources } from "@/i18n/i18n.resources";
 import { expect, test, mock } from "bun:test";
 import { Project, SyntaxKind } from 'ts-morph';
 import fs from "fs";
