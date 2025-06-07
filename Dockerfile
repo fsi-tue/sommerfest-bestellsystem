@@ -36,6 +36,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+COPY --from=deps /temp/prod/node_modules ./node_modules
+
 # Copy necessary files and set permissions
 COPY --from=builder /usr/src/app/public ./public
 RUN mkdir .next
@@ -47,11 +49,12 @@ COPY --from=builder --chown=nextjs:nodejs /usr/src/app/.next/static ./.next/stat
 
 USER nextjs
 
-# Expose the port
-EXPOSE 3000
-
-# Set the port environment variable
+# Set port and hostname environment variable
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# Expose the port
+EXPOSE $PORT
 
 # Start the server
 CMD ["bun", "run", "server.js"]
