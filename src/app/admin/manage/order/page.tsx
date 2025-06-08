@@ -3,15 +3,14 @@
 import { useEffect, useState } from "react";
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { getFromLocalStorage } from "@/lib/localStorage";
-import WithAuth from "@/app/admin/WithAuth";
 import { ORDER_STATUS_VALUES, OrderDocument, OrderStatus } from "@/model/order";
 import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
 import SearchInput from "@/app/components/SearchInput";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { QrCodeIcon } from "lucide-react";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
-const Page = ({ params }: { params: { orderId: string } }) => {
+const Page = () => {
     const [error, setError] = useState('');
 
     const [orders, setOrders] = useState<OrderDocument[]>([]);
@@ -40,7 +39,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = data?.message ??response.statusText;
+                    const error = data?.message ?? response.statusText;
                     throw new Error(error);
                 }
                 return data;
@@ -56,13 +55,6 @@ const Page = ({ params }: { params: { orderId: string } }) => {
     useEffect(() => {
         setFilteredOrders(orders);
     }, [orders]);
-
-    // Set params to filter
-    useEffect(() => {
-        if (params.orderId) {
-            setFilter(params.orderId[0]);
-        }
-    }, [params.orderId]);
 
     // Filter the orders
     useEffect(() => {
@@ -106,7 +98,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = data?.message ??response.statusText;
+                    const error = data?.message ?? response.statusText;
                     throw new Error(error);
                 }
                 return data;
@@ -126,7 +118,7 @@ const Page = ({ params }: { params: { orderId: string } }) => {
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = data?.message ??response.statusText;
+                    const error = data?.message ?? response.statusText;
                     throw new Error(error);
                 }
                 return data;

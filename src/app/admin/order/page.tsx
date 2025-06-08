@@ -4,7 +4,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle, Minus, Pizza, Plus, ScanIcon, XIcon } from 'lucide-react';
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { getFromLocalStorage } from '@/lib/localStorage';
-import WithAuth from '@/app/admin/WithAuth';
 import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { getDateFromTimeSlot } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';

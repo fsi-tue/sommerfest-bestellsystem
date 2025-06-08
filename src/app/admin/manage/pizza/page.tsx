@@ -3,11 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage";
-import WithAuth from "@/app/admin/WithAuth.jsx";
 import { Wrench } from "lucide-react";
 import EditItem from "./EditItem";
 import { Heading } from "@/app/components/layout/Heading";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { ItemDocument } from "@/model/item";
 
 const Page = () => {
