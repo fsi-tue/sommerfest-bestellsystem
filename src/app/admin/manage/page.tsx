@@ -7,8 +7,6 @@ import { Heading } from "@/app/components/layout/Heading";
 
 import { useTranslations } from 'next-intl';
 import { SystemStatus } from "@/model/system";
-import { getAuthToken } from "@/lib/clientAuth";
-import { redirect } from "next/navigation";
 
 export default function ManagePage() {
     const [message, setMessage] = useState('');
@@ -17,12 +15,6 @@ export default function ManagePage() {
     const [status, setStatus] = useState<'active' | 'inactive' | 'maintenance'>('active')
     const t = useTranslations();
 
-    useEffect(() => {
-        const authToken = getAuthToken()
-        if (!authToken) {
-            redirect('/login');
-        }
-    }, []);
     const deleteDatabase = () => {
         if (!enable) {
             return;
