@@ -24,7 +24,6 @@
     "docker:down:volumes": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza down --volumes"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/js-yaml": "^4.0.9",
     "@yudiel/react-qr-scanner": "^2.3.1",
@@ -36,12 +35,10 @@
     "mongoose": "^8.15.1",
     "next": "latest",
     "next-intl": "^4.1.0",
-    "prop-types": "^15.8.1",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3",
-    "serve": "^14.2.4",
     "yaml-loader": "^0.8.1",
     "zustand": "^5.0.5"
   },

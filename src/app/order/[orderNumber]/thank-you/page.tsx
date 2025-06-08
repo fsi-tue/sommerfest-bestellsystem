@@ -1,8 +1,6 @@
-"use client";
-
 import { Suspense } from 'react';
-import QRCodePage from './qrCodePage';
-import {useTranslations} from 'next-intl';
+import ThankYouPage from './thankYouPage';
+import { getTranslations } from 'next-intl/server';
 
 // Server Component that receives params as Promise
 export default async function Page({
@@ -12,13 +10,13 @@ export default async function Page({
 }) {
     // Await params as required by Next.js docs
     const { orderNumber } = await params;
-    const t = useTranslations();
+    const t = await getTranslations();
 
     return (
         <Suspense fallback={<div className="p-6 max-w-md mx-auto">
             <h1 className="text-2xl font-semibold">{t('order.suspense.loading')}</h1>
         </div>}>
-            <QRCodePage orderNumber={orderNumber}/>
+            <ThankYouPage orderNumber={orderNumber}/>
         </Suspense>
     );
 }

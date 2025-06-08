@@ -1,13 +1,19 @@
 import { getUserLocale } from '@/services/locale';
-import { getRequestConfig } from 'next-intl/server';
+import { getRequestConfig, RequestConfig } from 'next-intl/server';
+
+export async function loadMessages(locale: string): Promise<RequestConfig> {
+
+    // Import the raw YAML content as a string
+    const yamlModule = await import(`@/config/locales/${locale}.yaml?raw`);
+    return yamlModule.default.translation
+}
 
 export default getRequestConfig(async () => {
-    // Provide a static locale, fetch a user setting,
-    // read from `cookies()`, `headers()`, etc.
     const locale = await getUserLocale();
+    const messages = await loadMessages(locale);
 
     return {
         locale,
-        messages: (await import(`@/config/locales/${locale}.json`)).default
+        messages: messages
     };
 });

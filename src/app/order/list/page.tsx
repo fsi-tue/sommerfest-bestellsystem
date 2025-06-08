@@ -3,7 +3,9 @@
 import { getFromLocalStorage } from "@/lib/localStorage";
 import Timeline from "@/app/components/Timeline";
 import { ChevronRight, Clock, Package, Pizza } from "lucide-react";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
+import { OrderStatus } from "@/model/order";
+import React, { useEffect } from "react";
 
 const EVERY_X_SECONDS = 60;
 
@@ -18,8 +20,42 @@ const Page = () => {
 
     const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) ?? []
 
-
     const t = useTranslations();
+
+    const [orders, setOrders] = React.useState<{
+        id: string;
+        items: string[];
+        timeslot: string;
+        status: OrderStatus;
+    }[]>([]);
+
+    useEffect(() => {
+        Promise.all(localStorageOrders
+            .map(async (order: {
+                id: string;
+                items: string[];
+                timeslot: string;
+            }) => {
+                // Fetch order data
+                const status = await fetch(`/api/order/${order.id}`)
+                    .then(async response => {
+                        const data = await response.json();
+                        if (!response.ok) {
+                            const error = data?.message ?? response.statusText;
+                            throw new Error(error);
+                        }
+                        return data.status;
+                    })
+                    .catch(error => {
+                        return 'error'
+                    });
+
+                return {
+                    ...order,
+                    status,
+                }
+            })).then(r => setOrders(r));
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -57,13 +93,9 @@ const Page = () => {
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-100">
-                            {localStorageOrders.map((order: {
-                                id: string,
-                                items: string[],
-                                timeslot: number,
-                            }, index: number) => (
+                            {orders.map((order) => (
                                 <a
-                                    key={index}
+                                    key={`${order.id}-${order.timeslot}`}
                                     href={`/order/${order.id}`}
                                     className="block p-6 hover:bg-gray-50 transition-colors duration-200 group"
                                 >
@@ -76,11 +108,14 @@ const Page = () => {
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <p className="text-sm font-medium text-gray-900 truncate">
-                                                        Order #{order.id}
+                                                        Order #{order.id.slice(-8)}
                                                     </p>
                                                     <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                                                         <Clock className="w-3 h-3"/>
                                                         {order.timeslot}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                                                        {order.status}
                                                     </p>
                                                 </div>
                                             </div>

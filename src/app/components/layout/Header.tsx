@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { getFromLocalStorage } from "@/lib/localStorage.js";
 import { Home, List, LogIn, Menu } from "lucide-react";
 import Button from "@/app/components/Button";
 import LanguageSelector from "@/app/components/LanguageSelector";
 import { useTranslations } from 'next-intl';
+import { getFromLocalStorage } from "@/lib/localStorage";
 
 const Header = () => {
     const [authed, setAuthed] = useState(false);
@@ -13,12 +13,13 @@ const Header = () => {
     const t = useTranslations();
 
     useEffect(() => {
-        const token = getFromLocalStorage('token');
-        setAuthed(token != null);
+        const isAuthenticated = getFromLocalStorage('authed', false);
+        setAuthed(isAuthenticated);
+
         // Listen for custom login event to update header state without page reload
         const handleLoginSuccess = () => {
-            const updatedToken = getFromLocalStorage('token');
-            setAuthed(updatedToken != null);
+            const isAuthenticated = getFromLocalStorage('authed', false);
+            setAuthed(isAuthenticated);
         };
         window.addEventListener("loginSuccessEvent", handleLoginSuccess);
 
@@ -48,8 +49,9 @@ const Header = () => {
                         {headerText} <span aria-label="pizza">{headerEmoji}</span>
                     </a>
                 </h1>
+                <LanguageSelector/>
             </div>
-            <LanguageSelector/>
+
 
             <nav>
                 <div className="container mx-auto flex justify-between items-center px-2 md:px-4 py-2">

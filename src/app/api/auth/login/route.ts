@@ -3,10 +3,11 @@ import dbConnect from "@/lib/dbConnect";
 import { Session } from "@/model/session";
 
 import crypto from 'crypto';
-import { addHours, getUnixTime } from "date-fns";
-import { NextResponse } from "next/server";
+import { addHours } from "date-fns";
+import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-export async function POST(request: Request): Promise<Response> {
+export async function POST(request: NextRequest) {
     await dbConnect()
 
     const { token } = await request.json();
@@ -15,7 +16,6 @@ export async function POST(request: Request): Promise<Response> {
             message: 'Token not set'
         }, { status: 500 });
     }
-    const bearer = { token: '', expires: 0 };
 
     try {
         // Validate token
@@ -27,31 +27,34 @@ export async function POST(request: Request): Promise<Response> {
         }
 
         if (token === correct_token) {
-            const newToken = crypto.randomBytes(64).toString('hex');
+            const sessionToken = crypto.randomBytes(64).toString('hex');
+            const expiresAt = addHours(new Date(), CONSTANTS.LIFETIME_BEARER_HOURS);
 
-            // Add the new token to the database
+            // Save session to database
             const session = new Session();
             session.userId = 'admin';
-            session.token = newToken;
-            session.expiresAt = addHours(new Date(), CONSTANTS.LIFETIME_BEARER_HOURS);
+            session.token = sessionToken;
+            session.expiresAt = expiresAt;
             await session.save();
-            console.log('New token created', newToken, session.expiresAt.toISOString());
+            console.log('New token created', sessionToken, session.expiresAt.toISOString());
 
-            // Create a new bearer
-            bearer.token = newToken;
-            bearer.expires = getUnixTime(session.expiresAt);
+            const cookieStore = await cookies();
+            cookieStore.set('auth-token', sessionToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: CONSTANTS.LIFETIME_BEARER_HOURS * 60 * 60, // Use your constant
+                path: '/'
+            });
+
+            return NextResponse.json({
+                success: true,
+                message: 'Authentication successful'
+            });
         } else {
             return NextResponse.json({
                 message: 'Invalid token'
             }, { status: 401 });
-        }
-
-        if (bearer.expires > 0) {
-            return new Response(JSON.stringify(bearer));
-        } else {
-            return NextResponse.json({
-                message: 'Error creating token'
-            }, { status: 500 });
         }
     } catch (error) {
         console.error(error);

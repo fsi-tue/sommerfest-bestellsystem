@@ -95,7 +95,7 @@ const ItemDetails = ({
     const t = useTranslations();
 
     return (
-        <div className="flex-1 min-w-0 cursor-pointer" onClick={onToggleDetails}>
+        <button className="flex-1 min-w-0 cursor-pointer" role="button" onClick={onToggleDetails}>
             <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1 hover:text-primary-600 transition-colors">
                 {item.name}
             </h3>
@@ -113,7 +113,7 @@ const ItemDetails = ({
             {t('cart.currency')} {item.price.toFixed(2)}
           </span>
             </div>
-        </div>
+        </button>
     )
 };
 

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { requireAuth } from "@/lib/serverAuth";
 import { OrderModel } from "@/model/order";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -40,18 +39,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
  * Set order as paid
  * @constructor
  * @param request
+ * @param params
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
+    await requireAuth();
 
     // Get the ID from the URL
     const { id } = await params
-
-    // Authenticate the user
-    const headersList = await headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return new Response('Unauthorized', { status: 401 });
-    }
 
     // Get the order details from the request body
     const { isPaid } = await request.json()

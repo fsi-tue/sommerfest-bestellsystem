@@ -7,6 +7,7 @@ import { NextRequest } from "next/server";
  * Allow user to cancel an order.
  * @constructor
  * @param request
+ * @param params
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
@@ -32,18 +33,17 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         // Check if the order is already delivered or ready
-        if (ORDER_STATUSES.DELIVERED === foundOrder.status || ORDER_STATUSES.READY === foundOrder.status || ORDER_STATUSES.CANCELLED === foundOrder.status) {
-            console.log('Order was already cancelled:', foundOrder.status)
+        if (ORDER_STATUSES.DELIVERED === foundOrder.status ||
+            ORDER_STATUSES.READY === foundOrder.status ||
+            ORDER_STATUSES.CANCELLED === foundOrder.status ||
+            ORDER_STATUSES.IN_PREPARATION === foundOrder.status) {
             return new Response(`Order was already ${foundOrder.status}. Cannot cancel!`, { status: 400 });
         }
 
         // Update the order status
         foundOrder.status = 'cancelled'
-
-        // Save the updated order
         await foundOrder.save();
 
-        // console.log('Order updated:', foundOrder)
         return Response.json(foundOrder);
     } catch (error) {
         console.error('Error cancel order:', error);

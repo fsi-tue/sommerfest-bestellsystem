@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { addToLocalStorage } from "@/lib/localStorage.js";
 import Button from "@/app/components/Button";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
+import { addToLocalStorage } from "@/lib/localStorage";
 
 const Page = () => {
     const [token, setToken] = useState('');
@@ -26,33 +26,29 @@ const Page = () => {
         }
     }, []);
 
-    const handleAuthentication = (tokenToUse: string) => {
+    const handleAuthentication = async (tokenToUse: string) => {
         setIsLoading(true);
         setErrorMessage('');
 
-        fetch('/api/auth/login', {
+        const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ token: tokenToUse }),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Login failed');
-                }
-            })
-            .then((data) => {
-                addToLocalStorage('token', data.token);
-                window.dispatchEvent(new CustomEvent("loginSuccessEvent"));
-                router.push('/admin/prepare');
-            })
-            .catch((error) => {
-                setErrorMessage(error.message);
-                setIsLoading(false);
-            });
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            window.dispatchEvent(new CustomEvent("loginSuccessEvent"));
+            addToLocalStorage('authed', true);
+            router.push('/admin/prepare');
+        } else {
+            const errorData = await response.json();
+            setErrorMessage(errorData.error ?? 'Login failed');
+            addToLocalStorage('authed', false);
+        }
+        setIsLoading(false);
     };
 
     const handleSubmit = (event: any) => {

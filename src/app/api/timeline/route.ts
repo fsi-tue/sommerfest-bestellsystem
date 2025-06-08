@@ -1,16 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
-import { CONSTANTS } from '@/config';
 import { OrderModel } from '@/model/order';
 
-import {
-    format,
-    subMinutes,
-    addMinutes,
-    setSeconds,
-    setMilliseconds,
-    isAfter,
-    isBefore
-} from 'date-fns';
+import { addMinutes, format, isAfter, isBefore, setMilliseconds, setSeconds, subMinutes } from 'date-fns';
 import { ItemDocument, ItemModel } from "@/model/item";
 import { getDateFromTimeSlot } from "@/lib/time";
 
@@ -55,7 +46,7 @@ export async function GET(request: Request) {
             $gte: subMinutes(now, 10 * TIME_SLOT_SIZE_MINUTES),
             $lt: addMinutes(now, 20 * TIME_SLOT_SIZE_MINUTES),
         },
-        status: { $ne: 'cancelled' }, // TODO: Check if this is needed
+        status: { $ne: 'cancelled' },
     });
 
     const items = await ItemModel.find();
@@ -79,11 +70,14 @@ export async function GET(request: Request) {
         return totalAmount;
     });
 
-    return Response.json(timeSlots.map((timeSlot, index) => ({
+    const response = timeSlots.map((timeSlot, index) => ({
         time: timeSlot.time,
         Orders: orderTimeslots[index],
         color: orderTimeslots[index] > AMOUNT_CRITICAL ? COLOR_CRIT : (orderTimeslots[index] > AMOUNT_WARNING ? COLOR_WARN : COLOR_OK),
         border: index === 5 ? '#000' : '#FFF',
         borderwidth: index === 5 ? 4 : 0,
-    })));
+    }))
+    console.log(response)
+
+    return Response.json(response);
 }

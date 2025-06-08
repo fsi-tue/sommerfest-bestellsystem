@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { addToLocalStorage, getFromLocalStorage } from "@/lib/localStorage";
 import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
 import Button from "@/app/components/Button";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface OrderButtonProps {
     setError: (error: string) => void;
@@ -67,7 +67,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
                     addToLocalStorage('localStorageOrders', JSON.stringify(localStorageOrders));
 
                     // Redirect to thank you page
-                    router.push(`/order/thank-you/${data.orderId}`);
+                    router.push(`/order/${data.orderId}/thank-you`);
                 }
             })
             .catch(error => {

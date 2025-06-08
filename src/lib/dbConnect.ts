@@ -31,7 +31,7 @@ async function dbConnect() {
             minPoolSize: 2,  // Maintain minimum 2 connections
 
             // Timeout settings
-            serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+            serverSelectionTimeoutMS: 1000, // Keep trying to send operations for 5 seconds
             socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
             connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
 

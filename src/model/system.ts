@@ -1,8 +1,10 @@
 import { Model, model, Schema } from "mongoose";
 
+export type SystemStatus = 'active' | 'inactive' | 'maintenance';
+
 export interface SystemDocument {
     name: string;
-    status: 'active' | 'inactive' | 'maintenance';
+    status: SystemStatus;
 }
 
 const systemSchema = new Schema({

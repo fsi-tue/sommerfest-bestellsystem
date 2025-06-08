@@ -1,8 +1,6 @@
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { requireAuth } from "@/lib/serverAuth";
 import { Session } from "@/model/session";
 import dbConnect from "@/lib/dbConnect";
-import { NextResponse } from "next/server";
 
 /**
  * POST /logout
@@ -10,18 +8,10 @@ import { NextResponse } from "next/server";
  */
 export async function POST(request: Request) {
     await dbConnect()
-
-    // Authenticate the user
-    const headersList = await headers()
-    const token = extractBearerFromHeaders(headersList);
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return NextResponse.json({
-            message: 'Unauthorized'
-        }, { status: 401 });
-    }
+    const authToken = await requireAuth();
 
     // Remove the token from the database
-    await Session.deleteOne({ sessionId: token });
+    await Session.deleteOne({ sessionId: authToken });
 
     return new Response('Logged out');
 }

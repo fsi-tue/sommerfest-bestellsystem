@@ -1,27 +1,28 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { getFromLocalStorage } from "@/lib/localStorage";
 import { Database } from "lucide-react";
 import Button from "@/app/components/Button";
 import { Heading } from "@/app/components/layout/Heading";
 
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
+import { SystemStatus } from "@/model/system";
+import { getAuthToken } from "@/lib/clientAuth";
+import { redirect } from "next/navigation";
 
-const Page = () => {
-    const token = getFromLocalStorage('token', '');
-
+export default function ManagePage() {
     const [message, setMessage] = useState('');
     const [enable, setEnable] = useState(false)
-    const states: ('active' | 'inactive' | 'maintenance')[] = ['active', 'inactive']
+    const states: SystemStatus[] = ['active', 'inactive']
     const [status, setStatus] = useState<'active' | 'inactive' | 'maintenance'>('active')
     const t = useTranslations();
 
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-    }
-
+    useEffect(() => {
+        const authToken = getAuthToken()
+        if (!authToken) {
+            redirect('/login');
+        }
+    }, []);
     const deleteDatabase = () => {
         if (!enable) {
             return;
@@ -29,7 +30,7 @@ const Page = () => {
 
         fetch('/api/manage/db/delete', {
             method: 'POST',
-            headers: headers,
+            credentials: 'include'
         })
             .then(() => setMessage('Database deleted'))
             .catch((error) => setMessage(error))
@@ -42,23 +43,23 @@ const Page = () => {
 
         fetch('/api/manage/db/prepare', {
             method: 'POST',
-            headers: headers,
+            credentials: 'include'
         })
             .then(() => setMessage('Database prepared'))
             .catch((error) => {
                 console.error('Error preparing database', error);
-                setMessage(error)
+                setMessage(error => error)
             })
     }
 
     const getSystemStatus = () => {
         fetch('/api/manage/system/status', {
-            headers: headers,
+            credentials: 'include'
         })
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = data?.message ??response.statusText;
+                    const error = data?.message ?? response.statusText;
                     throw new Error(error);
                 }
                 return data;
@@ -74,10 +75,10 @@ const Page = () => {
         getSystemStatus()
     }, [])
 
-    const updateSystemStatus = (status: 'active' | 'inactive' | 'maintenance') => {
+    const updateSystemStatus = (status: SystemStatus) => {
         fetch(`/api/manage/system/status/${status}`, {
             method: 'POST',
-            headers: headers
+            credentials: 'include'
         })
             .then(() => {
                 setMessage(`System ${status}`)
@@ -138,5 +139,3 @@ const Page = () => {
         </div>
     );
 }
-
-export default Page;

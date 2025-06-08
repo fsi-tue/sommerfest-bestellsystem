@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { formatDateTime, getDateFromTimeSlot } from "@/lib/time";
+import { getDateFromTimeSlot } from "@/lib/time";
 import { Order, OrderStatus } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
 import { Loading } from "@/app/components/Loading";
 import Button from "@/app/components/Button";
 import ErrorMessage from "@/app/components/ErrorMessage";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
+import { formatDate } from "date-fns";
 
 export default function ClientOrderPage({ orderNumber }: { orderNumber: string }) {
     const [error, setError] = useState<string | null>(null);
@@ -129,31 +130,18 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
         <div className="p-6 max-w-md mx-auto rounded-2xl bg-white shadow-xl">
             {/* Status Hero Section */}
             <div className="px-6 py-12 text-center">
-                {error && (
-                    <ErrorMessage error={error}/>
-                )}
-
-                {!error && (
-                    <>
-                        <div
-                            className={`inline-flex px-4 py-2 rounded-full text-sm font-medium mb-4 ${getStatusColor(order.status)}`}>
-                            {t(`order.status.${order.status}`) || t(`order.status.default`)}
-                        </div>
-
-                        <h1 className="text-2xl font-semibold mb-6 text-gray-900 max-w-sm mx-auto">
-                            {statusToText(order)}
-                        </h1>
-                    </>)
-                }
+                <h1 className={`text-2xl px-4 py-2 font-semibold mb-6 text-gray-900 rounded-full max-w-sm mx-auto ${getStatusColor(order.status)}`}>
+                    {statusToText(order)}
+                </h1>
 
                 {order.status !== 'cancelled' && (
                     <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
                         <p className="text-sm text-gray-600 mb-1">Ready by</p>
                         <p className="text-3xl font-light text-blue-600">
-                            {formatDateTime(getDateFromTimeSlot(order.timeslot)).split(' ')[1]}
+                            {formatDate(getDateFromTimeSlot(order.timeslot), 'HH:mm')}
                         </p>
                         <p className="text-sm text-gray-600">
-                            {formatDateTime(getDateFromTimeSlot(order.timeslot)).split(' ')[0]}
+                            {formatDate(getDateFromTimeSlot(order.timeslot), 'dd.MM.yyyy')}
                         </p>
                     </div>
                 )}
@@ -192,6 +180,12 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                             <OrderQR orderId={orderNumber}/>
                         </div>
                     </div>
+
+                    {error && (
+                        <div className="p-6 text-center">
+                            <ErrorMessage error={error}/>
+                        </div>
+                    )}
 
                     {/* Cancel Button */}
                     {order.status !== 'cancelled' && (

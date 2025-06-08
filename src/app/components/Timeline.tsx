@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useOrderActions } from "@/app/zustand/order";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 
 interface TimeSlot {
@@ -66,13 +66,12 @@ const Timeline: React.FC<TimelineProps> = ({
 
         const jsonData: TimeSlot[] = await response.json();
         setTimeslots(jsonData);
+        setIsLoading(false);
     }, [startDate, stopDate]);
 
     useEffect(() => {
         fetchTimeline();
-
         const interval = setInterval(fetchTimeline, every_x_seconds * 1000);
-
         return () => clearInterval(interval);
     }, [fetchTimeline, every_x_seconds]);
 
@@ -110,10 +109,10 @@ const Timeline: React.FC<TimelineProps> = ({
                     <Bar dataKey="Orders" fill="#007bff">
                         {timeslots.map((entry, index) => (
                             <Cell
-                                key={`cell-${index}`}
+                                key={`cell-${index}-${entry.time}`}
                                 fill={entry.color ?? "#007bff"}
                                 stroke={entry.border}
-                                strokeWidth={entry.borderwidth || 0}
+                                strokeWidth={entry.borderwidth ?? 0}
                             />
                         ))}
                     </Bar>

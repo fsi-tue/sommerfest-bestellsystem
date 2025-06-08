@@ -31,9 +31,7 @@
     ::file-selector-button {
         border-color: var(--color-gray-200, currentcolor);
     }
-}
 
-@layer base {
     --text-color: #202020;
     --box-color: #ffffff;
     --box-hover-color: #dddddd;
@@ -46,20 +44,20 @@
     --font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --font-weight: 500;
     --letter-spacing: 0.02em;
-}
 
-body {
-    /* Font + Text */
-    font-family: var(--font-family), serif;
-    font-weight: var(--font-weight);
-    letter-spacing: var(--letter-spacing);
-    font-size: calc(10pt + 0.3vw);
-    text-align: justify;
+    body {
+        /* Font + Text */
+        font-family: var(--font-family), serif;
+        font-weight: var(--font-weight);
+        letter-spacing: var(--letter-spacing);
+        font-size: calc(10pt + 0.3vw);
+        text-align: justify;
 
-    /* Margin + Padding */
-    margin: 0;
-    padding: 0;
-    width: 100%;
+        /* Margin + Padding */
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
 }
 
 /* HTML: <div class="loader"></div> */

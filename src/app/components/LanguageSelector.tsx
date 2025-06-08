@@ -17,6 +17,7 @@ export default function LanguageSelector({ className = '' }: Readonly<LanguageSe
 
     function onChange(event: React.ChangeEvent<HTMLSelectElement>) {
         const locale = event.target.value as Locale;
+        setLocale(locale);
         startTransition(() => {
             setUserLocale(locale);
         });

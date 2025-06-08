@@ -78,5 +78,4 @@ const Page: React.FC = () => {
     );
 };
 
-// Wrap the Page component with the system check HOC
 export default WithSystemCheck(Page);

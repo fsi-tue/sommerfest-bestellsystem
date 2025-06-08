@@ -4,12 +4,11 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, Clock } from 'lucide-react';
 import { getFromLocalStorage } from '@/lib/localStorage';
-import WithAuth from '@/app/admin/WithAuth';
 import { ITEM_STATUSES, ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemDocument } from "@/model/item";
 import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/components/layout/Heading";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface ItemType {
     id: string;
@@ -227,4 +226,4 @@ const PizzaMakerStation = () => {
     );
 };
 
-export default WithAuth(PizzaMakerStation);
+export default PizzaMakerStation;

@@ -1,40 +1,21 @@
 import mongoose from "mongoose";
 import { ItemModel } from "@/model/item";
 import dbConnect from "@/lib/dbConnect";
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { requireAuth } from "@/lib/serverAuth";
 import { ApiOrder, ITEM_STATUS_VALUES, OrderModel } from "@/model/order";
-import { CONSTANTS, ORDER_CONFIG } from "@/config";
-import { System } from "@/model/system";
+import { ORDER_CONFIG } from "@/config";
 import { NextResponse } from "next/server";
+import { requireActiveSystem } from "@/lib/system";
 
 export async function GET(request: Request) {
     try {
         await dbConnect();
+        await requireAuth();
 
-        // Authenticate the user
-        const headersList = await headers();
-        if (!await validateToken(extractBearerFromHeaders(headersList))) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
-        const [system, orders] = await Promise.all([
-            System.findOne({ name: CONSTANTS.SYSTEM_NAME }).lean(),
-            OrderModel.find()
-                .select('name comment items orderDate timeslot totalPrice status isPaid finishedAt')
-                .lean()
-                .exec()
-        ]);
-
-        if (system?.status !== 'active') {
-            console.error('System is not active:', system?.status);
-            return NextResponse.json(
-                { message: 'System is not active' },
-                { status: 400 }
-            );
-        }
+        const orders = await OrderModel.find()
+            .select('name comment items orderDate timeslot totalPrice status isPaid finishedAt')
+            .lean()
+            .exec()
 
         const transformedOrders = orders.map(order => ({
             ...order,
@@ -58,6 +39,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         await dbConnect();
+        await requireActiveSystem();
 
         const { items, name, comment, timeslot } = await request.json() as ApiOrder;
 
@@ -85,22 +67,13 @@ export async function POST(request: Request) {
         // Validate item items exist
         const itemIds = [...new Set(flatItems.map(item => item._id.toString()))]
 
-        const [system, existingItems, existingOrders] = await Promise.all([
-            System.findOne({ name: CONSTANTS.SYSTEM_NAME }).lean(),
+        const [existingItems, existingOrders] = await Promise.all([
             ItemModel.find({ _id: { $in: itemIds } }).select('_id price size').lean(),
             OrderModel.find({
                 timeslot: timeslot,
                 status: { $nin: ['cancelled'] }
             }).select('items').lean()
         ]);
-
-        if (system?.status !== 'active') {
-            console.error('System is not active:', system?.status);
-            return NextResponse.json(
-                { message: 'System is not active' },
-                { status: 400 }
-            );
-        }
 
 
         if (existingItems.length !== itemIds.length) {
@@ -190,15 +163,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         await dbConnect();
-
-        // Authenticate the user
-        const headersList = await headers();
-        if (!await validateToken(extractBearerFromHeaders(headersList))) {
-            return NextResponse.json(
-                { message: 'Unauthorized' },
-                { status: 401 }
-            );
-        }
+        await requireAuth();
 
         // Parse request body
         const { id, order } = await request.json();

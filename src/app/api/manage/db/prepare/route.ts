@@ -1,11 +1,9 @@
 // Fill the database
 import { ItemModel } from "@/model/item";
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { requireAuth } from "@/lib/serverAuth";
 import dbConnect from "@/lib/dbConnect";
 import { System } from "@/model/system";
 import { CONSTANTS } from "@/config";
-import { NextResponse } from "next/server";
 
 // Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
@@ -26,15 +24,8 @@ const pizzasByName = {
  * @constructor
  */
 export async function POST() {
-    await dbConnect()
-
-    // Authenticate the user
-    const headersList = await headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return NextResponse.json({
-            message: 'Unauthorized'
-        }, { status: 401 });
-    }
+    await dbConnect();
+    await requireAuth();
 
     // Add pizzas
     const pizzas = [

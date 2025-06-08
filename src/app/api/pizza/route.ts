@@ -1,7 +1,6 @@
 import { ItemModel } from "@/model/item";
 import dbConnect from "@/lib/dbConnect";
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { requireAuth } from "@/lib/serverAuth";
 import { NextResponse } from "next/server";
 
 
@@ -20,14 +19,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     await dbConnect();
-
-    // Authenticate the user
-    const headersList = await headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return NextResponse.json({
-            message: 'Unauthorized'
-        }, { status: 401 });
-    }
+    await requireAuth();
 
     const newPizza = await request.json()
 
@@ -43,14 +35,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     await dbConnect();
-
-    // Authenticate the user
-    const headersList = await headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return NextResponse.json({
-            message: 'Unauthorized'
-        }, { status: 401 });
-    }
+    await requireAuth();
 
     const pizza = await request.json()
 

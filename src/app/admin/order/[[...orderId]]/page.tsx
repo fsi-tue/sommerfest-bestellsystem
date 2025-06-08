@@ -172,7 +172,7 @@ const OrderCard = ({
             <div className="flex items-start justify-between mb-3">
                 <div>
                     <h3 className="font-bold text-lg">{order.name}</h3>
-                    <p className="text-sm text-gray-600">#{order._id.toString().slice(-6)}</p>
+                    <p className="text-sm text-gray-600">#{order._id.toString().slice(-8)}</p>
                 </div>
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                     isOverdue ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
@@ -631,4 +631,4 @@ const OrderManagerDashboard = () => {
     );
 };
 
-export default WithAuth(OrderManagerDashboard);
+export default OrderManagerDashboard;

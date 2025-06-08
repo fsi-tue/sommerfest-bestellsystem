@@ -306,4 +306,4 @@ const Page = ({ params }: { params: { orderId: string } }) => {
 }
 
 
-export default WithAuth(Page);
+export default Page;

@@ -1,6 +1,5 @@
 // Fill the database
-import { headers } from "next/headers";
-import { extractBearerFromHeaders, validateToken } from "@/lib/auth";
+import { requireAuth } from "@/lib/serverAuth";
 import dbConnect from "@/lib/dbConnect";
 import { System } from "@/model/system";
 import { CONSTANTS } from "@/config";
@@ -15,21 +14,14 @@ export const fetchCache = "force-no-store";
  * Set the system status
  * @constructor
  */
-export async function POST(request: Request,
-                           { params }: { params: Promise<{ status: string }> }
+export async function POST(
+    request: Request,
+    { params }: { params: Promise<{ status: string }> }
 ) {
-
     await dbConnect();
+    await requireAuth();
 
-// Authenticate the user
-    const headersList = await headers()
-    if (!await validateToken(extractBearerFromHeaders(headersList))) {
-        return NextResponse.json({
-            message: 'Unauthorized'
-        }, { status: 401 });
-    }
-
-// Set the system status
+    // Set the system status
     const system = await System.findOne({ name: CONSTANTS.SYSTEM_NAME });
 
     if (!system) {
@@ -39,11 +31,11 @@ export async function POST(request: Request,
         }, { status: 500 });
     }
 
-    const { status } = await params
+    const { status } = await params;
     system.status = status as 'active' | 'inactive' | 'maintenance';
 
-// Save the updated system
-    await system.save()
+    // Save the updated system
+    await system.save();
 
-    return Response.json({ message: 'Successfully filled database' })
+    return NextResponse.json({ message: 'Successfully updated system status' });
 }
