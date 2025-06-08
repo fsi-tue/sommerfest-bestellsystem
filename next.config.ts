@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
         return config;
     },
     // Nginx will do gzip compression
-    compress: !process.env.BUILD_STANDALONE,
+    compress: false,
 }
 
 export default withNextIntl(nextConfig);
