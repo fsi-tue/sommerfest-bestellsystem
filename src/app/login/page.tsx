@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/app/components/Button";
 import { useTranslations } from 'next-intl';
-import { addToLocalStorage } from "@/lib/localStorage";
+import useAuthStore from "@/app/zustand/auth";
 
 const Page = () => {
     const [token, setToken] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const t = useTranslations();
+    const authStore = useAuthStore();
 
     const router = useRouter();
 
@@ -36,17 +37,15 @@ const Page = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ token: tokenToUse }),
-            credentials: 'include'
-        });
+            credentials: 'include',        });
 
         if (response.ok) {
-            window.dispatchEvent(new CustomEvent("loginSuccessEvent"));
-            addToLocalStorage('authed', true);
-            router.push('/admin/prepare');
+            authStore.signIn()
+            router.push('/admin/prepare/pizza');
         } else {
             const errorData = await response.json();
+            authStore.signOut()
             setErrorMessage(errorData.error ?? 'Login failed');
-            addToLocalStorage('authed', false);
         }
         setIsLoading(false);
     };

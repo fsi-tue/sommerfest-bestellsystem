@@ -3,7 +3,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, Clock } from 'lucide-react';
-import { getFromLocalStorage } from '@/lib/localStorage';
 import { ITEM_STATUSES, ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemDocument } from "@/model/item";
 import { ordersSortedByTimeslots } from "@/lib/order";
@@ -28,12 +27,6 @@ const PizzaMakerStation = () => {
 
     const t = useTranslations();
 
-    const token = getFromLocalStorage('token', '');
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-    };
-
     useEffect(() => {
         fetch("/api/pizza") // Consider moving fetch logic to a dedicated service/hook
             .then(async response => {
@@ -53,7 +46,7 @@ const PizzaMakerStation = () => {
 
     // Fetch orders and calculate upcoming pizzas
     const fetchOrders = async () => {
-        const response = await fetch('/api/order', { headers });
+        const response = await fetch('/api/order', { credentials: 'include',});
         const data = await response.json();
 
         if (!response.ok) {
@@ -69,8 +62,6 @@ const PizzaMakerStation = () => {
     // Calculate what pizzas need to be made
     const calculateUpcomingPizzas = (orders: OrderDocument[]) => {
         const pizzaCount = new Map<string, number>();
-
-
         orders.forEach(order => {
             if (order.status === 'ordered' || order.status === 'inPreparation') {
                 order.items.forEach(item => {
@@ -113,7 +104,7 @@ const PizzaMakerStation = () => {
 
         const response = await fetch('/api/order', {
             method: 'PUT',
-            headers,
+            credentials: 'include',
             body: JSON.stringify({
                 id: targetOrder._id.toString(),
                 order: updatedOrder
@@ -156,8 +147,8 @@ const PizzaMakerStation = () => {
                                 <>
                                     {order.items
                                         .filter(item => item.status === ITEM_STATUSES.PREPPING)
-                                        .map((item) => (
-                                                <span key={item.item.name}
+                                        .map((item, index) => (
+                                                <span key={`${order._id.toString()}-${item.item.name}-${index}`}
                                                       className={`border px-3 py-1 rounded-lg text-sm ${item.status !== ITEM_STATUSES.PREPPING ? 'bg-green-50 border-green-100 text-gray-400' : ''}`}>
                                             {item.item.name} <span
                                                     className="bg-gray-100 py-0.5 px-1  rounded-2xl">{order.timeslot}</span>

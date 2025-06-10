@@ -43,9 +43,7 @@ const WithSystemCheck = <P extends object>(
             try {
                 const response = await fetch('/api/manage/system/status', {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    credentials: 'include',
                     // Add cache control for browser caching
                     cache: 'no-store'
                 });

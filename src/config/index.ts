@@ -16,6 +16,7 @@ export const TOKENS_CONFIG = {
 export const ORDER_CONFIG = {
     MAX_ITEMS_PER_TIMESLOT: 4,
     TIMESLOT_DURATION: 10,
+    TIMESLOTS_BUFFER: 40
 }
 
 export const ITEM_CONFIG = {

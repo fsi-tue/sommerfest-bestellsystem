@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Item, ItemDocument } from "@/model/item";
-import { getFromLocalStorage } from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import Button from "@/app/components/Button";
 import { ITEM_CONFIG } from "@/config";
+import { useTranslations } from "next-intl";
 
 
 interface EditItemProps {
@@ -14,8 +14,6 @@ interface EditItemProps {
 }
 
 const EditItem = ({ item, isNew }: EditItemProps) => {
-    const token = getFromLocalStorage('token');
-
     const [error, setError] = useState<string>('');
     const [localItem, setLocalItem] = useState<Item>(item ??
         {
@@ -27,17 +25,13 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
             max: ITEM_CONFIG.MAX_ITEMS
         }
     );
+    const t = useTranslations();
 
     useEffect(() => {
         if (item) {
             setLocalItem(item);
         }
     }, [item]);
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-    }
 
     const updateItem = (parts: Partial<ItemDocument>) => {
         setLocalItem({
@@ -48,7 +42,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
     const saveItem = (parts: Partial<ItemDocument>) => {
         fetch(`/api/pizza`, {
             method: 'PUT',
-            headers: headers,
+            credentials: 'include',
             body: JSON.stringify({ ...item, ...parts })
         })
             .then(async response => {
@@ -66,7 +60,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
     const createItem = (item: Item) => {
         fetch(`/api/pizza`, {
             method: 'POST',
-            headers: headers,
+            credentials: 'include',
             body: JSON.stringify(item)
         })
             .then(async response => {
@@ -93,7 +87,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                 <div className="flex flex-wrap gap-2 mb-4">
       <span
           className={`text-sm font-medium text-white py-1 px-3 rounded-full ${localItem.enabled ? 'bg-green-500' : 'bg-gray-500'}`}>
-        {localItem.enabled ? 'Enabled' : 'Disabled'}
+                            {localItem.enabled ? t('admin.manage.pizza.edit_item.disabled') : t('admin.manage.pizza.edit_item.enabled')}
       </span>
                     <span
                         className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localItem.price} €</span>
@@ -111,14 +105,14 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                             onClick={() => saveItem(localItem)}
                             className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-full transition duration-200"
                         >
-                            Update
+                            {t('admin.manage.pizza.edit_item.update')}
                         </Button>
                     ) : (
                         <Button
                             onClick={() => createItem(localItem)}
                             className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-full transition duration-200"
                         >
-                            Create
+                            {t('admin.manage.pizza.edit_item.create')}
                         </Button>
                     )}
                     {!isNew && (
@@ -132,13 +126,13 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                             })}
                             className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-full transition duration-200"
                         >
-                            {localItem.enabled ? 'Disable' : 'Enable'}
+                            {localItem.enabled ? t('admin.manage.pizza.edit_item.disable') : t('admin.manage.pizza.edit_item.enable')}
                         </Button>
                     )}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Name</label>
+                        <label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.name')}</label>
                         <input
                             type="text"
                             value={localItem.name}
@@ -148,7 +142,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Type</label>
+                        <label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.type')}</label>
                         <input
                             type="text"
                             value={localItem.type}
@@ -158,7 +152,8 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Dietary</label>
+                        <label
+                            className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.dietary')}</label>
                         <input
                             type="text"
                             value={localItem.dietary}
@@ -168,7 +163,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Price</label>
+                        <label className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.price')}</label>
                         <div className="flex items-center">
                             <input
                                 type="number"
@@ -184,7 +179,8 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Max. Items available</label>
+                        <label
+                            className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.max_items_available')}</label>
                         <input
                             type="number"
                             value={localItem.max}

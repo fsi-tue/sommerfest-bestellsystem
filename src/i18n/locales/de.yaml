@@ -1,0 +1,166 @@
+translation:
+  lang_emoji: 🇩🇪
+  app_title: Pizza-Byte
+  loading_menu: Menü lädt...
+
+  errors:
+    failed_to_load_menu: 'Menü-Ladefehler: {message}}' # Or: 'Menü konnte nicht geladen werden: {{message}'
+
+  header:
+    adminlinks:
+      prepare: Vorbereitung
+      manage_db: Datenbank
+      manage_orders: Bestellungen
+      manage_items: Artikel
+      logout: Abmelden
+    menu:
+      login: Anmelden
+      home: Start
+      orders: Bestellungen
+
+  footer:
+    fuel: Code & Pizza von
+
+  order_view:
+    introduction:
+      choose_your_item: Produkt wählen
+      pick_up_time: Abholzeit
+      pay_in_cash: Barzahlung
+      closer: Schönen Abend! # Or: Guten Appetit!
+    order:
+      name: Name
+      name_placeholder: Dein Name
+    timeslot:
+      title: Zeitfenster
+      subtitle: Abholzeit wählen.
+    item:
+      button:
+        add: Hinzufügen
+
+  cart:
+    title: Warenkorb
+    messages:
+      empty_cart: Warenkorb leer.
+      add_note: Notiz hinzufügen
+      add_more_products: Mehr Artikel
+      name_not_set: Name fehlt
+      timeslot_not_selected: Zeitfenster fehlt
+    items: Artikel
+    total_price: Gesamt
+    currency: €
+    timeslot: Zeitfenster
+    select_timeslot: Wähle deine gewünschte Abholzeit aus
+    open_order_summary: Zur Übersicht # Or: Weiter zur Kasse
+
+  order_overview:
+    history:
+      title: Verlauf
+      subtitle: Deine letzten Bestellungen.
+    recent:
+      title: Aktuell
+      orders_found: '{count, plural, =0 {Keine Bestellungen} =1 {Eine Bestellung} other {# Bestellungen}} '
+      no_orders_yet: Keine Bestellungen.
+      messages:
+        first_order: Deine Bestellungen siehst du hier.
+    timeline:
+      title: Zeitachse
+      subtitle: Live-Bestellungen.
+
+  admin:
+    manage:
+      title: Datenbank
+      enable_system: System aktivieren
+      prepare_database: DB initialisieren
+      delete_database: DB löschen
+      system_state: 'System: {state}'
+
+      order:
+        errors:
+          order_not_found: Bestellung nicht gefunden.
+          barcode_fail: 'Barcode-Fehler: ID nicht lesbar'
+        order_history: Verlauf
+        scan_qr_code_text: QR-Scan für Bestellung
+        show_finished: Erledigte zeigen
+        hide_finished: Erledigte ausblenden
+        status: 'Status:'
+        price: 'Preis:'
+        items: 'Artikel:'
+        order_date: 'Datum:'
+        timeslot: 'Zeitfenster:'
+        comment: 'Notiz:'
+        paid: Bezahlt
+        not_paid: Offen
+
+      pizza:
+        errors:
+          error_fetching: 'Fehler: Artikel nicht geladen'
+        title: Artikel
+        subtitle: Artikel erstellen & bearbeiten.
+        new_pizza_name: Neuer Artikel
+        edit_item:
+          enabled: Aktiv
+          disabled: Inaktiv
+          disable: Deaktivieren
+          enable: Aktivieren
+          items_available: '{items} verfügbar'
+          update: Speichern
+          create: Erstellen
+          name: Name
+          type: Typ
+          dietary: Details
+          price: Preis
+          max_items_available: Max. verfügbar
+
+    prepare:
+      title: Aktive Bestellungen # Or: Vorbereitung
+      current_time: 'Zeit: {currentTime}'
+      open_orders: 'Offen: '
+      no_open_orders: Keine offenen Bestellungen 🎉
+      item: Artikel
+      timeslot: Zeitfenster
+      name: Name
+      status: Status
+      is_done: ✅ Erledigt
+
+  withsystemcheck:
+    check_system_status: Prüfe System...
+    system_inactive: System inaktiv
+    system_unavailable_message: Systemwartung. Bitte später erneut versuchen.
+
+  components:
+    menusection:
+      loading: Menü lädt...
+    timeline:
+      loading: Zeitplan lädt...
+      warning: 'Warnung: {error}. Zeige Ersatzdaten.'
+    errormessage:
+      please_try_again: Erneut versuchen.
+    searchinput:
+      placeholder: Suchen...
+
+  login:
+    title: Helfi-Anmeldung # Or: Login
+    fsik_token: FSI/K-Token
+    authenticating: Authentifiziere...
+    login: Anmelden
+
+  order:
+    suspense:
+      loading: Lädt...
+    thank_you:
+      qr:
+        title: Danke für die Bestellung! 🍕
+        your_order_number: 'Bestellnr.:'
+        instructions: Bitte am Tresen bezahlen.
+        order_again: Neue Bestellung
+        view_orders: Meine Bestellungen
+    status:
+      ordered: Bestellt
+      inPreparation: In Arbeit
+      ready: Abholbereit!
+      delivered: Abgeholt
+      cancelled: Storniert
+      default: Status unbekannt :(
+
+    order_button:
+      order_now: Bestellen

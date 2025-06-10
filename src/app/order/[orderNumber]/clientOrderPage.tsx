@@ -24,7 +24,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = (data && data.message) || response.statusText;
+                    const error = data?.message ?? response.statusText;
                     throw new Error(error);
                 }
                 return data;
@@ -56,7 +56,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
 
         fetch(`/api/order/${orderNumber}/cancel`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
+            credentials: 'include',
         })
             .then(response => {
                 if (response.ok) {
@@ -88,17 +88,17 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
     const statusToText = (order: { status: OrderStatus }) => {
         switch (order.status) {
             case 'ordered':
-                return 'We\'ve received your order.';
+                return t('order.status.ordered');
             case 'inPreparation':
-                return 'Your order is being prepared.';
+                return t('order.status.inPreparation');
             case 'ready':
-                return 'Your order is ready for pickup!';
+                return t('order.status.ready');
             case 'delivered':
-                return 'Your order has been delivered 🎉';
+                return t('order.status.delivered');
             case 'cancelled':
-                return 'Your order has been cancelled.';
+                return t('order.status.cancelled');
             default:
-                return 'Order status unavailable.';
+                return t('order.status.default');
         }
     }
     const getStatusColor = (status: OrderStatus) => {
@@ -123,7 +123,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
         return <Loading message="Loading Order..."/>;
     }
     if (!order) {
-        return <div className="p-6 text-center"><h1 className="text-xl">Order not found</h1></div>;
+        return <div className="p-6 text-center"><h1 className="text-xl">{t('order.not_found')}</h1></div>;
     }
 
     return (
@@ -136,7 +136,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
 
                 {order.status !== 'cancelled' && (
                     <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
-                        <p className="text-sm text-gray-600 mb-1">Ready by</p>
+                        <p className="text-sm text-gray-600 mb-1">{t('order.ready_by')}</p>
                         <p className="text-3xl font-light text-blue-600">
                             {formatDate(getDateFromTimeSlot(order.timeslot), 'HH:mm')}
                         </p>
@@ -154,7 +154,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-sm text-gray-500">Order #{orderNumber.slice(-8)}</span>
                             <span className={`text-sm font-medium ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
-                                {order.isPaid ? '✓ Paid' : '⚠ Unpaid'}
+                                {order.isPaid ? t('order.status.paid') : t('order.status.unpaid')}
                             </span>
                         </div>
 

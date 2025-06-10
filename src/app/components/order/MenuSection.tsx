@@ -1,6 +1,6 @@
 import { ItemDocument } from '@/model/item';
 import Item from "@/app/components/Item";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface MenuSectionProps {
     items: { [_id: string]: ItemDocument[] };

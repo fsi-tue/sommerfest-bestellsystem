@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
+import useOrderStore, { useCurrentOrder } from "@/app/zustand/order";
 import { ShoppingCart } from "lucide-react";
 import Button from "@/app/components/Button";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface FloatingOrderSummaryProps {
     error: string;
@@ -20,8 +20,8 @@ const FloatingOrderSummary: React.FC<FloatingOrderSummaryProps> = ({
     const t = useTranslations();
 
     const order = useCurrentOrder();
-    const orderActions = useOrderActions();
-    const totalItemsCount = orderActions.getTotalItemCount()
+    const orderStore = useOrderStore();
+    const totalItemsCount = orderStore.getTotalItemCount()
     useEffect(() => {
         setEnableCart(false)
         if (totalItemsCount === 0) {
@@ -65,7 +65,7 @@ const FloatingOrderSummary: React.FC<FloatingOrderSummaryProps> = ({
 
                             <div className="flex items-center justify-center min-w-[80px] px-3">
                                 <span className="text-white-800 font-bold text-lg">
-                                    €{orderActions.getCurrentOrderTotal().toFixed(2)}
+                                    €{orderStore.getCurrentOrderTotal().toFixed(2)}
                                 </span>
                             </div>
                         </>

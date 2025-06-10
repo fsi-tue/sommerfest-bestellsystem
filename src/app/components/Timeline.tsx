@@ -2,18 +2,12 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useOrderActions } from "@/app/zustand/order";
 import { useTranslations } from 'next-intl';
+import useOrderStore from "@/app/zustand/order";
+import { AggregatedSlotData } from "@/model/timeslot";
+import { ORDER_CONFIG } from "@/config";
 
-
-interface TimeSlot {
-    time: string;
-    height: number;
-    Orders?: number;
-    color?: string;
-    border?: string;
-    borderwidth?: number;
-}
+const MIN_BAR_HEIGHT = 0.5;
 
 interface TimelineProps {
     startDate: Date;
@@ -22,8 +16,8 @@ interface TimelineProps {
 }
 
 // Helper function to generate fallback timeslots
-const generateFallbackTimeslots = (startDate: Date, stopDate: Date): TimeSlot[] => {
-    const timeSlots: TimeSlot[] = [];
+const generateAllTimeslots = (startDate: Date, stopDate: Date): AggregatedSlotData[] => {
+    const timeSlots: AggregatedSlotData[] = [];
     const currentTime = new Date(startDate);
 
     while (currentTime <= stopDate) {
@@ -42,32 +36,37 @@ const Timeline: React.FC<TimelineProps> = ({
                                                stopDate,
                                                every_x_seconds
                                            }) => {
-    const [timeslots, setTimeslots] = useState<TimeSlot[]>([]);
+    const [timeslots, setTimeslots] = useState<AggregatedSlotData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const t = useTranslations();
 
-    const orderActions = useOrderActions();
+    const { setTimeslot, currentOrder } = useOrderStore();
 
+    const mergeTimeslots = (
+        allSlots: AggregatedSlotData[],
+        apiSlots: AggregatedSlotData[]
+    ): AggregatedSlotData[] => {
+        const apiSlotMap = new Map(apiSlots.map(slot => [slot.time, slot]));
+        return allSlots.map(slot => ({
+            ...slot,
+            ...apiSlotMap.get(slot.time), // Overwrite defaults with API data if present
+        }));
+    };
     const fetchTimeline = useCallback(async () => {
         setError(null);
+        let apiSlots: AggregatedSlotData[] = [];
         const response = await fetch('/api/timeline');
-
         if (!response.ok) {
-            console.error('Error fetching timeline timeslots:', error);
             setError('Failed to fetch timeline data');
-
-            // Generate fallback data
-            const fallbackTimeslots = generateFallbackTimeslots(startDate, stopDate);
-            setTimeslots(fallbackTimeslots);
-            setIsLoading(false);
-            return;
+            apiSlots = generateAllTimeslots(startDate, stopDate);
+        } else {
+            apiSlots = await response.json();
         }
 
-        const jsonData: TimeSlot[] = await response.json();
-        setTimeslots(jsonData);
+        setTimeslots(apiSlots);
         setIsLoading(false);
-    }, [startDate, stopDate]);
+    }, [startDate, stopDate, every_x_seconds]);
 
     useEffect(() => {
         fetchTimeline();
@@ -77,9 +76,9 @@ const Timeline: React.FC<TimelineProps> = ({
 
     const handleBarClick = useCallback((event: any) => {
         if (event?.activeLabel) {
-            orderActions.setTimeslot(event.activeLabel);
+            setTimeslot(event.activeLabel);
         }
-    }, [orderActions]);
+    }, []);
 
     if (isLoading) {
         return (
@@ -104,9 +103,10 @@ const Timeline: React.FC<TimelineProps> = ({
                     margin={{ top: 5, right: 30, left: -30, bottom: 5 }}
                 >
                     <XAxis dataKey="time"/>
-                    <YAxis/>
+                    <YAxis domain={[0, ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT]}/>
                     <Tooltip/>
-                    <Bar dataKey="Orders" fill="#007bff">
+
+                    <Bar dataKey="ordersAmount" name="Orders" fill="#007bff">
                         {timeslots.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}-${entry.time}`}

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import Button from "@/app/components/Button";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface SearchInputProps {
     search: (value: string) => void;

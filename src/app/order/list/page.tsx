@@ -1,11 +1,11 @@
 'use client'
 
-import { getFromLocalStorage } from "@/lib/localStorage";
 import Timeline from "@/app/components/Timeline";
 import { ChevronRight, Clock, Package, Pizza } from "lucide-react";
 import { useTranslations } from 'next-intl';
-import { OrderStatus } from "@/model/order";
 import React, { useEffect } from "react";
+import useOrderStore from "@/app/zustand/order";
+import { OrderDocument, OrderStatus } from "@/model/order";
 
 const EVERY_X_SECONDS = 60;
 
@@ -18,26 +18,21 @@ const Page = () => {
     end.setHours(end.getHours() + 1);
     end.setMinutes(59, 59, 999);
 
-    const localStorageOrders = JSON.parse(getFromLocalStorage('localStorageOrders')) ?? []
+    const { orders } = useOrderStore();
 
-    const t = useTranslations();
-
-    const [orders, setOrders] = React.useState<{
+    const [simpleOrders, setSimpleOrders] = React.useState<{
         id: string;
         items: string[];
         timeslot: string;
         status: OrderStatus;
     }[]>([]);
 
+    const t = useTranslations();
     useEffect(() => {
-        Promise.all(localStorageOrders
-            .map(async (order: {
-                id: string;
-                items: string[];
-                timeslot: string;
-            }) => {
+        Promise.all(orders
+            .map(async (order: OrderDocument) => {
                 // Fetch order data
-                const status = await fetch(`/api/order/${order.id}`)
+                const status = await fetch(`/api/order/${order._id.toString()}`)
                     .then(async response => {
                         const data = await response.json();
                         if (!response.ok) {
@@ -51,16 +46,17 @@ const Page = () => {
                     });
 
                 return {
-                    ...order,
-                    status,
+                    id: order._id.toString(),
+                    items: order.items.map(item => item.item.name),
+                    timeslot: order.timeslot,
+                    status: status,
                 }
-            })).then(r => setOrders(r));
-    }, []);
+            })).then(r => setSimpleOrders(r));
+    }, [orders]);
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
-
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -76,11 +72,11 @@ const Page = () => {
                     <div className="p-6 border-b border-gray-100">
                         <h2 className="text-lg font-semibold text-gray-900">{t('order_overview.recent.title')}</h2>
                         <p className="text-sm text-gray-500 mt-1">
-                            {t('order_overview.recent.orders_found', { count: localStorageOrders.length })}
+                            {t('order_overview.recent.orders_found', { count: simpleOrders.length })}
                         </p>
                     </div>
 
-                    {localStorageOrders.length === 0 ? (
+                    {simpleOrders.length === 0 ? (
                         <div className="p-12 text-center">
                             <div
                                 className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -93,7 +89,7 @@ const Page = () => {
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-100">
-                            {orders.map((order) => (
+                            {simpleOrders.map((order) => (
                                 <a
                                     key={`${order.id}-${order.timeslot}`}
                                     href={`/order/${order.id}`}
@@ -121,14 +117,15 @@ const Page = () => {
                                             </div>
                                             <div className="ml-13">
                                                 <div className="flex flex-wrap gap-1 mt-2">
-                                                    {(order.items ?? []).slice(0, 3).map((item, itemIndex) => (
-                                                        <span
-                                                            key={itemIndex}
-                                                            className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-700"
-                                                        >
+                                                    {(order.items ?? []).slice(0, 3)
+                                                        .map((item, index) => (
+                                                            <span
+                                                                key={`${order.id}-${item}-${index}`}
+                                                                className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-700"
+                                                            >
                                                             {item}
                                                         </span>
-                                                    ))}
+                                                        ))}
                                                     {(order.items ?? []).length > 3 && (
                                                         <span
                                                             className="inline-flex items-center px-2 py-1 rounded-md bg-gray-100 text-xs font-medium text-gray-500">
@@ -147,7 +144,6 @@ const Page = () => {
                     )}
                 </div>
 
-                {/* Timeline Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100">
                         <div className="flex items-center gap-3 mb-2">

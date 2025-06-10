@@ -150,7 +150,7 @@ export async function POST(request: Request) {
 
         await order.save();
 
-        return NextResponse.json({ orderId: order._id });
+        return NextResponse.json(order);
     } catch (error) {
         console.error('Error creating order:', error);
         return NextResponse.json(
@@ -200,7 +200,6 @@ export async function PUT(request: Request) {
         await foundOrder.save();
 
         return NextResponse.json(foundOrder);
-
     } catch (error) {
         console.error('Error updating order:', error);
         return NextResponse.json(

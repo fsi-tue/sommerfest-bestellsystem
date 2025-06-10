@@ -1,5 +1,5 @@
 import { Clock, Euro, Search } from "lucide-react";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 const IntroductionSection = () => {
     const t = useTranslations();

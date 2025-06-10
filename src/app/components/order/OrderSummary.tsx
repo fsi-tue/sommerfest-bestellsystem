@@ -1,13 +1,13 @@
 import { ItemDocument } from "@/model/item"; // Assuming this path is correct
 import OrderButton from "@/app/components/order/OrderButton";
-import React, { useMemo, useState } from "react";
-import { useCurrentOrder, useOrderActions } from "@/app/zustand/order";
+import React, { useMemo } from "react";
+import useOrderStore, { useCurrentOrder } from "@/app/zustand/order";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { CONSTANTS } from "@/config";
 import Timeline from "@/app/components/Timeline";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import Button from "@/app/components/Button";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface OrderSummaryPageProps {
     onClose: () => void;
@@ -17,10 +17,8 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                                            onClose,
                                                        }) => {
 
-    const [error, setError] = useState<string | null>(null);
-
     const order = useCurrentOrder();
-    const orderActions = useOrderActions();
+    const { setError, error, getCurrentOrderTotal, setName, removeFromOrder, addToOrder } = useOrderStore();
     const t = useTranslations();
 
     // Use a structure that includes quantity for each unique item
@@ -88,7 +86,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                             <div
                                                 className="flex items-center gap-2 bg-gray-100 rounded-full px-2 py-0.5">
                                                 <Button
-                                                    onClick={() => orderActions.removeFromOrder(item)}
+                                                    onClick={() => removeFromOrder(item)}
                                                     className="text-gray-500 hover:text-red-600 disabled:opacity-50 transition-colors p-1"
                                                     aria-label={`Remove ${item.name}`}
                                                     // disabled={quantity <= 1} // Disable if only removing via trash
@@ -97,7 +95,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                                 </Button>
                                                 <span className="font-medium w-5 text-center text-sm">{quantity}</span>
                                                 <Button
-                                                    onClick={() => orderActions.addToOrder(item)}
+                                                    onClick={() => addToOrder(item)}
                                                     className="text-gray-500 hover:text-green-600 transition-colors p-1"
                                                     aria-label={`Increase quantity of ${item.name}`}
                                                 >
@@ -123,11 +121,11 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                         <div>
                             <h3 className="text-xl font-semibold mb-2">Details</h3>
                             <div className="flex justify-between text-sm text-gray-700 mt-2">
-                                <span>Total</span>
-                                <span>{orderActions.getCurrentOrderTotal().toFixed(2)}€</span>
+                                <span>{t('cart.total_price')}</span>
+                                <span>{getCurrentOrderTotal().toFixed(2)}€</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-700 mt-2">
-                                <span>Timeslot</span>
+                                <span>{t('cart.timeslot')}</span>
                                 <span>
                                     {order.timeslot}
                                 </span>
@@ -144,10 +142,10 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                     id="name"
                                     name="name"
                                     type="text"
-                                    value={order.name} // Controlled component
-                                    placeholder="Enter your name"
+                                    value={order.name}
+                                    placeholder={t("order_view.order.name_placeholder")}
                                     className="mt-1 p-3 border border-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm"
-                                    onChange={(e) => orderActions.setName(e.target.value)}
+                                    onChange={(e) => setName(e.target.value)}
                                     required
                                 />
                             </div>
@@ -155,9 +153,9 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
 
                         {/* Timeline Section */}
                         <div className="timeline-container mt-8">
-                            <h4 className="text-xl font-semibold mb-2 text-gray-900">Timeslot</h4> {/* Adjusted heading level */}
-                            <p className="mb-4 text-base font-light leading-relaxed text-gray-700"> {/* Adjusted text size/leading */}
-                                Select your preferred pick-up time.
+                            <h4 className="text-xl font-semibold mb-2 text-gray-900">{t('cart.timeslot')}</h4>
+                            <p className="mb-4 text-base font-light leading-relaxed text-gray-700">
+                                {t('cart.select_timeslot')}
                             </p>
                             <Timeline
                                 startDate={start}

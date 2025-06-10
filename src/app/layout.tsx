@@ -10,7 +10,7 @@ import { getLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
     title: "🍕 FSI/K Sommerfest Pizza",
-    description: "Order your pizza for the FSI/K Sommerfest 2024",
+    description: "Order your pizza for the FSI/K Sommerfest 2025",
 };
 
 export default async function RootLayout({

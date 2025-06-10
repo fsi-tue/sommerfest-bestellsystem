@@ -1,6 +1,6 @@
 'use client'
 
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear(); // Get current year dynamically

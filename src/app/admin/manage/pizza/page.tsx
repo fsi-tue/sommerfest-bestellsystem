@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { getFromLocalStorage } from "@/lib/localStorage";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { Wrench } from "lucide-react";
 import EditItem from "./EditItem";
@@ -10,22 +9,14 @@ import { useTranslations } from 'next-intl';
 import { ItemDocument } from "@/model/item";
 
 const Page = () => {
-    const token = getFromLocalStorage('token', '');
 
     const [items, setItems] = useState<ItemDocument[]>([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const t = useTranslations();
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-    }
-
     useEffect(() => {
         fetch('/api/pizza/', {
-            headers: headers,
-        })
+            credentials: 'include',        })
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
@@ -43,7 +34,7 @@ const Page = () => {
                 setError(t('admin.manage.pizza.errors.error_fetching'));
                 setLoading(false);
             });
-    }, [token]);
+    }, []);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -54,7 +45,7 @@ const Page = () => {
 
     return (
         <div>
-            <Heading title={"Manage Items"} description={"Add, remove and disable items"}
+            <Heading title={t('admin.manage.pizza.title')} description={t('admin.manage.pizza.subtitle')}
                      icon={<Wrench className="w-10 h-10 text-gray-900"/>}/>
 
             {/* New Item */}

@@ -22,8 +22,7 @@ export default function ManagePage() {
 
         fetch('/api/manage/db/delete', {
             method: 'POST',
-            credentials: 'include'
-        })
+            credentials: 'include',        })
             .then(() => setMessage('Database deleted'))
             .catch((error) => setMessage(error))
     }
@@ -35,8 +34,7 @@ export default function ManagePage() {
 
         fetch('/api/manage/db/prepare', {
             method: 'POST',
-            credentials: 'include'
-        })
+            credentials: 'include',        })
             .then(() => setMessage('Database prepared'))
             .catch((error) => {
                 console.error('Error preparing database', error);
@@ -46,8 +44,7 @@ export default function ManagePage() {
 
     const getSystemStatus = () => {
         fetch('/api/manage/system/status', {
-            credentials: 'include'
-        })
+            credentials: 'include',        })
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
@@ -70,8 +67,7 @@ export default function ManagePage() {
     const updateSystemStatus = (status: SystemStatus) => {
         fetch(`/api/manage/system/status/${status}`, {
             method: 'POST',
-            credentials: 'include'
-        })
+            credentials: 'include',        })
             .then(() => {
                 setMessage(`System ${status}`)
                 setStatus(status)
@@ -84,14 +80,14 @@ export default function ManagePage() {
 
     return (
         <div>
-            <Heading title={t('admin.manage.title')} description={message}
+            <Heading title={t('admin.manage.database.title')} description={message}
                      icon={<Database className="w-10 h-10 text-primary-500"/>}/>
 
             <div className="w-full px-2 py-2">
                 <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-4 relative">
                     <div className="mb-4 flex items-center gap-4">
                         <label htmlFor="enable" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('admin.manage.enable_system')}
+                            {t('admin.manage.database.enable_system')}
                         </label>
                         <input
                             type="checkbox"
@@ -106,12 +102,12 @@ export default function ManagePage() {
                         <Button
                             onClick={prepareDatabase}
                             className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            {t('admin.manage.prepare_database')}
+                            {t('admin.manage.database.prepare_database')}
                         </Button>
                         <Button
                             onClick={deleteDatabase}
                             className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-red-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            {t('admin.manage.delete_database')}
+                            {t('admin.manage.database.delete_database')}
                         </Button>
                     </div>
                     <div className="flex gap-2 flex-wrap justify-start mt-4">
@@ -122,7 +118,7 @@ export default function ManagePage() {
                                 className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 ${state === status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 onClick={() => updateSystemStatus(state)}
                             >
-                                {t('admin.manage.system_state', { state: state })}
+                                {t('admin.manage.database.system_state', { state: state })}
                             </Button>
                         ))}
                     </div>

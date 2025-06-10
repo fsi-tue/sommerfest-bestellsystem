@@ -1,38 +1,22 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Home, List, LogIn, Menu } from "lucide-react";
 import Button from "@/app/components/Button";
 import LanguageSelector from "@/app/components/LanguageSelector";
 import { useTranslations } from 'next-intl';
-import { getFromLocalStorage } from "@/lib/localStorage";
+import { useIsSignedIn } from "@/app/zustand/auth";
 
 const Header = () => {
-    const [authed, setAuthed] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const t = useTranslations();
 
-    useEffect(() => {
-        const isAuthenticated = getFromLocalStorage('authed', false);
-        setAuthed(isAuthenticated);
-
-        // Listen for custom login event to update header state without page reload
-        const handleLoginSuccess = () => {
-            const isAuthenticated = getFromLocalStorage('authed', false);
-            setAuthed(isAuthenticated);
-        };
-        window.addEventListener("loginSuccessEvent", handleLoginSuccess);
-
-        // Cleanup listener on component unmount
-        return () => {
-            window.removeEventListener("loginSuccessEvent", handleLoginSuccess);
-        };
-    }, []);
+    const isSignedIn = useIsSignedIn()
 
     const adminLinks = [
-        { to: `/admin/prepare`, text: t('header.adminlinks.prepare') }, // does not work yet
-        { to: `/admin/order`, text: t('header.adminlinks.manage_orders') },
-        { to: `/admin/manage`, text: t('header.adminlinks.manage_db') },
+        { to: `/admin/prepare/pizza`, text: t('header.adminlinks.prepare') }, // does not work yet
+        { to: `/admin/prepare/order`, text: t('header.adminlinks.manage_orders') },
+        { to: `/admin/manage/database`, text: t('header.adminlinks.manage_db') },
         { to: `/admin/manage/pizza`, text: t('header.adminlinks.manage_items') },
         { to: `/admin/logout`, text: t('header.adminlinks.logout') },
     ];
@@ -73,7 +57,7 @@ const Header = () => {
                         </a>
                     </div>
 
-                    {!authed && (
+                    {!isSignedIn && (
                         <div className="flex space-x-4 sm:space-x-6">
                             <a
                                 href={`/login`}
@@ -85,7 +69,7 @@ const Header = () => {
                         </div>
                     )}
 
-                    {authed && (
+                    {isSignedIn && (
                         <>
                             {/* Admin Links: Hidden on small screens, visible on medium+ */}
                             <div className="hidden md:flex space-x-4 lg:space-x-6">
@@ -111,7 +95,7 @@ const Header = () => {
                     )}
                 </div>
 
-                {menuOpen && authed && (
+                {menuOpen && isSignedIn && (
                     <div className="lg:hidden border-t border-white/20 bg-white/5 backdrop-blur-md">
                         <nav className="container mx-auto px-4 py-4 space-y-2">
                             {adminLinks.map(({ to, text }) => (

@@ -3,57 +3,52 @@ import { ItemDocument } from '@/model/item'
 import { getDateFromTimeSlot } from '@/lib/time'
 import { create } from 'zustand'
 import { ORDER_CONFIG } from '@/config'
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface OrderState {
     orders: OrderDocument[]
     currentOrder: ApiOrder
     error: string | null
 
-    actions: {
-        // Error management
-        setError: (error: string) => void
-        clearError: () => void
+    // Error management
+    setError: (error: string) => void
+    clearError: () => void
 
-        // Order management
-        createNewOrder: () => void
-        addOrder: (order: OrderDocument) => void
-        removeOrder: (orderId: string) => void
-        setCurrentOrder: (order: ApiOrder) => void
+    // Order management
+    createNewOrder: () => void
+    addOrder: (order: OrderDocument) => void
+    removeOrder: (orderId: string) => void
+    setCurrentOrder: (order: ApiOrder) => void
 
-        // Current order updates
-        updateOrder: (updatedOrder: Partial<ApiOrder>) => void
-        setName: (name: string) => void
-        setTimeslot: (timeslot: string) => void
+    // Current order updates
+    updateOrder: (updatedOrder: Partial<ApiOrder>) => void
+    setName: (name: string) => void
+    setTimeslot: (timeslot: string) => void
 
-        // Item item management (your specific structure)
-        addToOrder: (item: ItemDocument) => void
-        removeFromOrder: (item: ItemDocument) => void
+    // Item item management (your specific structure)
+    addToOrder: (item: ItemDocument) => void
+    removeFromOrder: (item: ItemDocument) => void
 
-        // Utility functions
-        clearAllOrders: () => void
-        getOrderById: (orderId: string) => OrderDocument | undefined
-        getCurrentOrderTotal: () => number
-        getItemCount: (itemId: string) => number
-        getTotalItemCount: () => number
-    }
+    // Utility functions
+    clearAllOrders: () => void
+    getBlockedTimeslotDateUntil: () => Date
+    getOrderById: (orderId: string) => OrderDocument | undefined
+    getCurrentOrderTotal: () => number
+    getItemCount: (itemId: string) => number
+    getTotalItemCount: () => number
 }
 
-// Constants (you can move these to a separate config file)
-const ORDER = {
-    TIMESLOT_DURATION: 30 // Time buffer in minutes
-}
+const useOrderStore = create<OrderState>()(persist(
+    (set, get) => ({
+        orders: [],
+        currentOrder: {
+            name: '',
+            items: {},
+            comment: '',
+            timeslot: null
+        },
+        error: null,
 
-const useOrderStore = create<OrderState>()((set, get) => ({
-    orders: [],
-    currentOrder: {
-        name: '',
-        items: {},
-        comment: '',
-        timeslot: null
-    },
-    error: null,
-
-    actions: {
         // Error management
         setError: (error) => set({ error }),
 
@@ -90,16 +85,16 @@ const useOrderStore = create<OrderState>()((set, get) => ({
 
         // Set the name of the current order
         setName: (name) => {
-            const { updateOrder } = get().actions
+            const { updateOrder } = get()
             updateOrder({ name })
         },
 
         // Set timeslot with validation
-        setTimeslot: (timeslot) => {
-            const { clearError, setError, updateOrder } = get().actions
+        setTimeslot: (timeslot: string) => {
+            const { clearError, setError, updateOrder, } = get()
             clearError()
 
-            const BUFFER = ORDER.TIMESLOT_DURATION // Time buffer in minutes
+            const BUFFER = ORDER_CONFIG.TIMESLOT_DURATION // Time buffer in minutes
             const currentTimeWithBuffer = new Date()
             currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER)
 
@@ -124,7 +119,7 @@ const useOrderStore = create<OrderState>()((set, get) => ({
 
         // Add item item to current order
         addToOrder: (item) => {
-            const { setError, clearError, getTotalItemCount } = get().actions
+            const { setError, clearError, getTotalItemCount } = get()
             clearError() // Clear any previous errors when adding items
 
             set((state) => {
@@ -152,7 +147,7 @@ const useOrderStore = create<OrderState>()((set, get) => ({
 
         // Remove item item from current order
         removeFromOrder: (item) => {
-            const { clearError } = get().actions
+            const { clearError } = get()
             clearError()
 
             set((state) => {
@@ -194,6 +189,14 @@ const useOrderStore = create<OrderState>()((set, get) => ({
             error: null
         }),
 
+        // Returns the date until the timeslots are blocked
+        getBlockedTimeslotDateUntil: () => {
+            const BUFFER = ORDER_CONFIG.TIMESLOTS_BUFFER // Time buffer in minutes
+            const currentTimeWithBuffer = new Date()
+            currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER)
+            return currentTimeWithBuffer
+        },
+
         // Get order by ID
         getOrderById: (orderId) => {
             const state = get()
@@ -227,26 +230,13 @@ const useOrderStore = create<OrderState>()((set, get) => ({
                 return total + itemArray.length
             }, 0)
         }
+    }), {
+        name: 'order-storage',
+        storage: createJSONStorage(() => localStorage),
     }
-}))
+));
 
 // Export custom hooks for easier usage
-export const useOrders = () => useOrderStore((state) => state.orders)
 export const useCurrentOrder = () => useOrderStore((state) => state.currentOrder)
-export const useOrderError = () => useOrderStore((state) => state.error)
-export const useOrderActions = () => useOrderStore((state) => state.actions)
-
-// Export specific selectors
-export const useOrderById = (orderId: string) =>
-    useOrderStore((state) => state.orders.find(order => order._id.toString() === orderId))
-
-export const useCurrentOrderTotal = () =>
-    useOrderStore((state) => state.actions.getCurrentOrderTotal())
-
-export const useItemCount = (itemId: string) =>
-    useOrderStore((state) => state.actions.getItemCount(itemId))
-
-export const useTotalItemCount = () =>
-    useOrderStore((state) => state.actions.getTotalItemCount())
 
 export default useOrderStore

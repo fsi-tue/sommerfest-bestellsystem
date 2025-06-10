@@ -4,7 +4,7 @@ translation:
   loading_menu: ✨🔄💫 Woading Menu... pwease wait cutie~!! 🥺💖🌸
 
   errors:
-    failed_to_load_menu: "😿💔🌧️ UwU!! Uh oh oh oh! Faiwed to woad da pwecious menu~!! 🥺😭 : {{message}} 🥺🍕✨💫 Pwease pwease twy again watew, my sweet angel~!! 🌸🌈💖🦄✨🎀"
+    failed_to_load_menu: "😿💔🌧️ UwU!! Uh oh oh oh! Faiwed to woad da pwecious menu~!! 🥺😭 : {message} 🥺🍕✨💫 Pwease pwease twy again watew, my sweet angel~!! 🌸🌈💖🦄✨🎀"
 
   header:
     adminlinks:
@@ -58,8 +58,8 @@ translation:
       subtitle: 🐾🕵️‍♀️💞🌷✨ Twack and manage aww youw supew cute wecent owdews~ nya nya~!! uwu 🎀🎶✨💖
     recent:
       title: 🎀📦✨🐰💕 Wecent owo owdews, just fow you cutie~!! 🎉💖🌸✨
-      orders_found: "✨🎉🥳💫 UwU {{count}} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
-      orders_found_plural: "🎉✨💖🦄 UwU {{count}} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
+      orders_found: "✨🎉🥳💫 UwU {count} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
+      orders_found_plural: "🎉✨💖🦄 UwU {count} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
       no_orders_yet: 😿💔🐾🎶💫 Nya nya~ no owdews yet!! Pwease make a supew cute one~ ;w; 🎉🌷✨💖
       messages:
         first_order: 🤗🐰💖🎶✨ When you pwace youw vewy fiwst owo owdew, it wiww appeaw wight hewe fow easy twacking~!! *gives biggest huggwes* uwu 🌸🎀✨💕
@@ -74,7 +74,7 @@ translation:
       enable_system: 💡🔧✨🌟 Enabwe System~ nya nya~!! ✨🎀💖
       prepare_database: 🛠️🍕💫✨ Pwepawe da supew nyummy databwase~!! 🍭🎉💖
       delete_database: 🗑️💔😿💦 Dewete databwase... o-oh nuuu nuuu~!! 😿💦✨
-      system_state: 🌐✨💫💖 System {{state}} ~ *checking status nyan nyan~* 📊💞✨
+      system_state: 🌐✨💫💖 System {state} ~ *checking status nyan nyan~* 📊💞✨
 
       order:
         errors:
@@ -104,7 +104,7 @@ translation:
           disabled: ❌💔😿✨ Disabwed... so sowwy nya nya~!! 😿💔💫
           disable: ❌💔😿✨ Disabwe 😿💔💫
           enable: ✅🌈🌸 Enabwe~ uwu uwu!! 🌈🌸✨💖
-          items_available: '{{items}} supew duper cute itewms avaiwabwe~!! 🍕🎀✨💖'
+          items_available: '{items} supew duper cute itewms avaiwabwe~!! 🍕🎀✨💖'
           update: Upwate~! ✨🐾
           create: Cweate~ nya! 🌸🎉
           name: Nyame~ 💖✨
@@ -116,7 +116,7 @@ translation:
 
     prepare:
       title: ✨📦💖🎉 Owdews to pwepawe~!!
-      current_time: '🕒🌸💖✨ Cuwent time is~: {{currentTime}} nya nya~!! 💖'
+      current_time: '🕒🌸💖✨ Cuwent time is~: {currentTime} nya nya~!! 💖'
       open_orders: '📬✨💫 Open owdews wequiwing attention: '
       no_open_orders: 🎉😸💫💖 No open owdews wight nyow~ aww compwetely done, nyaaa~!! 💫💖✨
       item: 🧺✨💖 Itewm
@@ -135,7 +135,7 @@ translation:
       loading: 📋✨💖🐾 Woading nyummy wummy menu~!! *supew excited bounces* 🐾💖✨
     timeline:
       loading: ⏳🌸✨🎀 Woading cute wittle timewine... pwease wait~!! 🎀✨💖
-      warning: '⚠️😿💫✨ Wawning wawning: {{error}}. Showing fwuffy backup data~!! 💾🐾✨'
+      warning: '⚠️😿💫✨ Wawning wawning: {error}. Showing fwuffy backup data~!! 💾🐾✨'
     errormessage:
       please_try_again: 🔁💖✨🥺 Pwease twy again~!! *most hopefuw puppy eyes* ✨🥺💖
     searchinput:

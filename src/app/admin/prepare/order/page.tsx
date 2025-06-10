@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle, Minus, Pizza, Plus, ScanIcon, XIcon } from 'lucide-react';
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
-import { getFromLocalStorage } from '@/lib/localStorage';
 import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { getDateFromTimeSlot } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
@@ -12,6 +11,7 @@ import { ItemDocument } from "@/model/item";
 import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/components/layout/Heading";
 import { format } from "date-fns";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 interface ItemType {
     id: string;
@@ -50,7 +50,7 @@ const PizzaInventory = ({
     }, []);
 
     const handleQuantityChange = (type: string, delta: number) => {
-        const currentSelected = selectedPizzas.get(type) || 0;
+        const currentSelected = selectedPizzas.get(type) ?? 0;
         const newSelected = currentSelected + delta;
 
         const newMap = new Map(selectedPizzas);
@@ -129,7 +129,7 @@ const PizzaInventory = ({
                 </span>
 
                                 <Button
-                                    onClick={() => handleQuantityChange(item.name, 1)}
+                                    onClick={() => handleQuantityChange(item.name, +1)}
                                     className={`p-2 rounded-lg transition-all ${
                                         selected >= count
                                             ? 'bg-gray-100 text-gray-400'
@@ -261,32 +261,25 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
 
 const OrderManagerDashboard = () => {
     const [orders, setOrders] = useState<OrderDocument[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [inventory, setInventory] = useState<Map<string, number>>(new Map());
     const [searchFilter, setSearchFilter] = useState('');
     const [showScanner, setShowScanner] = useState(false);
     const [activeTab, setActiveTab] = useState<'active' | 'ready' | 'completed'>('active');
-
-    const token = getFromLocalStorage('token', '');
-    const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-    };
     const fetchOrders = async () => {
-        try {
-            const response = await fetch('/api/order', { headers });
-            const data = await response.json();
+        const response = await fetch('/api/order', { credentials: 'include', });
+        const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || response.statusText);
-            }
-
-            setOrders(data);
-            updateInventoryFromOrders(data);
-        } catch (error) {
-            console.error('Error fetching orders:', error);
+        if (!response.ok) {
+            const error = data.message ?? response.statusText
+            console.error(error)
+            setError(error)
+            return;
         }
-    };
 
+        setOrders(data);
+        updateInventoryFromOrders(data);
+    };
     const updateInventoryFromOrders = (orders: OrderDocument[]) => {
         const newInventory = new Map<string, number>();
 
@@ -304,33 +297,18 @@ const OrderManagerDashboard = () => {
 
         setInventory(newInventory);
     };
-
-    const handleInventoryUpdate = (type: string, delta: number) => {
-        const newInventory = new Map(inventory);
-        const current = newInventory.get(type) || 0;
-        const updated = Math.max(0, current + delta);
-
-        if (updated === 0) {
-            newInventory.delete(type);
-        } else {
-            newInventory.set(type, updated);
-        }
-
-        setInventory(newInventory);
-    };
-
     const handlePayment = (orderId: string) => {
         const isPaid = orders.find((order) => order._id.toString() === orderId)?.isPaid ?? false
 
         fetch(`/api/order/${orderId}/pay`, {
             method: 'PUT',
-            headers: headers,
+            credentials: 'include',
             body: JSON.stringify({ isPaid: !isPaid })
         })
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    const error = (data && data.message) || response.statusText;
+                    const error = data?.message ?? response.statusText;
                     throw new Error(error);
                 }
                 fetchOrders()
@@ -382,7 +360,7 @@ const OrderManagerDashboard = () => {
         Array.from(ordersToUpdate).forEach(order => {
             fetch('/api/order', {
                 method: 'PUT',
-                headers,
+                credentials: 'include',
                 body: JSON.stringify({
                     id: order._id.toString(),
                     order: order
@@ -462,7 +440,7 @@ const OrderManagerDashboard = () => {
         try {
             await fetch('/api/order', {
                 method: 'PUT',
-                headers,
+                credentials: 'include',
                 body: JSON.stringify({ id: orderId, order: updatedOrder })
             });
 
@@ -556,6 +534,10 @@ const OrderManagerDashboard = () => {
             {overdueOrders.length} order{overdueOrders.length > 1 ? 's' : ''} overdue!
           </span>
                 </div>
+            )}
+
+            {error && (
+                <ErrorMessage error={error}/>
             )}
 
             <div className="mb-8">
