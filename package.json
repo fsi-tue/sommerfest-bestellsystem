@@ -28,7 +28,7 @@
     "@types/js-yaml": "^4.0.9",
     "@yudiel/react-qr-scanner": "^2.3.1",
     "accept-language": "^3.0.20",
-    "caniuse-lite": "^1.0.30001718",
+    "caniuse-lite": "^1.0.30001722",
     "date-fns": "^4.1.0",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.513.0",
