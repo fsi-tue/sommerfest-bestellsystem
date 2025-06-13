@@ -115,7 +115,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                             <div className="flex justify-between text-sm text-gray-700 mt-2">
                                 <span>{t('cart.timeslot.title')}</span>
                                 <span>
-                                    {timeslotToLocalTime(order.timeslot)}
+                                    {order.timeslot?timeslotToLocalTime(order.timeslot):""}
                                 </span>
                             </div>
                         </div>
