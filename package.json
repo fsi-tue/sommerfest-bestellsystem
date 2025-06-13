@@ -50,7 +50,7 @@
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.21",
     "bun-types": "^1.2.15",
-    "oxlint": "^0.18.1",
+    "oxlint": "^1.1.0",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
     "ts-morph": "^26.0.0",
