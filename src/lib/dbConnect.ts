@@ -28,7 +28,7 @@ async function dbConnect() {
 
             // Connection pool settings
             maxPoolSize: 10, // Maintain up to 10 socket connections
-            minPoolSize: 2,  // Maintain minimum 2 connections
+            minPoolSize: 1,  // Maintain minimum 1 connections
 
             // Timeout settings
             serverSelectionTimeoutMS: 1000, // Keep trying to send operations for 5 seconds
@@ -39,7 +39,7 @@ async function dbConnect() {
             heartbeatFrequencyMS: 10000, // Send heartbeat every 10 seconds
 
             // Additional performance settings
-            maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+            maxIdleTimeMS: 5*60*1000, // Close connections after 5 min of inactivity
             compressors: 'zlib',
 
             // Retry settings
