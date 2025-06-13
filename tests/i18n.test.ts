@@ -1,5 +1,5 @@
 import { flattenKeys, loadResources } from "@/i18n/i18n.resources";
-import { expect, test, mock } from "bun:test";
+import { expect, mock, test } from "bun:test";
 import { Project, SyntaxKind } from 'ts-morph';
 import fs from "fs";
 import { glob } from "glob";
@@ -10,9 +10,12 @@ function collectAllUsedKeys(): string[] {
     let ret: string[] = [];
     mock('next-i18next', () => ({
         useTranslation: () => ({
-            t: (key: string, ...args: any[]) => { ret.push(key || ""); },
+            t: (key: string, ...args: any[]) => {
+                ret.push(key || "");
+            },
             i18n: {
-                changeLanguage() { }
+                changeLanguage() {
+                }
             },
         }),
     }));
@@ -31,8 +34,7 @@ function collectAllUsedKeys(): string[] {
                 } catch {
 
                 }
-            }
-            else {
+            } else {
             }
         }).catch(error => {
 
@@ -65,7 +67,9 @@ function extractI18nKeys(sourceDir: string): ExtractedKey[] {
         sourceFile.forEachDescendant(node => {
             if (node.getKind() === SyntaxKind.CallExpression) {
                 const callExpr = node.asKind(SyntaxKind.CallExpression);
-                if (!callExpr) return;
+                if (!callExpr) {
+                    return;
+                }
 
                 const expression = callExpr.getExpression();
 
@@ -89,8 +93,7 @@ function extractI18nKeys(sourceDir: string): ExtractedKey[] {
                                         column: lineAndColumn.column
                                     });
                                 }
-                            }
-                            else if (args[0].getKind() === SyntaxKind.TemplateExpression ||
+                            } else if (args[0].getKind() === SyntaxKind.TemplateExpression ||
                                 args[0].getKind() === SyntaxKind.NoSubstitutionTemplateLiteral) {
                                 const element = args[0].asKind(SyntaxKind.TemplateExpression);
                                 if (element) {
@@ -106,8 +109,7 @@ function extractI18nKeys(sourceDir: string): ExtractedKey[] {
                                     };
                                     extractedKeys.push(exKey);
                                 }
-                            }
-                            else if (args[0].getKind() === SyntaxKind.Identifier) {
+                            } else if (args[0].getKind() === SyntaxKind.Identifier) {
                                 const element = args[0].asKind(SyntaxKind.Identifier);
                                 if (element) {
                                     const pos = element.getStart();
@@ -121,8 +123,7 @@ function extractI18nKeys(sourceDir: string): ExtractedKey[] {
                                     };
                                     extractedKeys.push(exKey);
                                 }
-                            }
-                            else {
+                            } else {
                                 console.error("unknown kind", SyntaxKind[args[0].getKind()]);
                             }
                         }
@@ -148,6 +149,7 @@ const defined_keys_per_translation: Record<string, string[]> = Object.fromEntrie
                 const content = fs.readFileSync(absPath, "utf8");
                 return yaml.load(content);
             }
+
             return (
                 loadYaml(`src/config/locales/${id}.yaml`) as any
             ).translation;
@@ -209,15 +211,15 @@ test('that each file is translated', () => {
     ];
 
     const tFileList = [...AmountOfTInFiles];
-    for(const sourceFile of sourceFiles) {
+    for (const sourceFile of sourceFiles) {
         const filepath = sourceFile.getFilePath();
         // whole groups excluded
-        if(excludes.some(exclude => filepath.indexOf(exclude)>0)) {
+        if (excludes.some(exclude => filepath.indexOf(exclude) > 0)) {
             continue;
         }
-       
-        if(!tFileList.includes(filepath)){
-            console.error("- ❌ could not find t() in", path.relative(path.join(sourceDir,".."), filepath));
+
+        if (!tFileList.includes(filepath)) {
+            console.error("- ❌ could not find t() in", path.relative(path.join(sourceDir, ".."), filepath));
         }
     }
 });
@@ -267,17 +269,20 @@ test('that no key is unused in the translations', () => {
     );
 
     // Pre-compile regexes once - handle any variable name in ${}
-    const templateRegexes = usedKeys.map(templateKey => 
-    new RegExp('^' + templateKey
-    .replace(/\./g, '\\.')
-    .replace(/\$\{[^}]+\}/g, '[^.]+') + '$')
+    const templateRegexes = usedKeys.map(templateKey =>
+        new RegExp('^' + templateKey
+            .replace(/\./g, '\\.')
+            .replace(/\$\{[^}]+\}/g, '[^.]+') + '$')
     );
 
     function is_special(definedKey: string): boolean {
-        if(definedKey.endsWith("_plural") && usedKeys.includes(definedKey.substring(0, definedKey.length - "_plural".length)))
+        if (definedKey.endsWith("_plural") && usedKeys.includes(definedKey.substring(0, definedKey.length - "_plural".length))) {
             return true;
-        if(templateRegexes.some(regex => regex.test(definedKey))) return true;
-        
+        }
+        if (templateRegexes.some(regex => regex.test(definedKey))) {
+            return true;
+        }
+
         return false; // default does not match
     }
 

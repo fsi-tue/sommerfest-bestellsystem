@@ -4,6 +4,7 @@ import useOrderStore, { useCurrentOrder } from "@/app/zustand/order";
 import Button from "@/app/components/Button";
 import { useTranslations } from 'next-intl';
 import { OrderDocument } from "@/model/order";
+import { useShallow } from "zustand/react/shallow";
 
 interface OrderButtonProps {
     setError: (error: string) => void;
@@ -17,10 +18,16 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
         const t = useTranslations();
 
         const order = useCurrentOrder();
-        const orderStore = useOrderStore();
+        const { addOrder, createNewOrder, totalItemsCount } = useOrderStore(
+            useShallow((state) => ({
+                addOrder: state.addOrder,
+                createNewOrder: state.createNewOrder,
+                totalItemsCount: state.getTotalItemCount(),
+            }))
+        )
         useEffect(() => {
             setIsButtonDisabled(true)
-            if (orderStore.getTotalItemCount() === 0) {
+            if (totalItemsCount === 0) {
                 // Select items
                 setText(t('cart.messages.empty_cart'))
             } else if (order.name === '') {
@@ -34,7 +41,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
                 setText(t('order.order_button.order_now'))
                 setIsButtonDisabled(false)
             }
-        }, [order])
+        }, [order, totalItemsCount])
 
         // Function to order the pizzas
         const orderPizza = () => {
@@ -45,7 +52,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
 
             fetch('/api/order', {
                 method: 'POST',
-                credentials: 'include',                body: JSON.stringify(order),
+                credentials: 'include', body: JSON.stringify(order),
             })
                 .then(async response => {
                     const data = await response.json();
@@ -61,11 +68,11 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
                         }
 
                         // Add order to store and reset current order
-                        orderStore.addOrder(createdOrder);
-                        orderStore.createNewOrder()
+                        addOrder(createdOrder);
+                        createNewOrder()
 
                         // Redirect to thank you page
-                        router.push(`/order/${createdOrder._id.toString()}/thank-you`);
+                        router.push(`/order/${createdOrder._id.toString()}/thank-you`, { scroll: true })
                     }
                 )
                 .catch(error => {

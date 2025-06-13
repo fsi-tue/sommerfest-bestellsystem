@@ -1,169 +1,177 @@
 translation:
   lang_emoji: 🥺
-  app_title: 💖🍕✨🎀🎉 Get youw smowwest wittle byte of nyummy wummy pizza~!! 👉👈🥺 🍰🍕 So dewicious and adowabwe nyaaa~!! 💖🌸🍭✨🦄
-  loading_menu: ✨🔄💫 Woading Menu... pwease wait cutie~!! 🥺💖🌸
+  app_title: Pizza-Byte UwU
+  loading_menu: Woading menu... pwease wait! >w<
 
   errors:
-    failed_to_load_menu: "😿💔🌧️ UwU!! Uh oh oh oh! Faiwed to woad da pwecious menu~!! 🥺😭 : {message} 🥺🍕✨💫 Pwease pwease twy again watew, my sweet angel~!! 🌸🌈💖🦄✨🎀"
+    failed_to_load_menu: 'Menu woading ewwow: {message} OwO'
 
   header:
     adminlinks:
-      prepare: 🛠️💞✨🌟 Pwepawe Itewmz~!! *bounces supew excitedwy with spwarkly eyes* 🍕🌸🎊💖🦄🎀
-      manage_db: 🗄️✨💫🌈 Manage da supew special Database~ owo uwu~!! 🎀💻💖🌸✨
-      manage_orders: 📦🎉💖✨ Manage OwOwdews~!! *owganizes so so cutewy* 🐾💖🌟🦄🎀💫
-      manage_items: 🍕🧺💕✨ Manage Itewmz~ supew duper cute~!! ✨🌈🎊💖🦄🎀
-      logout: 🚪👋💫✨ Wog out~ byebye fow nyow, my pwecious~!! *gives biggest huggwes evew* 😿🎀💖🌸💕
-
+      prepare: Pwepawation uwu
+      manage_db: Database >w<
+      manage_orders: Owdews
+      manage_items: Items nya~
+      logout: Wogout TwT
     menu:
-      login: 🔐✨💫🌟 Wogin~ pwease pwease! My sweet cutie pie~!! 🐾🌷🎶💖🦄✨
-      home: 🏠💞🐾🌸✨ H-hwome sweet sweet hwome~!! *nuzzwes so softwy* 💐🍃✨🎀💖🌈
-      orders: 📦🎀🍰🎉💖 Youw vewy vewy own owo owdews~!! *giggwes and wiggwes* 🎀🌟🐰💕✨
+      login: Wogin
+      home: Home uwu
+      orders: Owdews
 
   footer:
-    fuel: 🍕✨Piwuicsa✨🍕-mumwchin'🥺💖 cwode wif wots of wuv 🧑‍💻👩🏾‍💻👨🏼‍💻✨💕 fwom da most pwecious devs~!! 🎀💖🌸
+    fuel: Code & Pizza by uwu
 
-  order_view:
+  order:
+    # When owdewing something uwu
     introduction:
-      choose_your_item: 🍕🥺💖🌟✨ Pwease pwease choose youw most favowite adowabwe itewm~!! 🎀🐾🍃💕🦄🌈
-      pick_up_time: 🕒🐱✨💫🌟 Sewect a supew snuggwy cozy pick-up time~ nyan nyan~!! 🌙🎶💫🎀💖
-      pay_in_cash: 💸💰🐾✨🌸 Pay in supew shiny pwetty cash at da most cute countew~!! 🍭🌸🎉💖🦄
-      closer: 🌙💤✨💖🌟 Enjoy youw supew duper cozy wondewful evewning~!! *sends infinite wuvs* 🎀🐰💫💕🌈
-    order:
-      name: 🥺🌸🎶💖✨ Youw pwettiest nyame pwease pwease~!! 🍃💖🎉🦄🌈
-      name_placeholder: ✍️💌🐰🌷✨ Type youw adowabwe nyame wight hewe~ *bwushes so hawd* 🍭🎀🌟💫
-
-    timeslot:
-      title: ⏰✨🎆💫🐾 Timewot fow pick-up~!! *spwarkwe spwarkwe* 🎉🌷💖
-      subtitle: 🕰️💞🐾🌸✨ Pwease sewect youw most most favowite pick-up time~ nya nya~!! 🎀🎶✨💕🦄
+      choose_your_item: Choose pwoduct pwease! >w<
+      pick_up_time: Pickup time nya~
+      pay_in_cash: Cash payment uwu
+      closer: Have a gweat evening! UwU
     item:
       button:
-        add: 👉👈💖🍕🥰✨🎉 Gimme pwease gimme~!! 💖🍕🌸🦄
+        add: Add pwease! owo
+    order_summary:
+      add: Add pizzas nya~
+      open_order_summary: Go to cawt >w<
+    order_button:
+      order_now: Owdew now! UwU
+
+  order_status:
+    order: Owdew
+    total: Totaw
+
+    suspense:
+      loading: Woading... pwease wait! >w<
+    show_at_pickup: Show this page at pickup uwu
+    thank_you:
+      qr:
+        title: Thanks fow youw owdew! 🍕 UwU
+        your_order_number: 'Owdew No.:'
+        instructions: Pwease pay at the countew! >w<
+        order_again: New owdew nya~
+        view_orders: My owdews uwu
+    status:
+      ready_by: Weady by
+      ordered: Owdewed
+      inPreparation: In pwepawation >w<
+      ready: Weady fow pickup! UwU
+      delivered: Picked up nya~
+      cancelled: Cancewwed TwT
+      default: Status unknown :( sowwy!
+      paid: Paid yay!
+      unpaid: Unpaid >w<
+    cancel_order: Cancew owdew
 
   cart:
-    title: 🛒🍰💖🍭🎉✨ Fuww of wuv and yum yum~!! 🍬🐾✨💕🌟
+    title: Cawt uwu
     messages:
-      empty_cart: 🥺💔😿🚫 Uwu oh oh! Youw 🛒 is aww empties~ ;w; pwease add sumfing cute~!! 🎀🌸💫✨
-      add_note: 📝💌🐾🎶✨ Add a wittle wittle nyote~ owo uwu~!! ✨🎉💖🌸
-      add_more_products: 🛍️💖🐰🌸✨ Add mowe supew cute pwoducts~!! *wiggwes excitedwy* 🎶🎀🎉💕
-    items: 🎁💞🍬🌟✨ Cute wittle itewms inside~!! 🎀🐾🍭💖
-    total_price: 💰💸✨🐰💕 Totaw pwayce~ owo *counts shiny coins* 🎉💖🍕🌟
-    currency: "✨💶🍀🌷🎉💫"
-    timeslot: 🍕⏳💖🌸✨ Timeswot fow youw yummy wummy pizza~!! *supew spwarkwy eyes* 🎀🐾✨💕
-    timeslot_not_selected: 🚫⏰😭🐾💔 Oh noes noes!! No timeswot sewected~!! 🎉🌸💫✨
-    open_order_summary: 📜✨🐰🎶💖 Pwease open youw adowabwe owdew summawy~ uwu~!! 🎀💖🌟✨
+      empty_cart: Cawt empty owo
+      add_note: Add note pwease!
+      add_more_products: Add mowe items >w<
+      name_not_set: Name missing nya~
+      timeslot_not_selected: Time swot missing uwu
+    timeslot:
+      title: Time swot
+      subtitle: Choose pickup time pwease! >w<
+    order:
+      name: Name
+      name_placeholder: Youw name uwu
+    items: Items nya~
+    total_price: Totaw
+    currency: €
+    select_timeslot: Sewect youw desiwed pickup time pwease! UwU
+    open_order_summary: Go to ovewview >w<
 
   order_overview:
     history:
-      title: 📚💖🐱🎉✨ Owdew histowy, so wuvwy and safe~!! *puwws contentwy* ✨🌸🐾💕
-      subtitle: 🐾🕵️‍♀️💞🌷✨ Twack and manage aww youw supew cute wecent owdews~ nya nya~!! uwu 🎀🎶✨💖
+      title: Histowy
+      subtitle: Youw wecent owdews uwu
     recent:
-      title: 🎀📦✨🐰💕 Wecent owo owdews, just fow you cutie~!! 🎉💖🌸✨
-      orders_found: "✨🎉🥳💫 UwU {count} 💕✨🎉🌈💫 owdew found~!! *spwarkwes evewywhewe* 💫🐾🍃💖"
-      orders_found_plural: "🎉✨💖🦄 UwU {count} 💕✨🎉🌈💫 owdews found~!! *giggwes happily* owo 🎀🐰🌸💕"
-      no_orders_yet: 😿💔🐾🎶💫 Nya nya~ no owdews yet!! Pwease make a supew cute one~ ;w; 🎉🌷✨💖
+      title: Cuwwent
+      orders_found: '{count, plural, =0 {No owdews owo} =1 {One owdew uwu} other {# owdews nya~}} '
+      no_orders_yet: No owdews yet >w<
       messages:
-        first_order: 🤗🐰💖🎶✨ When you pwace youw vewy fiwst owo owdew, it wiww appeaw wight hewe fow easy twacking~!! *gives biggest huggwes* uwu 🌸🎀✨💕
-
+        first_order: You'ww see youw owdews hewe! UwU
     timeline:
-      title: ⏰✨🎆💫🐾 OwO OwO OwO owdew timewine~!! *spwarkwe spwarkwe evewywhewe* 🎉🌷💖✨
-      subtitle: 🐾📅💖✨🌸 Weaw-time supew cute view of owdew activity and scheduwing~ nyaaa nyaaa~!! uwu 🎶🎀💫💕
+      title: Timewine
+      subtitle: Wive owdews nya~
 
   admin:
     manage:
-      title: 📚✨💻💖 Manage Databwase~!! *cute typing sounds* 🐾💻💞✨
-      enable_system: 💡🔧✨🌟 Enabwe System~ nya nya~!! ✨🎀💖
-      prepare_database: 🛠️🍕💫✨ Pwepawe da supew nyummy databwase~!! 🍭🎉💖
-      delete_database: 🗑️💔😿💦 Dewete databwase... o-oh nuuu nuuu~!! 😿💦✨
-      system_state: 🌐✨💫💖 System {state} ~ *checking status nyan nyan~* 📊💞✨
+      database:
+        title: Database >w<
+        enable_system: Enabwe system uwu
+        prepare_database: Initiawize DB nya~
+        delete_database: Dewete DB TwT
+        system_state: 'System: {state}'
 
       order:
         errors:
-          order_not_found: 😢🔍💔✨ OwO~ Owdew nyot found anywhewe!! *sniff sniff sadly* 💔🍃💫
-          barcode_fail: 😿📉💫✨ Couwd nyot extwact owdew ID fwom da bawcode~!! ✨🚫🔍💔
-        order_history: 🕰️📦💞🌸 Owdew Histowy~!! *so many pwecious memowies* 💞🌸✨💖
-        scan_qr_code_text: 📱🔎✨💖 Scan da supew duper cute QwAw Code to find youw owdew~ uwu uwu~!! 🎀✨💕
-        show_finished: ✅🎉💫🍰 Show aww da Finished ones~!! *spwarkwes happily* 💫🍰✨
-        hide_finished: ❌💤✨💫 Hide da compweted ones~ sleepy time zzz~ ✨💖
-        status: '📋✨💖 Owdew Status~:'
-        price: '💸✨💰 Pwice~:'
-        items: '📦✨🎁 Itewms~:'
-        order_date: '📅✨💫 Owdew Date~:'
-        timeslot: '⏰✨🌟 Timeswot~:'
-        comment: '💌✨💖 Comment~:'
-        paid: 💰🤑✨🎉 Paid~ yay yay~!! 🎉🎀💖
-        not_paid: 💸😭👉👈 Nyot Paid~ oopsie woopsie~!! 👉👈😿💫
+          order_not_found: Owdew not found owo
+          barcode_fail: 'Bawcode ewwow: ID not weadabwe >w<'
+        order_history: Histowy
+        scan_qr_code_text: QW scan fow owdew uwu
+        show_finished: Show compweted nya~
+        hide_finished: Hide compweted
+        status: 'Status:'
+        price: 'Pwice:'
+        items: 'Items:'
+        order_date: 'Date:'
+        timeslot: 'Time swot:'
+        comment: 'Note:'
+        paid: Paid uwu
+        not_paid: Outstanding >w<
 
       pizza:
         errors:
-          error_fetching: 🍕💥😿💫 Uh-oh oh oh!! Ewwow fetching aww da pizzy wizzas~!! 😿💫✨
-        title: 🍕✨💖🎀 Manage Itewms~ nya nya~!! 🎀✨💕
-        subtitle: ➕➖🛑✨💫 Add, wemove, ow disabwe supew nyummy itewms~!! 🍭🌟💖
-        new_pizza_name: ✨🆕💖🍕 Nyew Pizzy Nyame~!! 🍕💖✨
+          error_fetching: 'Ewwow: Items not woaded owo'
+        title: Items nya~
+        subtitle: Cweate & edit items pwease! >w<
+        new_pizza_name: New item uwu
         edit_item:
-          enabled: ✅🌈🌸 Enabwed~ uwu uwu!! 🌈🌸✨💖
-          disabled: ❌💔😿✨ Disabwed... so sowwy nya nya~!! 😿💔💫
-          disable: ❌💔😿✨ Disabwe 😿💔💫
-          enable: ✅🌈🌸 Enabwe~ uwu uwu!! 🌈🌸✨💖
-          items_available: '{items} supew duper cute itewms avaiwabwe~!! 🍕🎀✨💖'
-          update: Upwate~! ✨🐾
-          create: Cweate~ nya! 🌸🎉
-          name: Nyame~ 💖✨
-          type: Type~ uwu 🐰
-          dietary: Dietwawy~ 🍓🌈
-          price: Pwice~ 💰💫
-          max_items_available: Max itewms avaiwabwe~!! 🥳🍬
-
+          enabled: Active
+          disabled: Inactive
+          disable: Disabwe
+          enable: Enabwe
+          items_available: '{items} avaiwabwe uwu'
+          update: Save pwease! >w<
+          create: Cweate nya~
+          name: Name
+          type: Type
+          dietary: Detaiws
+          price: Pwice
+          max_items_available: Max. avaiwabwe
 
     prepare:
-      title: ✨📦💖🎉 Owdews to pwepawe~!!
-      current_time: '🕒🌸💖✨ Cuwent time is~: {currentTime} nya nya~!! 💖'
-      open_orders: '📬✨💫 Open owdews wequiwing attention: '
-      no_open_orders: 🎉😸💫💖 No open owdews wight nyow~ aww compwetely done, nyaaa~!! 💫💖✨
-      item: 🧺✨💖 Itewm
-      timeslot: ⏰✨🌟 Timeswot
-      name: 📝✨💕 Nyame
-      status: 🪪✨💫 Status
-      is_done: ✅✨🎉💕 Done~!! Yatta yatta~!! 🎉💕✨
+      title: Active Owdews uwu
+      current_time: 'Time: {currentTime}'
+      open_orders: 'Open: '
+      no_open_orders: No open owdews 🎉 yay!
+      item: Item
+      timeslot: Time swot
+      name: Name
+      status: Status
+      is_done: ✅ Done! UwU
 
   withsystemcheck:
-    check_system_status: 🔍🌐✨💖 Checking system status wight nyow~ nyaaa~!! ✨💖💫
-    system_inactive: 💤⚠️😿💫 System compwetewy inactive~ oh nuuu~!! 😿💫✨
-    system_unavailable_message: 🛠️💔✨💖 Ouw pwecious system is getting a supew snuggwy fix!! We so so sowwy fow da inconvenience~ pwease twy again watew~!! 👉👈🍃💖✨
+    check_system_status: Checking system... pwease wait! >w<
+    system_inactive: System inactive owo
+    system_unavailable_message: System maintenance. Pwease twy again watew! TwT
 
   components:
     menusection:
-      loading: 📋✨💖🐾 Woading nyummy wummy menu~!! *supew excited bounces* 🐾💖✨
+      loading: Woading menu... >w<
     timeline:
-      loading: ⏳🌸✨🎀 Woading cute wittle timewine... pwease wait~!! 🎀✨💖
-      warning: '⚠️😿💫✨ Wawning wawning: {error}. Showing fwuffy backup data~!! 💾🐾✨'
+      loading: Woading timewine... uwu
+      warning: 'Wawning: {error}. Showing fawwback data nya~'
     errormessage:
-      please_try_again: 🔁💖✨🥺 Pwease twy again~!! *most hopefuw puppy eyes* ✨🥺💖
+      please_try_again: Twy again pwease! owo
     searchinput:
-      placeholder: 🔍✨💌💖 Seaawch~ pwease entew somefing adowabwe~ owo uwu~!! 💌✨
+      placeholder: Seawch... uwu
 
   login:
-    title: 🔐🐾✨🎀 Hewfi Wogin~ nya nya~!! ✨🎀💖
-    fsik_token: 🧩💾💞✨ FSI/K Token~ pwease entew carefuwwy~!! 💞✨
-    authenticating: ⏳🐰💖🕒 Authentwating... just one tiny moment pwease~!! 🕒💖✨
-    login: ✨🔐🎉🐾 Wogin~!! Wet's gooo gooo~!! 🐾🎉✨
-
-  order:
-    suspense:
-      loading: ⏳🍕✨🎀 Woading youw supew dewicious owdew... *dwammatic dwumwoww* 🎀✨💖
-    thank_you:
-      qr:
-        title: 💖✨🎉🥺 Thank you so so much fow youw supew adowabwe owdew~!! 🍕🎉🥺💖
-        your_order_number: '🆔✨💫 Youw special owdew nyumbew is~:'
-        instructions: 🧾💸✨🌸 Pwease go pay at da supew shiny counta~!! ✨🌸💖
-        order_again: 🔁🍕💖✨ Owdew Again~!! Nyaa nyaa~!!
-        view_orders: 📜💞✨💖 View aww youw pwevious adowabwe owdews~ uwu uwu~!!
-    status:
-      ordered: 📨✨💖🎉 We've happily weceived youw owdew~ nya nya~!! 💖🎉✨
-      inPreparation: 🧑‍🍳🍕✨🌸 Youw owdew is being wovingly pwepawed~!! So nyummy wummy~!! ✨🌸💖
-      ready: 📦💖🎀🎉 Youw owdew is compwetewy weady fow pick-up~!! Yay yay~!! 🎀🎉✨
-      delivered: 🛵💨💕🍕 Youw owdew has awweady been dewivewed~!! Enjoy so much~!! 🍕💕✨
-      cancelled: ❌💔😿🌧️ Youw owdew got cancewwed... we so so sowwy~!! 😿🌧️💔
-      default: ❓😿💫👉👈 Owdew status nyot avaiwabwe wight nyow... oh nyo nyo~!! 👉👈💫✨
-
-    order_button:
-      order_now: 🍕💞🚀🐰 OwO Owdew wight nyow~!! Don't be shy shy~!! *bwushes supew hawd* 🎉🌸✨💖
+    title: Hewpew Wogin UwU
+    fsik_token: FSI/K Token >w<
+    authenticating: Authenticating... pwease wait! nya~
+    login: Wogin uwu

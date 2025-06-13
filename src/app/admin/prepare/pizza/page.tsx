@@ -46,7 +46,7 @@ const PizzaMakerStation = () => {
 
     // Fetch orders and calculate upcoming pizzas
     const fetchOrders = async () => {
-        const response = await fetch('/api/order', { credentials: 'include',});
+        const response = await fetch('/api/order', { credentials: 'include', });
         const data = await response.json();
 
         if (!response.ok) {
@@ -116,7 +116,7 @@ const PizzaMakerStation = () => {
             return;
         }
 
-        // Add to recently made list for visual feedback
+        // Add to a recently made list for visual feedback
         setRecentlyMade([...recentlyMade, pizzaType.name]);
         setTimeout(() => {
             setRecentlyMade(prev => prev.filter(name => name !== pizzaType.name));
@@ -134,38 +134,36 @@ const PizzaMakerStation = () => {
 
     return (
         <div>
-            {/* TODO: add missing translations*/}
-            <Heading title={t('admin.prepare.title')} description={"Tap when pizza is ready for oven"}
+            <Heading title={t('admin.prepare.title')} description={t('admin.prepare.subtitle')}
                      icon={<Clock className="w-10 h-10 text-gray-900"/>}/>
 
 
             <div className="flex flex-col md:flex-row gap-5">
                 <div className="bg-white p-4 md:p-8 rounded-2xl w-full md:w-1/3">
-                    <div className="flex flex-wrap gap-2">
-                        <div className="flex flex-col gap-2">
-                            {orders.map(order => (
-                                <>
-                                    {order.items
-                                        .filter(item => item.status === ITEM_STATUSES.PREPPING)
-                                        .map((item, index) => (
-                                                <span key={`${order._id.toString()}-${item.item.name}-${index}`}
-                                                      className={`border px-3 py-1 rounded-lg text-sm ${item.status !== ITEM_STATUSES.PREPPING ? 'bg-green-50 border-green-100 text-gray-400' : ''}`}>
+                    <div className="flex flex-col gap-2 max-h-[15rem] md:max-h-fit overflow-y-scroll ">
+                        {orders.map(order => (
+                            <>
+                                {order.items
+                                    .filter(item => item.status === ITEM_STATUSES.PREPPING)
+                                    .map((item, index) => (
+                                        <div
+                                            key={`${order._id.toString()}-${item.item._id.toString()}-${item.status}-${index}`}
+                                            className={`border px-3 py-1 rounded-lg text-sm flex items-center justify-between ${item.status !== ITEM_STATUSES.PREPPING ? 'bg-green-50 border-green-100 text-gray-400' : ''}`}>
                                             {item.item.name} <span
-                                                    className="bg-gray-100 py-0.5 px-1  rounded-2xl">{order.timeslot}</span>
-                                      </span>)
-                                        )}
-                                </>
-                            ))}
-                        </div>
-                        {upcomingPizzas.size === 0 && (
-                            <span className="text-gray-400">{t('admin.prepare.no_open_orders')} 🎉</span>
-                        )}
+                                            className="bg-gray-100 py-0.5 px-1  rounded-2xl">{order.timeslot}</span>
+                                        </div>)
+                                    )}
+                            </>
+                        ))}
                     </div>
+                    {upcomingPizzas.size === 0 && (
+                        <span className="text-gray-400">{t('admin.prepare.no_open_orders')} 🎉</span>
+                    )}
                 </div>
 
                 {/* Pizza buttons grid */}
                 <div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                         {items.map(pizza => {
                             const pendingCount = upcomingPizzas.get(pizza.name) ?? 0;
                             const isRecent = recentlyMade.includes(pizza.name);
@@ -174,7 +172,7 @@ const PizzaMakerStation = () => {
                                 <button
                                     key={pizza.id}
                                     className={`
-                aspect-4/3 ${pizza.color} bg-opacity-90 rounded-3xl p-6 md:p-4 
+                aspect-4/3 ${pizza.color} bg-opacity-90 rounded-3xl p-3 md:p-4 
                 shadow-2xl transform transition-all duration-200
                 ${pendingCount > 0 ? 'hover:scale-105 active:scale-95 cursor-pointer' : 'opacity-50 cursor-not-allowed'}
                 ${isRecent ? 'ring-4 ring-green-400 ring-opacity-75' : ''}
@@ -190,9 +188,9 @@ const PizzaMakerStation = () => {
                                                 className="text-sm text-black opacity-75 mt-1">{pizza.dietary}</span>
                                         )}
                                         {pendingCount > 0 && (
-                                            <div className="mt-4 bg-white bg-opacity-25 rounded-full px-4 py-2">
+                                            <div className="mt-4 bg-white bg-opacity-25 rounded-2xl px-4 py-2">
                                                 <span
-                                                    className="text-xl font-bold text-black">{pendingCount} needed</span>
+                                                    className="text-lg font-medium text-black">{pendingCount} needed</span>
                                             </div>
                                         )}
                                         {isRecent && (

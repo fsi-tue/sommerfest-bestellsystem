@@ -22,7 +22,8 @@ export default function ManagePage() {
 
         fetch('/api/manage/db/delete', {
             method: 'POST',
-            credentials: 'include',        })
+            credentials: 'include',
+        })
             .then(() => setMessage('Database deleted'))
             .catch((error) => setMessage(error))
     }
@@ -34,7 +35,8 @@ export default function ManagePage() {
 
         fetch('/api/manage/db/prepare', {
             method: 'POST',
-            credentials: 'include',        })
+            credentials: 'include',
+        })
             .then(() => setMessage('Database prepared'))
             .catch((error) => {
                 console.error('Error preparing database', error);
@@ -44,7 +46,8 @@ export default function ManagePage() {
 
     const getSystemStatus = () => {
         fetch('/api/manage/system/status', {
-            credentials: 'include',        })
+            credentials: 'include',
+        })
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
@@ -67,7 +70,8 @@ export default function ManagePage() {
     const updateSystemStatus = (status: SystemStatus) => {
         fetch(`/api/manage/system/status/${status}`, {
             method: 'POST',
-            credentials: 'include',        })
+            credentials: 'include',
+        })
             .then(() => {
                 setMessage(`System ${status}`)
                 setStatus(status)
@@ -77,7 +81,6 @@ export default function ManagePage() {
                 setMessage(error)
             })
     }
-
     return (
         <div>
             <Heading title={t('admin.manage.database.title')} description={message}

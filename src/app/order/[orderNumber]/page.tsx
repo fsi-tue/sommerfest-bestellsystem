@@ -1,8 +1,7 @@
 import { Suspense } from 'react';
 import ClientOrderPage from './clientOrderPage';
-import LoadingFallback from '@/app/components/LoadingFallback';
+import { Loading } from '@/app/components/Loading';
 
-// Remove "use client" - this should be a server component
 export default async function Page({
                                        params,
                                    }: {
@@ -12,7 +11,7 @@ export default async function Page({
     const { orderNumber } = await params;
 
     return (
-        <Suspense fallback={<LoadingFallback/>}>
+        <Suspense fallback={<Loading/>}>
             <ClientOrderPage orderNumber={orderNumber}/>
         </Suspense>
     );

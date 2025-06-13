@@ -2,6 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
 import { ORDER_STATUSES, OrderModel } from "@/model/order";
 import { NextRequest } from "next/server";
+import { ObjectId } from "bson";
 
 /**
  * Allow user to cancel an order.
@@ -16,7 +17,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params
 
     // Check if the ID is valid and ObjectId
-    if (!id || !mongoose.isValidObjectId(id)) {
+    if (!id || !ObjectId.isValid(id)) {
         return new Response(`
             The ID is not valid.
             Please provide a valid ID.

@@ -2,8 +2,15 @@ import { ApiOrder, OrderDocument } from '@/model/order'
 import { ItemDocument } from '@/model/item'
 import { getDateFromTimeSlot } from '@/lib/time'
 import { create } from 'zustand'
-import { ORDER_CONFIG } from '@/config'
-import { createJSONStorage, persist } from "zustand/middleware";
+import { ORDER_AMOUNT_THRESHOLDS, ORDER_CONFIG, TIME_SLOT_CONFIG } from '@/config'
+import { createJSONStorage, persist } from 'zustand/middleware'
+
+const initialOrder: ApiOrder = {
+    name: '',
+    items: {},
+    comment: '',
+    timeslot: null,
+}
 
 interface OrderState {
     orders: OrderDocument[]
@@ -11,7 +18,7 @@ interface OrderState {
     error: string | null
 
     // Error management
-    setError: (error: string) => void
+    setError: (msg: string) => void
     clearError: () => void
 
     // Order management
@@ -21,222 +28,153 @@ interface OrderState {
     setCurrentOrder: (order: ApiOrder) => void
 
     // Current order updates
-    updateOrder: (updatedOrder: Partial<ApiOrder>) => void
+    updateOrder: (partial: Partial<ApiOrder>) => void
     setName: (name: string) => void
-    setTimeslot: (timeslot: string) => void
+    setTimeslot: (slot: string) => void
 
-    // Item item management (your specific structure)
+    // Item management
     addToOrder: (item: ItemDocument) => void
     removeFromOrder: (item: ItemDocument) => void
 
-    // Utility functions
+    // Utilities
     clearAllOrders: () => void
     getBlockedTimeslotDateUntil: () => Date
-    getOrderById: (orderId: string) => OrderDocument | undefined
+    getOrderById: (id: string) => OrderDocument | undefined
     getCurrentOrderTotal: () => number
     getItemCount: (itemId: string) => number
     getTotalItemCount: () => number
 }
 
-const useOrderStore = create<OrderState>()(persist(
-    (set, get) => ({
-        orders: [],
-        currentOrder: {
-            name: '',
-            items: {},
-            comment: '',
-            timeslot: null
-        },
-        error: null,
-
-        // Error management
-        setError: (error) => set({ error }),
-
-        clearError: () => set({ error: null }),
-
-        // Create a new empty order
-        createNewOrder: () => set({
-            currentOrder: {
-                name: '',
-                items: {},
-                comment: '',
-                timeslot: null
-            },
-            error: null
-        }),
-
-        // Add a completed order to the orders list
-        addOrder: (order) => set((state) => ({
-            orders: [...state.orders, order]
-        })),
-
-        // Remove an order by ID
-        removeOrder: (orderId) => set((state) => ({
-            orders: state.orders.filter(order => order._id.toString() !== orderId)
-        })),
-
-        // Set the current order
-        setCurrentOrder: (order) => set({ currentOrder: order }),
-
-        // Update current order with partial data
-        updateOrder: (updatedOrder) => set((state) => ({
-            currentOrder: { ...state.currentOrder, ...updatedOrder }
-        })),
-
-        // Set the name of the current order
-        setName: (name) => {
-            const { updateOrder } = get()
-            updateOrder({ name })
-        },
-
-        // Set timeslot with validation
-        setTimeslot: (timeslot: string) => {
-            const { clearError, setError, updateOrder, } = get()
-            clearError()
-
-            const BUFFER = ORDER_CONFIG.TIMESLOT_DURATION // Time buffer in minutes
-            const currentTimeWithBuffer = new Date()
-            currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER)
-
-            try {
-                const timeslotTime = getDateFromTimeSlot(timeslot)
-
-                if (timeslotTime < currentTimeWithBuffer) {
-                    setError('Selected timeslot is too soon or in the past.')
-                    // Auto-clear error after 5s
-                    setTimeout(() => clearError(), 5000)
-                    return // Prevent setting the invalid timeslot
-                }
-
-                updateOrder({ timeslot }) // Update if valid
-
-            } catch (e) {
-                console.error("Error parsing timeslot:", e)
-                setError("Invalid timeslot selected.")
-                setTimeout(() => clearError(), 5000)
-            }
-        },
-
-        // Add item item to current order
-        addToOrder: (item) => {
-            const { setError, clearError, getTotalItemCount } = get()
-            clearError() // Clear any previous errors when adding items
-
-            set((state) => {
-                const itemId = item._id.toString()
-                const currentItems = state.currentOrder.items[itemId] ?? []
-                const updatedItems = [...currentItems, item]
-
-                if (getTotalItemCount() >= ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT) {
-                    setError('Max. amount of items reached')
-                    return state
-                }
-
-                return {
-                    ...state,
-                    currentOrder: {
-                        ...state.currentOrder,
-                        items: {
-                            ...state.currentOrder.items,
-                            [itemId]: updatedItems,
-                        },
-                    },
-                }
-            })
-        },
-
-        // Remove item item from current order
-        removeFromOrder: (item) => {
-            const { clearError } = get()
-            clearError()
-
-            set((state) => {
-                const itemId = item._id.toString()
-                const currentItems = state.currentOrder.items[itemId] ?? []
-
-                if (currentItems.length === 0) {
-                    return state // Should not happen with this structure, but safe check
-                }
-
-                const updatedItems = currentItems.slice(0, -1) // Remove the last item instance
-                const newItemsState = { ...state.currentOrder.items }
-
-                if (updatedItems.length === 0) {
-                    delete newItemsState[itemId] // Remove the key if no items of this type remain
-                } else {
-                    newItemsState[itemId] = updatedItems
-                }
-
-                return {
-                    ...state,
-                    currentOrder: {
-                        ...state.currentOrder,
-                        items: newItemsState,
-                    },
-                }
-            })
-        },
-
-        // Clear all orders
-        clearAllOrders: () => set({
+const useOrderStore = create<OrderState>()(
+    persist(
+        (set, get) => ({
             orders: [],
-            currentOrder: {
-                name: '',
-                items: {},
-                comment: '',
-                timeslot: null
+            currentOrder: initialOrder,
+            error: null,
+
+            /* ---------- error helpers ---------- */
+            setError: (msg) => set((s) => ({ ...s, error: msg })),
+            clearError: () => set((s) => ({ ...s, error: null })),
+
+            /* ---------- order helpers ---------- */
+            createNewOrder: () =>
+                set((s) => ({ ...s, currentOrder: initialOrder, error: null })),
+
+            addOrder: (order) =>
+                set((s) => ({ ...s, orders: [...s.orders, order] })),
+
+            removeOrder: (id) =>
+                set((s) => ({
+                    ...s,
+                    orders: s.orders.filter((o) => o._id.toString() !== id),
+                })),
+
+            setCurrentOrder: (order) => set((s) => ({ ...s, currentOrder: order })),
+
+            updateOrder: (partial) =>
+                set((s) => ({ ...s, currentOrder: { ...s.currentOrder, ...partial } })),
+
+            setName: (name) => get().updateOrder({ name }),
+
+            /* ---------- timeslot with validation ---------- */
+            setTimeslot: (slot) =>
+                set((s) => {
+                    const BUFFER = TIME_SLOT_CONFIG.SIZE_MINUTES
+                    const cutoff = new Date()
+                    cutoff.setMinutes(cutoff.getMinutes() + BUFFER)
+
+                    try {
+                        const tsDate = getDateFromTimeSlot(slot)
+                        if (tsDate < cutoff) {
+                            return { ...s, error: 'Selected timeslot is too soon or in the past.' }
+                        }
+                        return {
+                            ...s,
+                            error: null,
+                            currentOrder: { ...s.currentOrder, timeslot: slot },
+                        }
+                    } catch {
+                        return { ...s, error: 'Invalid timeslot selected.' }
+                    }
+                }),
+
+            /* ---------- add / remove items ---------- */
+            addToOrder: (item) =>
+                set((s) => {
+                    const total = Object.values(s.currentOrder.items).reduce(
+                        (t, arr) => t + arr.length,
+                        0
+                    )
+                    if (total >= ORDER_AMOUNT_THRESHOLDS.MAX) {
+                        setTimeout(() => s.clearError(), 1000)
+                        return { ...s, error: 'Max. amount of items reached' }
+                    }
+
+                    const id = item._id.toString()
+                    const updated = [...(s.currentOrder.items[id] ?? []), item]
+
+                    return {
+                        ...s,
+                        error: null,
+                        currentOrder: {
+                            ...s.currentOrder,
+                            items: { ...s.currentOrder.items, [id]: updated },
+                        },
+                    }
+                }),
+
+            removeFromOrder: (item) =>
+                set((s) => {
+                    const id = item._id.toString()
+                    const arr = s.currentOrder.items[id] ?? []
+                    if (!arr.length) {
+                        return s
+                    } // nothing to remove
+
+                    const updatedItems = arr.slice(0, -1)
+                    const newItems = { ...s.currentOrder.items }
+                    updatedItems.length ? (newItems[id] = updatedItems) : delete newItems[id]
+
+                    return {
+                        ...s,
+                        error: null,
+                        currentOrder: { ...s.currentOrder, items: newItems },
+                    }
+                }),
+
+            /* ---------- misc utilities ---------- */
+            clearAllOrders: () => set({ orders: [], currentOrder: initialOrder, error: null }),
+
+            getBlockedTimeslotDateUntil: () => {
+                const buf = ORDER_CONFIG.TIMESLOTS_BUFFER
+                const d = new Date()
+                d.setMinutes(d.getMinutes() + buf)
+                return d
             },
-            error: null
+
+            getOrderById: (id) => get().orders.find((o) => o._id.toString() === id),
+
+            getCurrentOrderTotal: () => {
+                const items = get().currentOrder.items
+                return Object.values(items).reduce(
+                    (tot, arr) => tot + arr.reduce((s, it) => s + (it.price || 0), 0),
+                    0
+                )
+            },
+
+            getItemCount: (id) => get().currentOrder.items[id]?.length || 0,
+
+            getTotalItemCount: () => {
+                const items = get().currentOrder.items
+                return Object.values(items).reduce((tot, arr) => tot + arr.length, 0)
+            },
         }),
-
-        // Returns the date until the timeslots are blocked
-        getBlockedTimeslotDateUntil: () => {
-            const BUFFER = ORDER_CONFIG.TIMESLOTS_BUFFER // Time buffer in minutes
-            const currentTimeWithBuffer = new Date()
-            currentTimeWithBuffer.setMinutes(currentTimeWithBuffer.getMinutes() + BUFFER)
-            return currentTimeWithBuffer
-        },
-
-        // Get order by ID
-        getOrderById: (orderId) => {
-            const state = get()
-            return state.orders.find(order => order._id.toString() === orderId)
-        },
-
-        // Calculate total for current order
-        getCurrentOrderTotal: () => {
-            const state = get()
-            const items = state.currentOrder.items
-
-            return Object.values(items).reduce((total, itemArray) => {
-                return total + itemArray.reduce((subtotal, item) => {
-                    return subtotal + (item.price || 0)
-                }, 0)
-            }, 0)
-        },
-
-        // Get count of specific item in current order
-        getItemCount: (itemId) => {
-            const state = get()
-            return state.currentOrder.items[itemId]?.length || 0
-        },
-
-        // Get total count of all items in current order
-        getTotalItemCount: () => {
-            const state = get()
-            const items = state.currentOrder.items
-
-            return Object.values(items).reduce((total, itemArray) => {
-                return total + itemArray.length
-            }, 0)
+        {
+            name: 'order-storage',
+            storage: createJSONStorage(() => localStorage),
         }
-    }), {
-        name: 'order-storage',
-        storage: createJSONStorage(() => localStorage),
-    }
-));
+    )
+)
 
-// Export custom hooks for easier usage
-export const useCurrentOrder = () => useOrderStore((state) => state.currentOrder)
-
+export const useCurrentOrder = () => useOrderStore((s) => s.currentOrder)
 export default useOrderStore

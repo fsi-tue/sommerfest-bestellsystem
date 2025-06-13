@@ -4,21 +4,20 @@ import { Construction } from "lucide-react";
 import { ComponentType, useCallback, useEffect, useMemo, useState } from "react";
 import { Loading } from "@/app/components/Loading";
 import { useTranslations } from 'next-intl';
-
-// Define the system status type
-type SystemStatus = 'checking' | 'active' | 'inactive';
+import { SystemStatus } from "@/model/system";
 
 let globalSystemStatus: SystemStatus | null = null;
 let lastFetchTime = 0;
 const CACHE_DURATION = 30000; // 30 seconds
 
+type ExtendedSystemStatus = SystemStatus | 'checking';
 const WithSystemCheck = <P extends object>(
     WrappedComponent: ComponentType<P>
 ): ComponentType<P> => {
 
     return function WithSystemCheckComponent(props: P) {
         const t = useTranslations();
-        const [systemStatus, setSystemStatus] = useState<SystemStatus>(() => {
+        const [systemStatus, setSystemStatus] = useState<ExtendedSystemStatus>(() => {
             const now = Date.now();
             if (globalSystemStatus && (now - lastFetchTime) < CACHE_DURATION) {
                 return globalSystemStatus;

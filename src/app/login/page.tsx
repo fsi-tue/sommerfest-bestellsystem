@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/app/components/Button";
 import { useTranslations } from 'next-intl';
 import useAuthStore from "@/app/zustand/auth";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 const Page = () => {
     const [token, setToken] = useState('');
@@ -37,11 +38,12 @@ const Page = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ token: tokenToUse }),
-            credentials: 'include',        });
+            credentials: 'include',
+        });
 
         if (response.ok) {
-            authStore.signIn()
-            router.push('/admin/prepare/pizza');
+            authStore.signIn();
+            router.push('/admin/prepare/pizza', { scroll: true })
         } else {
             const errorData = await response.json();
             authStore.signOut()
@@ -96,14 +98,8 @@ const Page = () => {
                             </Button>
                         </div>
 
-                        {errorMessage && /* TODO: maybe use error message component?*/ (
-                            <div className="rounded-md bg-red-50 p-4 mt-4">
-                                <div className="flex">
-                                    <div className="text-sm text-red-700">
-                                        {errorMessage}
-                                    </div>
-                                </div>
-                            </div>
+                        {errorMessage && (
+                            <ErrorMessage error={errorMessage}/>
                         )}
                     </form>
                 </div>

@@ -4,7 +4,7 @@ translation:
   loading_menu: Menü lädt...
 
   errors:
-    failed_to_load_menu: 'Menü-Ladefehler: {message}}' # Or: 'Menü konnte nicht geladen werden: {{message}'
+    failed_to_load_menu: 'Menü-Ladefehler: {message}}'
 
   header:
     adminlinks:
@@ -21,36 +21,68 @@ translation:
   footer:
     fuel: Code & Pizza von
 
-  order_view:
+  order:
+    # When ordering something
     introduction:
       choose_your_item: Produkt wählen
       pick_up_time: Abholzeit
       pay_in_cash: Barzahlung
-      closer: Schönen Abend! # Or: Guten Appetit!
-    order:
-      name: Name
-      name_placeholder: Dein Name
-    timeslot:
-      title: Zeitfenster
-      subtitle: Abholzeit wählen.
+      closer: Schönen Abend!
     item:
       button:
         add: Hinzufügen
+    order_summary:
+      add: Pizzen hinzufügen
+      open_order_summary: Zum Warenkorb
+    order_button:
+      order_now: Bestellen
+
+  order_status:
+    order: Bestellung
+    total: Gesamt
+
+    suspense:
+      loading: Lädt...
+    show_at_pickup: Zeige diese Seite bei der Abholung
+    thank_you:
+      qr:
+        title: Danke für die Bestellung! 🍕
+        your_order_number: 'Bestellnr.:'
+        instructions: Bitte am Tresen bezahlen.
+        order_again: Neue Bestellung
+        view_orders: Meine Bestellungen
+    status:
+      ready_by: Fertig um
+      ordered: Bestellt
+      inPreparation: In Arbeit
+      ready: Abholbereit!
+      delivered: Abgeholt
+      cancelled: Storniert
+      default: Status unbekannt :(
+      paid: Bezahlt
+      unpaid: Nicht bezahlt
+    cancel_order: Bestellung stornieren
+
 
   cart:
     title: Warenkorb
     messages:
       empty_cart: Warenkorb leer.
       add_note: Notiz hinzufügen
-      add_more_products: Mehr Artikel
+      add_more_products: Mehr Artikel hinzufügen
       name_not_set: Name fehlt
       timeslot_not_selected: Zeitfenster fehlt
+    timeslot:
+      title: Zeitfenster
+      subtitle: Abholzeit wählen.
+    order:
+      name: Name
+      name_placeholder: Dein Name
     items: Artikel
     total_price: Gesamt
     currency: €
-    timeslot: Zeitfenster
     select_timeslot: Wähle deine gewünschte Abholzeit aus
-    open_order_summary: Zur Übersicht # Or: Weiter zur Kasse
+    open_order_summary: Zur Übersicht
 
   order_overview:
     history:
@@ -68,11 +100,12 @@ translation:
 
   admin:
     manage:
-      title: Datenbank
-      enable_system: System aktivieren
-      prepare_database: DB initialisieren
-      delete_database: DB löschen
-      system_state: 'System: {state}'
+      database:
+        title: Datenbank
+        enable_system: System aktivieren
+        prepare_database: DB initialisieren
+        delete_database: DB löschen
+        system_state: 'System: {state}'
 
       order:
         errors:
@@ -112,7 +145,9 @@ translation:
           max_items_available: Max. verfügbar
 
     prepare:
-      title: Aktive Bestellungen # Or: Vorbereitung
+      title: Aktive Bestellungen
+      subtitle: Drücke auf die Pizza, wenn du fertig bist
+      needed: '{amount} benötigt'
       current_time: 'Zeit: {currentTime}'
       open_orders: 'Offen: '
       no_open_orders: Keine offenen Bestellungen 🎉
@@ -143,24 +178,3 @@ translation:
     fsik_token: FSI/K-Token
     authenticating: Authentifiziere...
     login: Anmelden
-
-  order:
-    suspense:
-      loading: Lädt...
-    thank_you:
-      qr:
-        title: Danke für die Bestellung! 🍕
-        your_order_number: 'Bestellnr.:'
-        instructions: Bitte am Tresen bezahlen.
-        order_again: Neue Bestellung
-        view_orders: Meine Bestellungen
-    status:
-      ordered: Bestellt
-      inPreparation: In Arbeit
-      ready: Abholbereit!
-      delivered: Abgeholt
-      cancelled: Storniert
-      default: Status unbekannt :(
-
-    order_button:
-      order_now: Bestellen

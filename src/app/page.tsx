@@ -4,19 +4,20 @@ import React, { useEffect, useState } from "react"; // Added useCallback, useMem
 import WithSystemCheck from "@/app/WithSystemCheck"; // Keep HOC wrapper
 import { ItemDocument } from '@/model/item';
 
-import IntroductionSection from '@/app/components/IntroductionSection';
+import IntroductionSection from '@/app/components/order/IntroductionSection';
 import MenuSection from '@/app/components/order/MenuSection';
 import FloatingOrderSummary from '@/app/components/order/FloatingOrderSummary';
 import OrderSummary from "@/app/components/order/OrderSummary";
 
 import { useTranslations } from 'next-intl';
+import useOrderStore from '@/app/zustand/order'
 
 const Page: React.FC = () => {
-    const [error, setError] = useState('');
     const [items, setItems] = useState<{ [_id: string]: ItemDocument[] }>({});
     const [isMenuLoading, setIsMenuLoading] = useState(true); // Add loading state for menu
     const [ordersOpen, setOrdersOpen] = useState(false);
     const t = useTranslations();
+    const { setError } = useOrderStore();
 
     // --- Data Fetching ---
     useEffect(() => {
@@ -34,7 +35,7 @@ const Page: React.FC = () => {
             .catch(error => {
                 const msg = t('errors.failed_to_load_menu', { message: error.message });
                 console.error(msg, error);
-                setError(msg); // Provide more context
+                setError(msg);
             })
             .finally(() => {
                 setIsMenuLoading(false);
@@ -66,7 +67,6 @@ const Page: React.FC = () => {
 
                     {!isMenuLoading && (
                         <FloatingOrderSummary
-                            error={error}
                             onToggleOpen={() => setOrdersOpen(true)}
                         />
                     )}

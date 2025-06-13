@@ -3,11 +3,13 @@ import dbConnect from "@/lib/dbConnect";
 import { requireAuth } from "@/lib/serverAuth";
 import { OrderModel } from "@/model/order";
 import { NextRequest, NextResponse } from "next/server";
+import { ObjectId } from "bson";
 
 /**
  * Retrieve whether order is paid or not
  * @constructor
  * @param request
+ * @param params
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     await dbConnect();
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params
 
     // Check if the ID is valid and ObjectId
-    if (!id || !mongoose.isValidObjectId(id)) {
+    if (!id || !ObjectId.isValid(id)) {
         return NextResponse.json({
             message: 'The ID is not valid.'
         }, { status: 400 })
@@ -42,9 +44,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
  * @param params
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    await dbConnect();
-    await requireAuth();
-
     // Get the ID from the URL
     const { id } = await params
 
@@ -52,11 +51,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const { isPaid } = await request.json()
 
     // Check if the ID is valid and ObjectId
-    if (!id || !mongoose.isValidObjectId(id)) {
+    if (!id || !ObjectId.isValid(id)) {
         return NextResponse.json({
             message: 'The ID is not valid.'
         }, { status: 400 })
     }
+
+    await dbConnect();
+    await requireAuth();
 
 
     try {

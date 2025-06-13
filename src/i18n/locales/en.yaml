@@ -1,136 +1,166 @@
 translation:
   lang_emoji: 🇺🇸
-  app_title: Get Your Byte of Pizza!
-  loading_menu: Loading Menu...
+  app_title: Pizza-Byte
+  loading_menu: Loading menu...
 
   errors:
-    failed_to_load_menu: 'Failed to load menu: {message}'
-
+    failed_to_load_menu: 'Menu loading error: {message}'
 
   header:
     adminlinks:
-      prepare: Prepare Items
-      manage_db: Manage DB
-      manage_orders: Manage Orders
-      manage_items: Manage Items
+      prepare: Preparation
+      manage_db: Database
+      manage_orders: Orders
+      manage_items: Items
       logout: Logout
     menu:
       login: Login
       home: Home
-      orders: Your Orders
+      orders: Orders
 
   footer:
-    fuel: Pizza-fueled code by
+    fuel: Code & Pizza by
 
-
-
-  order_view:
+  order:
+    # When ordering something
     introduction:
-      choose_your_item: Choose your Item
-      pick_up_time: Pick-Up Time
-      pay_in_cash: Pay in Cash at the counter
-      closer: Enjoy your evening!
-    order:
-      name: Name
-      name_placeholder: Enter your name
-    timeslot:
-      title: Timeslot
-      subtitle: Select your preferred pick-up time.
+      choose_your_item: Choose product
+      pick_up_time: Pickup time
+      pay_in_cash: Cash payment
+      closer: Have a great evening!
     item:
       button:
         add: Add
+    order_summary:
+      add: Add pizzas
+      open_order_summary: Go to cart
+    order_button:
+      order_now: Order
+
+  order_status:
+    order: Order
+    total: Total
+
+    suspense:
+      loading: Loading...
+    show_at_pickup: Show this page at pickup
+    thank_you:
+      qr:
+        title: Thanks for your order! 🍕
+        your_order_number: 'Order No.:'
+        instructions: Please pay at the counter.
+        order_again: New order
+        view_orders: My orders
+    status:
+      ready_by: Ready by
+      ordered: Ordered
+      inPreparation: In preparation
+      ready: Ready for pickup!
+      delivered: Picked up
+      cancelled: Cancelled
+      default: Status unknown :(
+      paid: Paid
+      unpaid: Unpaid
+    cancel_order: Cancel order
 
   cart:
     title: Cart
     messages:
-      empty_cart: Your cart is empty.
-      add_note: Add a note
-      add_more_products: Add more Products
-      name_not_set: Enter name
-      timeslot_not_selected: Select timeslot
+      empty_cart: Cart empty.
+      add_note: Add note
+      add_more_products: Add more items
+      name_not_set: Name missing
+      timeslot_not_selected: Time slot missing
+    timeslot:
+      title: Time slot
+      subtitle: Choose pickup time.
+    order:
+      name: Name
+      name_placeholder: Your name
     items: Items
-    total_price: Total Price
+    total_price: Total
     currency: €
-    timeslot: Timeslot
-    select_timeslot: Select your preferred pick-up time.
-    open_order_summary: Open order summary
+    select_timeslot: Select your desired pickup time
+    open_order_summary: Go to overview
 
   order_overview:
     history:
-      title: Order History
-      subtitle: Track and manage your recent orders
+      title: History
+      subtitle: Your recent orders.
     recent:
-      title: Recent Orders
-      orders_found: '{count, plural, =0 {No Orders} =1 {One Order} other {# Orders}} '
-      no_orders_yet: No orders yet
+      title: Current
+      orders_found: '{count, plural, =0 {No orders} =1 {One order} other {# orders}} '
+      no_orders_yet: No orders yet.
       messages:
-        first_order: When you place your first order, it will appear here for easy
-          tracking.
+        first_order: You'll see your orders here.
     timeline:
-      title: Order Timeline
-      subtitle: Real-time view of order activity and scheduling
+      title: Timeline
+      subtitle: Live orders.
 
   admin:
     manage:
       database:
-        title: Manage Database
-        enable_system: Enable System
-        prepare_database: Prepare Database
-        delete_database: Delete Database
-        system_state: System {state}
+        title: Database
+        enable_system: Enable system
+        prepare_database: Initialize DB
+        delete_database: Delete DB
+        system_state: 'System: {state}'
 
-      pizza:
-        errors:
-          error_fetching: Error fetching pizzas
-        title: Manage Items
-        subtitle: Add, remove and disable items
-        new_pizza_name: New Pizza
-        edit_item:
-          enabled: Enabled
-          disabled: Disabled
-          disable: Disable
-          enable: Enable
-          items_available: '{items} items available'
-          update: Update
-          create: Create
-          name: Name
-          type: Type
-          dietary: Dietary
-          price: Price
-          max_items_available: Max items available
-    prepare:
       order:
         errors:
-          order_not_found: Order not found
-          barcode_fail: Could not extract order id from barcode
-        order_history: Order History
-        scan_qr_code_text: Scan the QR Code to search for an order
-        show_finished: Show Finished
-        hide_finished: Hide Finished
+          order_not_found: Order not found.
+          barcode_fail: 'Barcode error: ID not readable'
+        order_history: History
+        scan_qr_code_text: QR scan for order
+        show_finished: Show completed
+        hide_finished: Hide completed
         status: 'Status:'
         price: 'Price:'
         items: 'Items:'
-        order_date: 'Order Date:'
-        timeslot: 'Timeslot:'
-        comment: 'Comment:'
+        order_date: 'Date:'
+        timeslot: 'Time slot:'
+        comment: 'Note:'
         paid: Paid
-        not_paid: Not Paid
+        not_paid: Outstanding
+
       pizza:
-        title: Orders
-        current_time: 'Current Time: {currentTime}'
-        open_orders: 'Open orders: '
-        no_open_orders: No open orders 🎉
-        item: Item
-        timeslot: Timeslot
-        name: Name
-        status: Status
-        is_done: ✅ Done
+        errors:
+          error_fetching: 'Error: Items not loaded'
+        title: Items
+        subtitle: Create & edit items.
+        new_pizza_name: New item
+        edit_item:
+          enabled: Active
+          disabled: Inactive
+          disable: Disable
+          enable: Enable
+          items_available: '{items} available'
+          update: Save
+          create: Create
+          name: Name
+          type: Type
+          dietary: Details
+          price: Price
+          max_items_available: Max. available
+
+    prepare:
+      title: Active Orders
+      subtitle: Tap when pizza is ready for oven
+      needed: '{amount} needed'
+      current_time: 'Time: {currentTime}'
+      open_orders: 'Open: '
+      no_open_orders: No open orders 🎉
+      item: Item
+      timeslot: Time slot
+      name: Name
+      status: Status
+      is_done: ✅ Done
 
   withsystemcheck:
-    check_system_status: Checking system status...
-    system_inactive: System Inactive
-    system_unavailable_message: Our system is currently undergoing maintenance. We
-      apologize for any inconvenience this may cause. Please try again later.
+    check_system_status: Checking system...
+    system_inactive: System inactive
+    system_unavailable_message: System maintenance. Please try again later.
+
   components:
     menusection:
       loading: Loading menu...
@@ -138,38 +168,12 @@ translation:
       loading: Loading timeline...
       warning: 'Warning: {error}. Showing fallback data.'
     errormessage:
-      please_try_again: Please try again.
+      please_try_again: Try again.
     searchinput:
       placeholder: Search...
 
   login:
-    title: Helfi Login
+    title: Helper Login # Or: Login
     fsik_token: FSI/K Token
     authenticating: Authenticating...
     login: Login
-
-  order:
-    suspense:
-      loading: Loading...
-    not_found: Order not found
-    ready_by: Ready by
-
-    thank_you:
-      qr:
-        title: Thank you for your order! 🍕
-        your_order_number: 'Your order number is'
-        instructions: Please proceed to pay at the counter.
-        order_again: Order again
-        view_orders: View orders
-    status:
-      ordered: We've received your order.
-      inPreparation: Your order is being prepared.
-      ready: Your order is ready for pickup!
-      delivered: Your order has been delivered.
-      cancelled: Your order has been cancelled.
-      default: Order status unavailable.
-      paid: Paid
-      unpaid: Unpaid
-    
-    order_button:
-      order_now: Order now

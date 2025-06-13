@@ -36,6 +36,9 @@ export const itemSchema = new Schema<ItemDocument>(
     }
 );
 
+itemSchema.index({ price: 1 });
+
+
 // Create the Item model
 let ItemModel: Model<ItemDocument>;
 try {

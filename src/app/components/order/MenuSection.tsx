@@ -1,5 +1,5 @@
 import { ItemDocument } from '@/model/item';
-import Item from "@/app/components/Item";
+import Item from "@/app/components/order/Item";
 import { useTranslations } from 'next-intl';
 
 interface MenuSectionProps {

@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/dbConnect";
-import mongoose from "mongoose";
 import { OrderModel } from "@/model/order";
 import { NextRequest } from "next/server";
+import { ObjectId } from "bson";
 
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params
 
     // Check if the ID is valid and ObjectId
-    if (!id || !mongoose.isValidObjectId(id)) {
+    if (!id || !ObjectId.isValid(id)) {
         return new Response(`
             The ID is not valid.
             Please provide a valid ID.

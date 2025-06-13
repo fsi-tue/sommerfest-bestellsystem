@@ -3,7 +3,7 @@ import OrderButton from "@/app/components/order/OrderButton";
 import React, { useMemo } from "react";
 import useOrderStore, { useCurrentOrder } from "@/app/zustand/order";
 import { ArrowLeft, Plus, X } from "lucide-react";
-import { CONSTANTS } from "@/config";
+import { TIME_SLOT_CONFIG } from "@/config";
 import Timeline from "@/app/components/Timeline";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import Button from "@/app/components/Button";
@@ -125,7 +125,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                                 <span>{getCurrentOrderTotal().toFixed(2)}€</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-700 mt-2">
-                                <span>{t('cart.timeslot')}</span>
+                                <span>{t('cart.timeslot.title')}</span>
                                 <span>
                                     {order.timeslot}
                                 </span>
@@ -137,13 +137,13 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                         <div className="mb-6 space-y-4">
                             <div>
                                 <label htmlFor="name"
-                                       className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                       className="block text-sm font-medium text-gray-700 mb-1">{t('cart.order.name')}</label>
                                 <input
                                     id="name"
                                     name="name"
                                     type="text"
                                     value={order.name}
-                                    placeholder={t("order_view.order.name_placeholder")}
+                                    placeholder={t("cart.order.name_placeholder")}
                                     className="mt-1 p-3 border border-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm"
                                     onChange={(e) => setName(e.target.value)}
                                     required
@@ -153,14 +153,14 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
 
                         {/* Timeline Section */}
                         <div className="timeline-container mt-8">
-                            <h4 className="text-xl font-semibold mb-2 text-gray-900">{t('cart.timeslot')}</h4>
+                            <h4 className="text-xl font-semibold mb-2 text-gray-900">{t('cart.timeslot.title')}</h4>
                             <p className="mb-4 text-base font-light leading-relaxed text-gray-700">
-                                {t('cart.select_timeslot')}
+                                {t('cart.timeslot.subtitle')}
                             </p>
                             <Timeline
                                 startDate={start}
                                 stopDate={end}
-                                every_x_seconds={CONSTANTS.EVERY_X_SECONDS}
+                                every_x_seconds={TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS}
                             />
                         </div>
                     </div>

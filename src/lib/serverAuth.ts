@@ -4,6 +4,8 @@ import dbConnect from "@/lib/dbConnect";
 import { cookies } from "next/headers";
 
 import { cache } from "react";
+import { CONSTANTS } from "@/config";
+import { System } from "@/model/system";
 
 export const getAuthToken = async () => {
     const cookieStore = await cookies();
@@ -72,4 +74,21 @@ export async function getSessionUser(token: string): Promise<string | null> {
         console.error('Get session user error:', error);
         return null;
     }
+}
+
+
+export async function getSystemStatus() {
+    const system = await System.findOne({ name: CONSTANTS.SYSTEM_NAME }).lean();
+    if (!system) {
+        throw new Error('System not found');
+    }
+
+    return system.status;
+}
+
+export async function requireActiveSystem() {
+    if (await getSystemStatus() !== 'active') {
+        throw new Error('System is not active');
+    }
+    return true;
 }

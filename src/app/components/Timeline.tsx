@@ -5,9 +5,7 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 
 import { useTranslations } from 'next-intl';
 import useOrderStore from "@/app/zustand/order";
 import { AggregatedSlotData } from "@/model/timeslot";
-import { ORDER_CONFIG } from "@/config";
-
-const MIN_BAR_HEIGHT = 0.5;
+import { ORDER_AMOUNT_THRESHOLDS } from "@/config";
 
 interface TimelineProps {
     startDate: Date;
@@ -15,7 +13,6 @@ interface TimelineProps {
     every_x_seconds: number;
 }
 
-// Helper function to generate fallback timeslots
 const generateAllTimeslots = (startDate: Date, stopDate: Date): AggregatedSlotData[] => {
     const timeSlots: AggregatedSlotData[] = [];
     const currentTime = new Date(startDate);
@@ -41,18 +38,7 @@ const Timeline: React.FC<TimelineProps> = ({
     const [error, setError] = useState<string | null>(null);
     const t = useTranslations();
 
-    const { setTimeslot, currentOrder } = useOrderStore();
-
-    const mergeTimeslots = (
-        allSlots: AggregatedSlotData[],
-        apiSlots: AggregatedSlotData[]
-    ): AggregatedSlotData[] => {
-        const apiSlotMap = new Map(apiSlots.map(slot => [slot.time, slot]));
-        return allSlots.map(slot => ({
-            ...slot,
-            ...apiSlotMap.get(slot.time), // Overwrite defaults with API data if present
-        }));
-    };
+    const { setTimeslot } = useOrderStore();
     const fetchTimeline = useCallback(async () => {
         setError(null);
         let apiSlots: AggregatedSlotData[] = [];
@@ -103,7 +89,7 @@ const Timeline: React.FC<TimelineProps> = ({
                     margin={{ top: 5, right: 30, left: -30, bottom: 5 }}
                 >
                     <XAxis dataKey="time"/>
-                    <YAxis domain={[0, ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT]}/>
+                    <YAxis domain={[0, ORDER_AMOUNT_THRESHOLDS.MAX]}/>
                     <Tooltip/>
 
                     <Bar dataKey="ordersAmount" name="Orders" fill="#007bff">

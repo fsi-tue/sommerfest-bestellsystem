@@ -9,7 +9,7 @@ const Page = () => {
     const authStore = useAuthStore();
     useEffect(() => {
         authStore.signOut();
-        router.push('/');
+        router.push('/', { scroll: true })
     }, []);
 
     return (

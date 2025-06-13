@@ -103,10 +103,9 @@ orderSchema.pre("save", function (next) {
  * Middleware to update order status based on item statuses.
  */
 orderSchema.pre("save", function (next) {
-    const allStatuses = this.items.map((item) => item.status);
-    const uniqueStatuses = new Set(allStatuses);
+    const uniqueStatuses = new Set(this.items.map((item) => item.status));
 
-    // If the order is cancelled or delivered, set all items to the same status
+    // If the order is canceled or delivered, set all items to the same status
     if (this.status === "cancelled" || this.status === "delivered") {
         this.items.forEach((item) => {
             item.status = this.status as ItemStatus;
@@ -132,6 +131,9 @@ orderSchema.pre("save", function (next) {
 
     next();
 });
+
+orderSchema.index({ timeslot: 1, status: 1 });
+orderSchema.index({ timeslot: 1, status: 1, 'items.item.size': 1 });
 
 // Create the Order model
 let OrderModel: Model<OrderDocument>;

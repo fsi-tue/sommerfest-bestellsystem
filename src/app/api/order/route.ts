@@ -1,192 +1,198 @@
-import mongoose from "mongoose";
-import { ItemModel } from "@/model/item";
-import dbConnect from "@/lib/dbConnect";
-import { requireAuth } from "@/lib/serverAuth";
-import { ApiOrder, ITEM_STATUS_VALUES, OrderModel } from "@/model/order";
-import { ORDER_CONFIG } from "@/config";
-import { NextResponse } from "next/server";
-import { requireActiveSystem } from "@/lib/system";
+import { NextResponse } from 'next/server';
+import mongoose, { Types } from 'mongoose';
 
-export async function GET(request: Request) {
-    try {
-        await dbConnect();
+import dbConnect from '@/lib/dbConnect';
+import { requireActiveSystem, requireAuth } from '@/lib/serverAuth';
+import { ITEM_STATUS_VALUES, OrderModel } from '@/model/order';
+import { ItemModel } from '@/model/item';
+import { ORDER_AMOUNT_THRESHOLDS } from '@/config';
+
+const dbReady = dbConnect();
+
+const withDB = async <T>(fn: () => Promise<T>) => {
+    await dbReady;
+    return fn();
+};
+
+export async function GET() {
+    return withDB(async () => {
         await requireAuth();
 
-        const orders = await OrderModel.find()
-            .select('name comment items orderDate timeslot totalPrice status isPaid finishedAt')
-            .lean()
-            .exec()
+        const orders = await OrderModel.aggregate([
+            {
+                $project: {
+                    name: 1,
+                    orderDate: 1,
+                    timeslot: 1,
+                    totalPrice: 1,
+                    status: 1,
+                    isPaid: 1,
+                    finishedAt: 1,
+                    comment: { $ifNull: ['$comment', ''] },
+                    items: {
+                        $map: {
+                            input: '$items',
+                            as: 'i',
+                            in: { item: '$$i.item', status: '$$i.status' },
+                        },
+                    },
+                },
+            },
+        ]);
 
-        const transformedOrders = orders.map(order => ({
-            ...order,
-            comment: order.comment ?? "",
-            items: order.items.map(item => ({
-                item: item.item,
-                status: item.status
-            }))
-        }));
-
-        return NextResponse.json(transformedOrders);
-    } catch (error) {
-        console.error('Error fetching orders:', error);
+        return NextResponse.json(orders);
+    }).catch((err) => {
+        console.error('GET /order error ➜', err);
         return NextResponse.json(
             { message: 'There was an error on our side' },
-            { status: 500 }
+            { status: 500 },
         );
-    }
+    });
 }
 
-export async function POST(request: Request) {
-    try {
-        await dbConnect();
+export async function POST(req: Request) {
+    return withDB(async () => {
         await requireActiveSystem();
 
-        const { items, name, comment, timeslot } = await request.json() as ApiOrder;
+        const body = (await req.json()) as {
+            items: Record<string, { _id: string; size: number }[]>;
+            name?: string;
+            comment?: string;
+            timeslot: string;
+        };
 
-        const flatItems = Object.values(items).flat();
-
-        if (flatItems.length < 1) {
+        const flatItems = Object.values(body.items ?? {}).flat();
+        if (flatItems.length === 0) {
             return NextResponse.json(
                 { message: 'At least one item is required' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        const currentOrderItemsTotal = flatItems.reduce(
-            (total, item) => total + item.size,
-            0
-        );
-
-        if (currentOrderItemsTotal > ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT) {
+        const newSize = flatItems.reduce((acc, i) => acc + i.size, 0);
+        if (newSize > ORDER_AMOUNT_THRESHOLDS.MAX) {
             return NextResponse.json(
-                { message: 'You have too many items in your order' },
-                { status: 400 }
+                { message: 'Too many items for one order' },
+                { status: 400 },
             );
         }
 
-        // Validate item items exist
-        const itemIds = [...new Set(flatItems.map(item => item._id.toString()))]
+        const session = await mongoose.startSession();
+        try {
+            let responseDoc: unknown;
+            const itemIds = [
+                ...new Set(flatItems.map((i) => i._id)),
+            ].map((id) => new Types.ObjectId(id));
 
-        const [existingItems, existingOrders] = await Promise.all([
-            ItemModel.find({ _id: { $in: itemIds } }).select('_id price size').lean(),
-            OrderModel.find({
-                timeslot: timeslot,
-                status: { $nin: ['cancelled'] }
-            }).select('items').lean()
-        ]);
+            const [{ capacity }] = await OrderModel.aggregate([
+                {
+                    $facet: {
+                        capacity: [
+                            {
+                                $match: {
+                                    timeslot: body.timeslot,
+                                    status: { $ne: 'cancelled' },
+                                },
+                            },
+                            { $unwind: '$items' },
+                            {
+                                $group: {
+                                    _id: null,
+                                    total: { $sum: '$items.item.size' },
+                                },
+                            },
+                        ],
+                    },
+                },
+            ]).session(session);
 
+            /* validate items really exist */
+            const existingItems = await ItemModel.find({ _id: { $in: itemIds } })
+                .select('_id price size')
+                .lean()
+                .session(session);
 
-        if (existingItems.length !== itemIds.length) {
-            return NextResponse.json(
-                { message: `These items exist: ` + existingItems.map(item => item._id) + ' but the following were ordered: ' + itemIds },
-                { status: 400 }
-            );
-        }
-
-        const capacityCheck = await OrderModel.aggregate([
-            {
-                $match: {
-                    timeslot: timeslot,
-                    status: { $nin: ['cancelled'] }
-                }
-            },
-            {
-                $unwind: '$items'
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalSize: { $sum: '$items.item.size' }
-                }
+            if (existingItems.length !== itemIds.length) {
+                throw new Error('Invalid item ids provided');
             }
-        ]);
-        let existingItemsTotal = 0
-        if (capacityCheck.length > 0) {
-            existingItemsTotal = capacityCheck[0].totalSize as number
+
+            const alreadyBooked = capacity?.[0]?.total ?? 0;
+            if (
+                alreadyBooked + newSize >
+                ORDER_AMOUNT_THRESHOLDS.MAX
+            ) {
+                throw new Error(
+                    'The time slot is already full. Please choose another one.',
+                );
+            }
+
+            /* price calculation */
+            const priceMap = existingItems.reduce<Record<string, number>>(
+                (map, it) => {
+                    map[it._id.toString()] = it.price;
+                    return map;
+                },
+                {},
+            );
+
+            const totalPrice = flatItems.reduce(
+                (sum, i) => sum + (priceMap[i._id] ?? 0),
+                0,
+            );
+
+            /* build and save the order */
+            responseDoc = await new OrderModel({
+                name: (body.name ?? 'anonymous').slice(0, 30),
+                comment: (body.comment ?? 'No comment').slice(0, 500),
+                items: flatItems.map((i) => ({
+                    item: i,
+                    status: ITEM_STATUS_VALUES[0],
+                })),
+                timeslot: body.timeslot,
+                totalPrice,
+            }).save({ session });
+
+            return NextResponse.json(responseDoc);
+        } catch (err: any) {
+            console.error('POST /order error ➜', err);
+            return NextResponse.json(
+                { message: err.message ?? 'There was an error on our side' },
+                { status: 400 },
+            );
+        } finally {
+            session.endSession();
         }
-
-        // Check timeslot capacity
-        /* const existingOrders = await OrderModel.find({
-            timeslot: timeslot,
-            status: { $nin: ['cancelled'] }
-        }).lean();
-
-        const existingItemsTotal = existingOrders
-            .flatMap(order => order.items)
-            .reduce((total, orderItem) => {
-                const item = orderItem.item as ItemDocument;
-                return total + (item?.size ?? 0);
-            }, 0); */
-
-        if (existingItemsTotal + currentOrderItemsTotal > ORDER_CONFIG.MAX_ITEMS_PER_TIMESLOT) {
-            return NextResponse.json({
-                message: 'The time slot is already full. Please choose another time slot.'
-            }, { status: 400 });
-        }
-
-        // Calculate total price from database
-        const itemPriceMap = existingItems.reduce((map, item) => {
-            map[item._id.toString()] = item.price;
-            return map;
-        }, {} as Record<string, number>);
-
-        const totalPrice = flatItems.reduce((total, item) => {
-            return total + (itemPriceMap[item._id.toString()] ?? 0);
-        }, 0);
-
-        const mappedItems = flatItems.map(item => ({
-            item: item,
-            status: ITEM_STATUS_VALUES[0],
-        }))
-
-        // Create and save order
-        const order = new OrderModel({
-            name: (name || "anonymous").slice(0, 30),
-            comment: (comment || "No comment").slice(0, 500),
-            items: mappedItems,
-            timeslot: timeslot,
-            totalPrice: totalPrice
-        });
-
-        await order.save();
-
-        return NextResponse.json(order);
-    } catch (error) {
-        console.error('Error creating order:', error);
+    }).catch((err) => {
+        console.error('POST outer error ➜', err);
         return NextResponse.json(
             { message: 'There was an error on our side' },
-            { status: 500 }
+            { status: 500 },
         );
-    }
+    });
 }
 
-export async function PUT(request: Request) {
-    try {
-        await dbConnect();
+export async function PUT(req: Request) {
+    return withDB(async () => {
         await requireAuth();
 
-        // Parse request body
-        const { id, order } = await request.json();
+        const { id, order } = await req.json();
 
-        if (!id || !mongoose.isValidObjectId(id)) {
+        if (!id || !Types.ObjectId.isValid(id)) {
             return NextResponse.json(
                 { message: 'Invalid order ID' },
-                { status: 400 }
+                { status: 400 },
             );
         }
 
-        // Find and update order
-        const foundOrder = await OrderModel.findById(id);
-
-        if (!foundOrder) {
+        const existing = await OrderModel.findById(id);
+        if (!existing) {
             return NextResponse.json(
                 { message: 'Order not found' },
-                { status: 404 }
+                { status: 404 },
             );
         }
 
-        // Update order fields
-        Object.assign(foundOrder, {
+        Object.assign(existing, {
             name: order.name,
             comment: order.comment,
             items: order.items,
@@ -194,17 +200,17 @@ export async function PUT(request: Request) {
             totalPrice: order.totalPrice,
             status: order.status,
             isPaid: order.isPaid,
-            finishedAt: order.finishedAt
+            finishedAt: order.finishedAt,
         });
 
-        await foundOrder.save();
+        await existing.save();
 
-        return NextResponse.json(foundOrder);
-    } catch (error) {
-        console.error('Error updating order:', error);
+        return NextResponse.json(existing);
+    }).catch((err) => {
+        console.error('PUT /order error ➜', err);
         return NextResponse.json(
             { message: 'There was an error on our side' },
-            { status: 500 }
+            { status: 500 },
         );
-    }
+    });
 }
