@@ -1,6 +1,6 @@
 import { ApiOrder, OrderDocument } from '@/model/order'
 import { ItemDocument } from '@/model/item'
-import { getDateFromTimeSlot } from '@/lib/time'
+import { timeslotToDate, timeslotToUTCTime } from '@/lib/time'
 import { create } from 'zustand'
 import { ORDER_AMOUNT_THRESHOLDS, ORDER_CONFIG, TIME_SLOT_CONFIG } from '@/config'
 import { createJSONStorage, persist } from 'zustand/middleware'
@@ -79,19 +79,20 @@ const useOrderStore = create<OrderState>()(
             /* ---------- timeslot with validation ---------- */
             setTimeslot: (slot) =>
                 set((s) => {
-                    const BUFFER = TIME_SLOT_CONFIG.SIZE_MINUTES
+                    const BUFFER = TIME_SLOT_CONFIG.SIZE_MINUTES * TIME_SLOT_CONFIG.TIMESLOTS_AS_BUFFER
                     const cutoff = new Date()
                     cutoff.setMinutes(cutoff.getMinutes() + BUFFER)
 
                     try {
-                        const tsDate = getDateFromTimeSlot(slot)
+                        const tsDate = timeslotToDate(slot)
                         if (tsDate < cutoff) {
                             return { ...s, error: 'Selected timeslot is too soon or in the past.' }
                         }
                         return {
                             ...s,
                             error: null,
-                            currentOrder: { ...s.currentOrder, timeslot: slot },
+                            // convert the timeslot to UTC
+                            currentOrder: { ...s.currentOrder, timeslot: timeslotToUTCTime(slot) },
                         }
                     } catch {
                         return { ...s, error: 'Invalid timeslot selected.' }

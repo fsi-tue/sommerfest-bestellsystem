@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { getDateFromTimeSlot } from "@/lib/time";
+import { timeslotToDate, timeslotToLocalTime } from "@/lib/time";
 import { Order, OrderStatus } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
 import { Loading } from "@/app/components/Loading";
@@ -125,10 +125,10 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                     <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
                         <p className="text-sm text-gray-600 mb-1">{t('order_status.status.ready_by')}</p>
                         <p className="text-3xl font-light text-blue-600">
-                            {formatDate(getDateFromTimeSlot(order.timeslot), 'HH:mm')}
+                            {timeslotToLocalTime(formatDate(timeslotToDate(order.timeslot), 'HH:mm'))}
                         </p>
                         <p className="text-sm text-gray-600">
-                            {formatDate(getDateFromTimeSlot(order.timeslot), 'dd.MM.yyyy')}
+                            {formatDate(timeslotToDate(order.timeslot), 'dd.MM.yyyy')}
                         </p>
                     </div>
                 )}

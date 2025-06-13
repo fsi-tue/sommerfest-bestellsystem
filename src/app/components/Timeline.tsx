@@ -1,17 +1,12 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useTranslations } from 'next-intl';
 import useOrderStore from "@/app/zustand/order";
 import { AggregatedSlotData } from "@/model/timeslot";
-import { ORDER_AMOUNT_THRESHOLDS } from "@/config";
-
-interface TimelineProps {
-    startDate: Date;
-    stopDate: Date;
-    every_x_seconds: number;
-}
+import { ORDER_AMOUNT_THRESHOLDS, TIME_SLOT_CONFIG } from "@/config";
+import { timeslotToLocalTime } from "@/lib/time";
 
 const generateAllTimeslots = (startDate: Date, stopDate: Date): AggregatedSlotData[] => {
     const timeSlots: AggregatedSlotData[] = [];
@@ -28,15 +23,23 @@ const generateAllTimeslots = (startDate: Date, stopDate: Date): AggregatedSlotDa
     return timeSlots;
 };
 
-const Timeline: React.FC<TimelineProps> = ({
-                                               startDate,
-                                               stopDate,
-                                               every_x_seconds
-                                           }) => {
+const Timeline = () => {
     const [timeslots, setTimeslots] = useState<AggregatedSlotData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const t = useTranslations();
+
+    // Timeline date range calculation (can be done outside component if static)
+    const { startDate, stopDate } = useMemo(() => {
+        const startDate = new Date()
+        startDate.setHours(startDate.getHours() - 1);
+        startDate.setMinutes(0, 0, 0);
+
+        const stopDate = new Date();
+        stopDate.setHours(stopDate.getHours() + 1);
+        stopDate.setMinutes(59, 59, 999);
+        return { startDate, stopDate };
+    }, []);
 
     const { setTimeslot } = useOrderStore();
     const fetchTimeline = useCallback(async () => {
@@ -47,18 +50,22 @@ const Timeline: React.FC<TimelineProps> = ({
             setError('Failed to fetch timeline data');
             apiSlots = generateAllTimeslots(startDate, stopDate);
         } else {
-            apiSlots = await response.json();
+            apiSlots = await response.json()
+            apiSlots = apiSlots.map((item: AggregatedSlotData) => ({
+                ...item,
+                time: timeslotToLocalTime(item.time),
+            }))
         }
 
         setTimeslots(apiSlots);
         setIsLoading(false);
-    }, [startDate, stopDate, every_x_seconds]);
+    }, [startDate, stopDate, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS]);
 
     useEffect(() => {
         fetchTimeline();
-        const interval = setInterval(fetchTimeline, every_x_seconds * 1000);
+        const interval = setInterval(fetchTimeline, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS * 1000);
         return () => clearInterval(interval);
-    }, [fetchTimeline, every_x_seconds]);
+    }, [fetchTimeline, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS]);
 
     const handleBarClick = useCallback((event: any) => {
         if (event?.activeLabel) {

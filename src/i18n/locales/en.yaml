@@ -61,6 +61,7 @@ translation:
       default: Status unknown :(
       paid: Paid
       unpaid: Unpaid
+      error: Error
     cancel_order: Cancel order
 
   cart:

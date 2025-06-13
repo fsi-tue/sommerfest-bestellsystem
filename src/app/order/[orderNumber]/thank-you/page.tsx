@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import ThankYouPage from './thankYouPage';
 import { getTranslations } from 'next-intl/server';
+import { Loading } from '@/app/components/Loading';
 
 // Server Component that receives params as Promise
 export default async function Page({
@@ -13,9 +14,7 @@ export default async function Page({
     const t = await getTranslations();
 
     return (
-        <Suspense fallback={<div className="p-6 max-w-md mx-auto">
-            <h1 className="text-2xl font-semibold">{t('order.suspense.loading')}</h1>
-        </div>}>
+        <Suspense fallback={<Loading message={t('order_status.suspense.loading')}/>}>
             <ThankYouPage orderNumber={orderNumber}/>
         </Suspense>
     );

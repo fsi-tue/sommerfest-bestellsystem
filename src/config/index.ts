@@ -9,6 +9,7 @@ export const TIME_SLOT_CONFIG = {
     SIZE_MINUTES: 10,
     PAST_SLOTS_TO_SHOW: 5,
     FUTURE_SLOTS_TO_SHOW: 14,
+    TIMESLOTS_AS_BUFFER: 3, // number of timeslots as buffer
 
     STATUS_COLORS: {
         OK: '#0ce504',

@@ -1,13 +1,13 @@
 import { ItemDocument } from "@/model/item"; // Assuming this path is correct
 import OrderButton from "@/app/components/order/OrderButton";
-import React, { useMemo } from "react";
+import React from "react";
 import useOrderStore, { useCurrentOrder } from "@/app/zustand/order";
 import { ArrowLeft, Plus, X } from "lucide-react";
-import { TIME_SLOT_CONFIG } from "@/config";
 import Timeline from "@/app/components/Timeline";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import Button from "@/app/components/Button";
 import { useTranslations } from 'next-intl';
+import { timeslotToLocalTime } from "@/lib/time";
 
 interface OrderSummaryPageProps {
     onClose: () => void;
@@ -36,18 +36,6 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
         }, [] as { item: ItemDocument, quantity: number }[]);
 
     const isEmpty = aggregatedItems.length === 0;
-
-    // Timeline date range calculation (can be done outside component if static)
-    const { start, end } = useMemo(() => {
-        const startDate = new Date();
-        startDate.setHours(startDate.getHours() - 1);
-        startDate.setMinutes(0, 0, 0);
-
-        const endDate = new Date();
-        endDate.setHours(endDate.getHours() + 1);
-        endDate.setMinutes(59, 59, 999);
-        return { start: startDate, end: endDate };
-    }, []);
 
     return (
         <div>
@@ -127,7 +115,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                             <div className="flex justify-between text-sm text-gray-700 mt-2">
                                 <span>{t('cart.timeslot.title')}</span>
                                 <span>
-                                    {order.timeslot}
+                                    {timeslotToLocalTime(order.timeslot)}
                                 </span>
                             </div>
                         </div>
@@ -157,15 +145,10 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                             <p className="mb-4 text-base font-light leading-relaxed text-gray-700">
                                 {t('cart.timeslot.subtitle')}
                             </p>
-                            <Timeline
-                                startDate={start}
-                                stopDate={end}
-                                every_x_seconds={TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS}
-                            />
+                            <Timeline/>
                         </div>
                     </div>
 
-                    {/* Error message */}
                     {error && (
                         <div className="px-4 py-2">
                             <ErrorMessage error={error}/>

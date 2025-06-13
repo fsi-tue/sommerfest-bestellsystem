@@ -10,6 +10,7 @@ import {
     startOfMinute,
     subMinutes
 } from "date-fns";
+import { formatInTimeZone } from 'date-fns-tz';
 import { ORDER_AMOUNT_THRESHOLDS, ORDER_CONFIG, TIME_SLOT_CONFIG } from "@/config";
 import { AggregatedSlotData } from "@/model/timeslot";
 import { OrderDocument } from "@/model/order";
@@ -48,7 +49,7 @@ export const formatDateTime = (date: Date) => {
  * Get the current time slot
  * @param timeslot
  */
-export const getDateFromTimeSlot = (timeslot: string): Date => {
+export const timeslotToDate = (timeslot: string): Date => {
     if (!timeslot) {
         return new Date();
     }
@@ -67,6 +68,26 @@ export const getDateFromTimeSlot = (timeslot: string): Date => {
         0
     );
 }
+
+
+export const timeslotToLocalTime = (timeslot: string | null) => {
+    if (!timeslot) {
+        return null;
+    }
+    // Use a fixed date to avoid date boundary issues
+    const utcDate = new Date(`1970-01-01T${timeslot}:00Z`);
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    return formatInTimeZone(utcDate, userTimezone, 'HH:mm');
+};
+
+export const timeslotToUTCTime = (timeslot: string) => {
+    // Parse as local time
+    const localDate = new Date(`1970-01-01T${timeslot}:00`);
+
+    // Format in UTC timezone
+    return formatInTimeZone(localDate, 'UTC', 'HH:mm');
+};
 
 /**
  * Aligns a given date to the start of its time slot and optionally shifts it by a number of slots.
@@ -118,7 +139,7 @@ export function aggregateOrdersIntoSlots(
             continue;
         } // Basic validation
 
-        const orderTime = getDateFromTimeSlot(order.timeslot); // Assuming this returns a valid Date
+        const orderTime = timeslotToDate(order.timeslot); // Assuming this returns a valid Date
 
         for (let i = 0; i < timeSlots.length; i++) {
             const slot = timeSlots[i];
@@ -148,7 +169,6 @@ export function aggregateOrdersIntoSlots(
 export function formatResponseData(
     timeSlots: TimeSlot[],
     slotAmounts: number[],
-    currentSlotIndex: number
 ): AggregatedSlotData[] {
     const BUFFER = ORDER_CONFIG.TIMESLOTS_BUFFER // Time buffer in minutes
     const currentTimeWithBuffer = new Date()
@@ -165,14 +185,14 @@ export function formatResponseData(
         }
 
         // This is needed to check if the timeslot is blocked
-        const timeslotTime = getDateFromTimeSlot(slot.time)
+        const timeslotTime = timeslotToDate(slot.time)
 
         return {
             time: slot.time,
             ordersAmount: amount,
             color: color,
-            border: index === currentSlotIndex ? TIME_SLOT_CONFIG.BORDER_STYLES.CURRENT_SLOT_COLOR : TIME_SLOT_CONFIG.BORDER_STYLES.DEFAULT_COLOR,
-            borderwidth: index === currentSlotIndex ? TIME_SLOT_CONFIG.BORDER_STYLES.CURRENT_SLOT_WIDTH : TIME_SLOT_CONFIG.BORDER_STYLES.DEFAULT_WIDTH,
+            border: TIME_SLOT_CONFIG.BORDER_STYLES.DEFAULT_COLOR,
+            borderwidth: TIME_SLOT_CONFIG.BORDER_STYLES.DEFAULT_WIDTH,
             isBlocked: amount > ORDER_AMOUNT_THRESHOLDS.CRITICAL || timeslotTime > currentTimeWithBuffer
         } as AggregatedSlotData;
     });

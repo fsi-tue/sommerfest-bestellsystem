@@ -4,13 +4,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle, Minus, Pizza, Plus, ScanIcon, XIcon } from 'lucide-react';
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/model/order';
-import { getDateFromTimeSlot } from '@/lib/time';
+import { timeslotToDate, timeslotToLocalTime } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
 import Button from '@/app/components/Button';
 import { ItemDocument } from "@/model/item";
 import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/components/layout/Heading";
-import { format } from "date-fns";
 import ErrorMessage from "@/app/components/ErrorMessage";
 
 interface ItemType {
@@ -159,7 +158,6 @@ const OrderCard = ({
     onPay: (orderId: string) => void;
     onDeliver: (orderId: string) => void;
 }) => {
-    const timeslotDate = getDateFromTimeSlot(order.timeslot);
     const readyItems = order.items.filter(item => item.status === ITEM_STATUSES.READY).length;
     const totalItems = order.items.length;
     const progress = (readyItems / totalItems) * 100;
@@ -176,7 +174,7 @@ const OrderCard = ({
                 <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                     isOverdue ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
                 }`}>
-                    {format(timeslotDate, 'HH:mm')}
+                    {timeslotToLocalTime(order.timeslot)}
                 </div>
             </div>
 
@@ -488,8 +486,8 @@ const OrderManagerDashboard = () => {
 
         // Sort by timeslot
         return filtered.sort((a, b) => {
-            const timeA = getDateFromTimeSlot(a.timeslot).getTime();
-            const timeB = getDateFromTimeSlot(b.timeslot).getTime();
+            const timeA = timeslotToDate(a.timeslot).getTime();
+            const timeB = timeslotToDate(b.timeslot).getTime();
             return timeA - timeB;
         });
     }, [orders, activeTab, searchFilter]);
@@ -499,7 +497,7 @@ const OrderManagerDashboard = () => {
         const now = Date.now()
         return filteredOrders.filter(order =>
             (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED) &&
-            getDateFromTimeSlot(order.timeslot).getTime() < now
+            timeslotToDate(order.timeslot).getTime() < now
         );
     }, [filteredOrders]);
 
@@ -588,7 +586,7 @@ const OrderManagerDashboard = () => {
                 {filteredOrders.map(order => {
                     const now = Date.now()
                     const isOverdue = (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED)
-                        && getDateFromTimeSlot(order.timeslot).getTime() < now
+                        && timeslotToDate(order.timeslot).getTime() < now
 
                     return (
                         <OrderCard

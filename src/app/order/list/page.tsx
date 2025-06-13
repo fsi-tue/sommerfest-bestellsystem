@@ -5,24 +5,10 @@ import { ChevronRight, Clock, Package, Pizza } from "lucide-react";
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useMemo } from "react";
 import useOrderStore from "@/app/zustand/order";
-import { OrderDocument, OrderStatus } from "@/model/order";
-import { TIME_SLOT_CONFIG } from "@/config";
-
-// Memoize date calculations outside component
-const getTimeRange = () => {
-    const start = new Date();
-    start.setHours(start.getHours() - 1);
-    start.setMinutes(0, 0, 0);
-
-    const end = new Date();
-    end.setHours(end.getHours() + 1);
-    end.setMinutes(59, 59, 999);
-
-    return { start, end };
-};
+import { OrderDocument } from "@/model/order";
+import { timeslotToLocalTime } from "@/lib/time";
 
 const Page = () => {
-    const { start, end } = useMemo(() => getTimeRange(), []);
     const { orders } = useOrderStore();
     const t = useTranslations();
 
@@ -30,8 +16,17 @@ const Page = () => {
         id: string;
         items: string[];
         timeslot: string;
-        status: OrderStatus;
+        status: string;
+        statusColor: string;
     }[]>([]);
+
+    const statusToColor: { [status: string]: string } = {
+        ordered: "primary",
+        inPreparation: "orange",
+        ready: "green",
+        delivered: "gray",
+        cancelled: "red"
+    }
 
     // Batch API calls for better performance
     const fetchOrderStatuses = useCallback(async (orderIds: string[]) => {
@@ -61,12 +56,17 @@ const Page = () => {
         const orderIds = orders.map(order => order._id.toString());
 
         fetchOrderStatuses(orderIds).then(statusMap => {
-            const processedOrders = orders.map((order: OrderDocument) => ({
-                id: order._id.toString(),
-                items: order.items.map(item => item.item.name),
-                timeslot: order.timeslot,
-                status: statusMap[order._id.toString()] || 'error',
-            }));
+            const processedOrders = orders.map((order: OrderDocument) => {
+                const orderStatus: string = statusMap[order._id.toString()] ?? 'error'
+
+                return ({
+                    id: order._id.toString(),
+                    items: order.items.map(item => item.item.name),
+                    timeslot: order.timeslot,
+                    status: t(`order_status.status.${orderStatus}`),
+                    statusColor: statusToColor[orderStatus] ?? 'gray'
+                });
+            });
 
             setSimpleOrders(processedOrders);
         });
@@ -93,7 +93,7 @@ const Page = () => {
         return (
             <div className="divide-y divide-gray-100">
                 {simpleOrders.map((order) => (
-                    <OrderItem key={`${order.id}-${order.timeslot}`} order={order}/>
+                    <OrderItem key={`${order.id}-${order.timeslot}`} order={order} t={t}/>
                 ))}
             </div>
         );
@@ -112,8 +112,6 @@ const Page = () => {
 
                 <TimelineSection
                     t={t}
-                    start={start}
-                    end={end}
                 />
             </div>
         </div>
@@ -151,26 +149,28 @@ const OrdersSection = React.memo(({ t, ordersCount, ordersList }: any) => (
     </div>
 ));
 
-const OrderItem = React.memo(({ order }: { order: any }) => (
+const OrderItem = React.memo(({ t, order }: { order: any }) => (
     <a
         href={`/order/${order.id}`}
-        className="block p-6 hover:bg-gray-50 transition-colors duration-200 group"
+        className={`block p-6 bg-${order.statusColor}-50 text-${order.statusColor}-800 hover:bg-${order.statusColor}-500 transition-colors group`}
     >
         <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-2xl flex items-center justify-center shrink-0">
+                    <div
+                        className="w-10 h-10 rounded-2xl bg-yellow-100 flex items-center justify-center shrink-0">
                         <Pizza className="w-5 h-5 text-yellow-600"/>
                     </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex flex-row items-center gap-3 mb-2">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                            Order #{order.id.slice(-8)}
+                            {t('order_status.order')} #{order.id.slice(-8)}
                         </p>
-                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <p className="items-center px-2 py-1 rounded-md bg-white text-xs text-gray-900 flex gap-1">
                             <Clock className="w-3 h-3"/>
-                            {order.timeslot}
+                            {timeslotToLocalTime(order.timeslot)}
                         </p>
-                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <p
+                            className="inline-flex items-center px-2 py-1 rounded-md bg-white text-xs text-gray-900 font-bold">
                             {order.status}
                         </p>
                     </div>
@@ -199,7 +199,7 @@ const OrderItem = React.memo(({ order }: { order: any }) => (
     </a>
 ));
 
-const TimelineSection = React.memo(({ t, start, end }: any) => (
+const TimelineSection = React.memo(({ t }: any) => (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100">
             <div className="flex items-center gap-3 mb-2">
@@ -215,11 +215,7 @@ const TimelineSection = React.memo(({ t, start, end }: any) => (
             </p>
         </div>
         <div className="p-6">
-            <Timeline
-                startDate={start}
-                stopDate={end}
-                every_x_seconds={TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS}
-            />
+            <Timeline/>
         </div>
     </div>
 ));

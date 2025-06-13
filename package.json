@@ -24,12 +24,14 @@
     "docker:down:volumes": "docker-compose -f docker-compose.yml -f docker-compose.db.yml -p pizza down --volumes"
   },
   "dependencies": {
+    "@date-fns/utc": "^2.1.0",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/js-yaml": "^4.0.9",
     "@yudiel/react-qr-scanner": "^2.3.1",
     "accept-language": "^3.0.20",
     "caniuse-lite": "^1.0.30001718",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.513.0",
     "mongoose": "^8.15.1",
@@ -47,10 +49,10 @@
     "@types/react": "^19.1.7",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.21",
+    "bun-types": "^1.2.15",
     "oxlint": "^0.18.1",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
-    "bun-types": "^1.2.15",
     "ts-morph": "^26.0.0",
     "typescript": "^5.8.3"
   },
