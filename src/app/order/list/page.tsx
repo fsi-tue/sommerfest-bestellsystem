@@ -149,7 +149,7 @@ const OrdersSection = React.memo(({ t, ordersCount, ordersList }: any) => (
     </div>
 ));
 
-const OrderItem = React.memo(({ t, order }: { order: any }) => (
+const OrderItem = React.memo(({ t, order }: { t: any, order: any }) => (
     <a
         href={`/order/${order.id}`}
         className={`block p-6 bg-${order.statusColor}-50 text-${order.statusColor}-800 hover:bg-${order.statusColor}-500 transition-colors group`}
@@ -215,7 +215,7 @@ const TimelineSection = React.memo(({ t }: any) => (
             </p>
         </div>
         <div className="p-6">
-            <Timeline/>
+            <Timeline noClick={true}/>
         </div>
     </div>
 ));

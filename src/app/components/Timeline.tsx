@@ -7,71 +7,95 @@ import useOrderStore from "@/app/zustand/order";
 import { AggregatedSlotData } from "@/model/timeslot";
 import { ORDER_AMOUNT_THRESHOLDS, TIME_SLOT_CONFIG } from "@/config";
 import { timeslotToLocalTime } from "@/lib/time";
+import { useShallow } from "zustand/react/shallow";
 
-const generateAllTimeslots = (startDate: Date, stopDate: Date): AggregatedSlotData[] => {
-    const timeSlots: AggregatedSlotData[] = [];
-    const currentTime = new Date(startDate);
-
-    while (currentTime <= stopDate) {
-        timeSlots.push({
-            time: currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            height: 0,
-        });
-        currentTime.setMinutes(currentTime.getMinutes() + 5);
-    }
-
-    return timeSlots;
-};
-
-const Timeline = () => {
+const Timeline = ({
+                      noClick
+                  }: { noClick: boolean } = { noClick: false }) => {
     const [timeslots, setTimeslots] = useState<AggregatedSlotData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const t = useTranslations();
 
-    // Timeline date range calculation (can be done outside component if static)
-    const { startDate, stopDate } = useMemo(() => {
-        const startDate = new Date()
-        startDate.setHours(startDate.getHours() - 1);
-        startDate.setMinutes(0, 0, 0);
+    const { setTimeslot, order, totalItems } = useOrderStore(
+        useShallow((state) => ({
+            setTimeslot: state.setTimeslot,
+            order: state.currentOrder,
+            totalItems: state.getTotalItemCount()
+        }))
+    );
 
-        const stopDate = new Date();
-        stopDate.setHours(stopDate.getHours() + 1);
-        stopDate.setMinutes(59, 59, 999);
-        return { startDate, stopDate };
+    // Generate fallback timeslots
+    const generateFallbackSlots = useCallback(() => {
+        const slots: AggregatedSlotData[] = [];
+        const start = new Date();
+        start.setHours(start.getHours() - 1, 0, 0, 0);
+
+        const end = new Date();
+        end.setHours(end.getHours() + 1, 59, 59, 999);
+
+        const current = new Date(start);
+        while (current <= end) {
+            slots.push({
+                time: current.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                height: 0,
+            });
+            current.setMinutes(current.getMinutes() + 5);
+        }
+        return slots;
     }, []);
 
-    const { setTimeslot } = useOrderStore();
     const fetchTimeline = useCallback(async () => {
         setError(null);
-        let apiSlots: AggregatedSlotData[] = [];
-        const response = await fetch('/api/timeline');
-        if (!response.ok) {
-            setError('Failed to fetch timeline data');
-            apiSlots = generateAllTimeslots(startDate, stopDate);
-        } else {
-            apiSlots = await response.json()
-            apiSlots = apiSlots.map((item: AggregatedSlotData) => ({
-                ...item,
-                time: timeslotToLocalTime(item.time),
-            }))
-        }
+        try {
+            const response = await fetch('/api/timeline');
+            let apiSlots: AggregatedSlotData[];
 
-        setTimeslots(apiSlots);
-        setIsLoading(false);
-    }, [startDate, stopDate, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS]);
+            if (!response.ok) {
+                setError('Failed to fetch timeline data');
+                apiSlots = generateFallbackSlots();
+            } else {
+                apiSlots = await response.json();
+                apiSlots = apiSlots.map(item => ({
+                    ...item,
+                    time: timeslotToLocalTime(item.time),
+                })) as AggregatedSlotData[];
+            }
+
+            setTimeslots(apiSlots);
+        } catch (err) {
+            setError('Network error');
+            setTimeslots(generateFallbackSlots());
+        } finally {
+            setIsLoading(false);
+        }
+    }, [generateFallbackSlots]);
+
+    // Enhanced timeslots with selected state highlighting
+    const enhancedTimeslots = useMemo(() => {
+        const selectedTime = timeslotToLocalTime(order.timeslot);
+        return timeslots.map(slot => ({
+            ...slot,
+            ...(slot.time === selectedTime && {
+                border: TIME_SLOT_CONFIG.BORDER_STYLES.CURRENT_SLOT_COLOR,
+                borderwidth: TIME_SLOT_CONFIG.BORDER_STYLES.CURRENT_SLOT_WIDTH,
+                color: TIME_SLOT_CONFIG.STATUS_COLORS.SELECT,
+                ordersAmount: totalItems > 0 ? totalItems : 1
+            })
+        }));
+    }, [timeslots, order.timeslot, totalItems]);
+
+    const handleBarClick = useCallback((event: any) => {
+        if (!noClick && event?.activeLabel) {
+            setTimeslot(event.activeLabel);
+        }
+    }, [noClick, setTimeslot]);
 
     useEffect(() => {
         fetchTimeline();
         const interval = setInterval(fetchTimeline, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS * 1000);
         return () => clearInterval(interval);
-    }, [fetchTimeline, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS]);
-
-    const handleBarClick = useCallback((event: any) => {
-        if (event?.activeLabel) {
-            setTimeslot(event.activeLabel);
-        }
-    }, []);
+    }, [fetchTimeline]);
 
     if (isLoading) {
         return (
@@ -85,22 +109,21 @@ const Timeline = () => {
         <div className="w-full">
             {error && (
                 <div className="mb-2 p-2 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-                    {t('components.timeline.warning', { error: error })}
+                    {t('components.timeline.warning', { error })}
                 </div>
             )}
 
             <ResponsiveContainer height={300}>
                 <BarChart
-                    data={timeslots}
+                    data={enhancedTimeslots}
                     onClick={handleBarClick}
                     margin={{ top: 5, right: 30, left: -30, bottom: 5 }}
                 >
                     <XAxis dataKey="time"/>
                     <YAxis domain={[0, ORDER_AMOUNT_THRESHOLDS.MAX]}/>
                     <Tooltip/>
-
                     <Bar dataKey="ordersAmount" name="Orders" fill="#007bff">
-                        {timeslots.map((entry, index) => (
+                        {enhancedTimeslots.map((entry, index) => (
                             <Cell
                                 key={`cell-${index}-${entry.time}`}
                                 fill={entry.color ?? "#007bff"}

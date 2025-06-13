@@ -4,13 +4,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle, Minus, Pizza, Plus, ScanIcon, XIcon } from 'lucide-react';
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/model/order';
-import { timeslotToDate, timeslotToLocalTime } from '@/lib/time';
+import { timeslotToUTCDate, timeslotToLocalTime } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
 import Button from '@/app/components/Button';
 import { ItemDocument } from "@/model/item";
 import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/components/layout/Heading";
 import ErrorMessage from "@/app/components/ErrorMessage";
+import { UTCDate } from "@date-fns/utc";
 
 interface ItemType {
     id: string;
@@ -432,7 +433,7 @@ const OrderManagerDashboard = () => {
         const updatedOrder = {
             ...order,
             status: ORDER_STATUSES.DELIVERED,
-            finishedAt: new Date()
+            finishedAt: new UTCDate()
         };
 
         try {
@@ -486,8 +487,8 @@ const OrderManagerDashboard = () => {
 
         // Sort by timeslot
         return filtered.sort((a, b) => {
-            const timeA = timeslotToDate(a.timeslot).getTime();
-            const timeB = timeslotToDate(b.timeslot).getTime();
+            const timeA = timeslotToUTCDate(a.timeslot).getTime();
+            const timeB = timeslotToUTCDate(b.timeslot).getTime();
             return timeA - timeB;
         });
     }, [orders, activeTab, searchFilter]);
@@ -497,7 +498,7 @@ const OrderManagerDashboard = () => {
         const now = Date.now()
         return filteredOrders.filter(order =>
             (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED) &&
-            timeslotToDate(order.timeslot).getTime() < now
+            timeslotToUTCDate(order.timeslot).getTime() < now
         );
     }, [filteredOrders]);
 
@@ -586,7 +587,7 @@ const OrderManagerDashboard = () => {
                 {filteredOrders.map(order => {
                     const now = Date.now()
                     const isOverdue = (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED)
-                        && timeslotToDate(order.timeslot).getTime() < now
+                        && timeslotToUTCDate(order.timeslot).getTime() < now
 
                     return (
                         <OrderCard

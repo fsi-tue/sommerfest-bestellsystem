@@ -1,6 +1,6 @@
 import { Document, model, Model, Schema, Types } from "mongoose";
 import { ItemDocument, itemSchema } from "./item";
-import { timeslotToDate } from "@/lib/time";
+import { timeslotToUTCDate } from "@/lib/time";
 
 // Status enums with better type safety
 export const ORDER_STATUSES = {
@@ -122,7 +122,7 @@ orderSchema.pre("save", function (next) {
         this.status = "inPreparation";
 
         // If the timeslot has passed, mark the order as ready
-        if (timeslotToDate(this.timeslot).getTime() <= new Date().getTime()) {
+        if (timeslotToUTCDate(this.timeslot).getTime() <= new Date().getTime()) {
             this.status = "ready";
         }
     } else if (uniqueStatuses.size === 1 && uniqueStatuses.has("ready")) {

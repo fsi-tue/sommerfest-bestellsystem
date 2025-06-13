@@ -145,7 +145,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({
                             <p className="mb-4 text-base font-light leading-relaxed text-gray-700">
                                 {t('cart.timeslot.subtitle')}
                             </p>
-                            <Timeline/>
+                            <Timeline noClick={false}/>
                         </div>
                     </div>
 

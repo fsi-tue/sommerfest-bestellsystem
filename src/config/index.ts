@@ -15,6 +15,7 @@ export const TIME_SLOT_CONFIG = {
         OK: '#0ce504',
         WARN: '#e59604',
         CRIT: '#B33',
+        SELECT: '#7b7be1',
     },
 
     BORDER_STYLES: {

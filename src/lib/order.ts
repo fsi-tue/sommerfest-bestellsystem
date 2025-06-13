@@ -1,6 +1,6 @@
 import { OrderDocument } from "@/model/order";
 import { ItemDocument } from "@/model/item";
-import { timeslotToDate } from "@/lib/time";
+import { timeslotToUTCDate } from "@/lib/time";
 
 export function ordersSortedByTimeslots(orders: OrderDocument[]): OrderDocument[] {
     const currentTime = new Date().getTime()
@@ -10,7 +10,7 @@ export function ordersSortedByTimeslots(orders: OrderDocument[]): OrderDocument[
     const filteredOrders = orders.filter(order => order.status !== "cancelled" && order.status !== "delivered");
 
     for (const order of filteredOrders) {
-        const tsDate = timeslotToDate(order.timeslot).getTime()
+        const tsDate = timeslotToUTCDate(order.timeslot).getTime()
         const diff = tsDate - currentTime;
         priorityByOrderId.set(order, diff)
     }

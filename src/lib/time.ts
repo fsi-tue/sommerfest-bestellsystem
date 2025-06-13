@@ -10,12 +10,15 @@ import {
     startOfMinute,
     subMinutes
 } from "date-fns";
-import { formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { ORDER_AMOUNT_THRESHOLDS, ORDER_CONFIG, TIME_SLOT_CONFIG } from "@/config";
 import { AggregatedSlotData } from "@/model/timeslot";
 import { OrderDocument } from "@/model/order";
 import { ItemDocument } from "@/model/item";
+import { UTCDate } from "@date-fns/utc";
 
+// Timezone of the user
+const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 export interface TimeSlot {
     time: string; // Formatted time like HH:mm
@@ -49,6 +52,26 @@ export const formatDateTime = (date: Date) => {
  * Get the current time slot
  * @param timeslot
  */
+export const timeslotToUTCDate = (timeslot: string): Date => {
+    if (!timeslot) {
+        return new UTCDate();
+    }
+
+    const [hour, minute] = timeslot.split(':');
+    const now = new UTCDate();
+
+    return setMilliseconds(
+        setSeconds(
+            setMinutes(
+                setHours(now, Number(hour)),
+                Number(minute)
+            ),
+            0
+        ),
+        0
+    );
+}
+
 export const timeslotToDate = (timeslot: string): Date => {
     if (!timeslot) {
         return new Date();
@@ -69,22 +92,37 @@ export const timeslotToDate = (timeslot: string): Date => {
     );
 }
 
+export const timeslotToLocalDate = (timeslot: string) => {
+    return toZonedTime(
+        new Date(`${new Date().toISOString().split('T')[0]}T${timeslot}:00Z`), // Today's date + UTC time
+        TZ
+    )
+}
 
-export const timeslotToLocalTime = (timeslot: string):string => {
-    // Use a fixed date to avoid date boundary issues
-    const utcDate = new Date(`1970-01-01T${timeslot}:00Z`);
-    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+/*  UTC "HH:mm" ──► local "HH:mm"  */
+export const timeslotToLocalTime = (timeslot: string | null) =>
+    timeslot ? formatInTimeZone(timeslotToLocalDate(timeslot), TZ, 'HH:mm') : null;
 
-    return formatInTimeZone(utcDate, userTimezone, 'HH:mm');
+/*  local "HH:mm" ──► UTC "HH:mm"  */
+export const timeslotToUTCTime = (timeslot: string | null) => {
+    if (!timeslot) {
+        return null;
+    }
+    const [h, m] = timeslot.split(':').map(Number);
+
+    // Use today's date with the specified local time
+    const today = new Date();
+    const localDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        h,
+        m
+    );
+
+    return formatInTimeZone(fromZonedTime(localDate, TZ), 'UTC', 'HH:mm');
 };
 
-export const timeslotToUTCTime = (timeslot: string) => {
-    // Parse as local time
-    const localDate = new Date(`1970-01-01T${timeslot}:00`);
-
-    // Format in UTC timezone
-    return formatInTimeZone(localDate, 'UTC', 'HH:mm');
-};
 
 /**
  * Aligns a given date to the start of its time slot and optionally shifts it by a number of slots.
@@ -136,7 +174,7 @@ export function aggregateOrdersIntoSlots(
             continue;
         } // Basic validation
 
-        const orderTime = timeslotToDate(order.timeslot); // Assuming this returns a valid Date
+        const orderTime = timeslotToUTCDate(order.timeslot); // Assuming this returns a valid Date
 
         for (let i = 0; i < timeSlots.length; i++) {
             const slot = timeSlots[i];
@@ -182,7 +220,7 @@ export function formatResponseData(
         }
 
         // This is needed to check if the timeslot is blocked
-        const timeslotTime = timeslotToDate(slot.time)
+        const timeslotTime = timeslotToUTCDate(slot.time)
 
         return {
             time: slot.time,
