@@ -58,7 +58,7 @@ async function dbConnect() {
     } catch (e) {
         cached.promise = null;
         console.error('❌ MongoDB Connection Error:', e);
-        throw e;
+        return null;
     }
 
     return cached.conn;
