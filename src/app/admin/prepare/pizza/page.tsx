@@ -150,8 +150,10 @@ const PizzaMakerStation = () => {
                                         <div
                                             key={`${order._id.toString()}-${item.item._id.toString()}-${item.status}-${index}`}
                                             className={`border px-3 py-1 rounded-lg text-sm flex items-center justify-between ${item.status !== ITEM_STATUSES.PREPPING ? 'bg-green-50 border-green-100 text-gray-400' : ''}`}>
-                                            {item.item.name} <span
-                                            className="bg-gray-100 py-0.5 px-1  rounded-2xl">{timeslotToLocalTime(order.timeslot)}</span>
+                                            {item.item.name} 
+                                            <span className="bg-gray-100 py-0.5 px-1  rounded-2xl">
+                                                {timeslotToLocalTime(order.timeslot)}
+                                            </span>
                                         </div>)
                                     )}
                             </>

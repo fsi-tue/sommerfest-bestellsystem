@@ -70,10 +70,7 @@ export const timeslotToDate = (timeslot: string): Date => {
 }
 
 
-export const timeslotToLocalTime = (timeslot: string | null) => {
-    if (!timeslot) {
-        return null;
-    }
+export const timeslotToLocalTime = (timeslot: string):string => {
     // Use a fixed date to avoid date boundary issues
     const utcDate = new Date(`1970-01-01T${timeslot}:00Z`);
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
