@@ -4,134 +4,101 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, Clock } from 'lucide-react';
 import { ITEM_STATUSES, ORDER_STATUSES, OrderDocument } from '@/model/order';
-import { ItemDocument } from "@/model/item";
-import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/components/layout/Heading";
 import { useTranslations } from 'next-intl';
 import { timeslotToLocalTime } from "@/lib/time";
-
-interface ItemType {
-    id: string;
-    name: string;
-    type: string;
-    dietary?: string;
-    color?: string;
-    emoji?: any;
-}
+import { useItems } from "@/lib/fetch/item";
+import { Loading } from "@/app/components/Loading";
+import { updateOrder, useOrders } from "@/lib/fetch/order";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const PizzaMakerStation = () => {
-    const [items, setItems] = useState<ItemType[]>([]);
-    const [orders, setOrders] = useState<OrderDocument[]>([]);
+    const queryClient = useQueryClient();
     const [upcomingPizzas, setUpcomingPizzas] = useState<Map<string, number>>(new Map());
     const [recentlyMade, setRecentlyMade] = useState<string[]>([]);
     const [error, setError] = useState('');
 
     const t = useTranslations();
 
+    const { data: items, error: itemsError, isFetching: isFetchingItems } = useItems()
+    const { data: orders, error: ordersError } = useOrders(5000)
+
+    const updateOrderMutation = useMutation({
+        mutationFn: async ({ orderId, order }: {
+            orderId: string;
+            order: OrderDocument
+        }) => updateOrder(orderId, order),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+    });
     useEffect(() => {
-        fetch("/api/pizza") // Consider moving fetch logic to a dedicated service/hook
-            .then(async response => {
-                const data = await response.json() as ItemDocument[]
-                setItems(data.map(item => ({
-                    id: item._id.toString(),
-                    name: item.name,
-                    type: item.type,
-                    dietary: item.dietary
-                }) as ItemType))
-            })
-            .catch(error => {
-                console.error('Error fetching items menu:', error);
-                setError(`Failed to load menu: ${error.message}`); // Provide more context
-            })
-    }, []);
-
-    // Fetch orders and calculate upcoming pizzas
-    const fetchOrders = async () => {
-        const response = await fetch('/api/order', { credentials: 'include', });
-        const data = await response.json();
-
-        if (!response.ok) {
-            setError(data.message ?? response.statusText);
-            return;
+        if (orders) {
+            const filteredOrders = orders.filter((order) => order.status === ORDER_STATUSES.ORDERED)
+            calculateUpcomingPizzas(filteredOrders);
         }
+    }, [items, orders]);
+    useEffect(() => {
+        if (itemsError) {
+            setError(itemsError.message)
+        } else if (ordersError) {
+            setError(ordersError.message)
+        }
+    }, [ordersError, itemsError]);
 
-        const filteredOrders = ordersSortedByTimeslots(data.filter((order: OrderDocument) => order.status === ORDER_STATUSES.ORDERED))
-        setOrders(filteredOrders);
-        calculateUpcomingPizzas(data);
-    };
+    if (isFetchingItems) {
+        return <Loading message={t('loading_menu')}/>
+    }
+
+    if (!items || !orders) {
+        return null;
+    }
 
     // Calculate what pizzas need to be made
     const calculateUpcomingPizzas = (orders: OrderDocument[]) => {
         const pizzaCount = new Map<string, number>();
-        orders.forEach(order => {
-            if (order.status === 'ordered' || order.status === 'inPreparation') {
-                order.items.forEach(item => {
-                    if (item.status === 'prepping' && item.item.type === 'pizza') {
-                        const key = item.item.name;
-                        pizzaCount.set(key, (pizzaCount.get(key) ?? 0) + 1);
-                    }
-                });
+        for (const order of orders) {
+            if (order.status !== ORDER_STATUSES.ORDERED && order.status !== ORDER_STATUSES.ACTIVE) {
+                continue;
             }
-        });
+
+            for (const item of order.items) {
+                if (item.status === 'prepping' && item.item.type === 'pizza') {
+                    const key = item.item.name;
+                    pizzaCount.set(key, (pizzaCount.get(key) ?? 0) + 1);
+                }
+            }
+        }
 
         setUpcomingPizzas(pizzaCount);
     };
 
     // Mark items as ready (ready to cook)
-    const markPizzaReady = async (pizzaType: ItemType) => {
+    const markPizzaReady = async (itemId: string) => {
         // Find the first order that needs this items type
         const targetOrder = orders.find(order =>
-            (order.status === 'ordered' || order.status === 'inPreparation') &&
+            (order.status === ORDER_STATUSES.ORDERED || order.status === ORDER_STATUSES.ACTIVE) &&
             order.items.some(item =>
-                item.item.name === pizzaType.name &&
+                item.item._id.toString() === itemId &&
                 item.status === 'prepping'
             )
         );
 
         if (!targetOrder) {
-            setError(`No pending orders for ${pizzaType.name}`);
+            setError(`No pending orders for that item found`);
             return;
         }
 
         // Find the specific item index
         const itemIndex = targetOrder.items.findIndex(item =>
-            item.item.name === pizzaType.name &&
+            item.item._id.toString() === itemId &&
             item.status === 'prepping'
         );
 
         // Update item status
-        const updatedOrder = { ...targetOrder };
+        const updatedOrder = { ...targetOrder } as OrderDocument;
         updatedOrder.items[itemIndex].status = ITEM_STATUSES.READY_TO_COOK;
 
-        const response = await fetch('/api/order', {
-            method: 'PUT',
-            credentials: 'include',
-            body: JSON.stringify({
-                id: targetOrder._id.toString(),
-                order: updatedOrder
-            })
-        });
-
-        if (!response.ok) {
-            setError('Failed to update order');
-            return;
-        }
-
-        // Add to a recently made list for visual feedback
-        setRecentlyMade([...recentlyMade, pizzaType.name]);
-        setTimeout(() => {
-            setRecentlyMade(prev => prev.filter(name => name !== pizzaType.name));
-        }, 2000);
-
-        // Refresh orders
-        fetchOrders();
+        updateOrderMutation.mutate({ orderId: targetOrder._id.toString(), order: updatedOrder })
     };
-
-    useEffect(() => {
-        fetchOrders();
-        const interval = setInterval(fetchOrders, 5000);
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <div>
@@ -142,22 +109,20 @@ const PizzaMakerStation = () => {
             <div className="flex flex-col md:flex-row gap-5">
                 <div className="bg-white p-4 md:p-8 rounded-2xl w-full md:w-1/3">
                     <div className="flex flex-col gap-2 max-h-[15rem] md:max-h-fit overflow-y-scroll ">
-                        {orders.map(order => (
-                            <>
-                                {order.items
-                                    .filter(item => item.status === ITEM_STATUSES.PREPPING)
-                                    .map((item, index) => (
-                                        <div
-                                            key={`${order._id.toString()}-${item.item._id.toString()}-${item.status}-${index}`}
-                                            className={`border px-3 py-1 rounded-lg text-sm flex items-center justify-between ${item.status !== ITEM_STATUSES.PREPPING ? 'bg-green-50 border-green-100 text-gray-400' : ''}`}>
-                                            {item.item.name} 
-                                            <span className="bg-gray-100 py-0.5 px-1  rounded-2xl">
+                        {orders.map(order => {
+                            return order.items
+                                .filter(item => item.status === ITEM_STATUSES.PREPPING)
+                                .map((item, index) => (
+                                    <div
+                                        key={`${order._id.toString()}-${item.item._id.toString()}-${item.status}-${index}`}
+                                        className={`border px-3 py-1 rounded-lg text-sm flex items-center justify-between ${item.status !== ITEM_STATUSES.PREPPING ? 'bg-green-50 border-green-100 text-gray-400' : ''}`}>
+                                        {item.item.name}
+                                        <span className="bg-gray-100 py-0.5 px-1  rounded-2xl">
                                                 {timeslotToLocalTime(order.timeslot)}
                                             </span>
-                                        </div>)
-                                    )}
-                            </>
-                        ))}
+                                    </div>)
+                                )
+                        })}
                     </div>
                     {upcomingPizzas.size === 0 && (
                         <span className="text-gray-400">{t('admin.prepare.no_open_orders')} 🎉</span>
@@ -167,28 +132,27 @@ const PizzaMakerStation = () => {
                 {/* Pizza buttons grid */}
                 <div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                        {items.map(pizza => {
-                            const pendingCount = upcomingPizzas.get(pizza.name) ?? 0;
-                            const isRecent = recentlyMade.includes(pizza.name);
+                        {items.map(item => {
+                            const pendingCount = upcomingPizzas.get(item.name) ?? 0;
+                            const isRecent = recentlyMade.includes(item.name);
 
                             return (
                                 <button
-                                    key={pizza.id}
+                                    key={`${item.id}-${item.name}`}
                                     className={`
-                aspect-4/3 ${pizza.color} bg-opacity-90 rounded-3xl p-3 md:p-4 
+                aspect-4/3 bg-opacity-90 rounded-3xl p-3 md:p-4 
                 shadow-2xl transform transition-all duration-200
                 ${pendingCount > 0 ? 'hover:scale-105 active:scale-95 cursor-pointer' : 'opacity-50 cursor-not-allowed'}
                 ${isRecent ? 'ring-4 ring-green-400 ring-opacity-75' : ''}
               `}
-                                    onClick={() => pendingCount > 0 && markPizzaReady(pizza)}
+                                    onClick={() => pendingCount > 0 && markPizzaReady(item._id.toString())}
                                     disabled={pendingCount === 0}
                                 >
                                     <div className="flex flex-col items-center justify-center h-full">
-                                        <div className="text-6xl md:text-8xl mb-4">{pizza.emoji}</div>
-                                        <h3 className="text-2xl md:text-3xl font-bold text-black">{pizza.name}</h3>
-                                        {pizza.dietary && (
+                                        <h3 className="text-2xl md:text-3xl font-bold text-black">{item.name}</h3>
+                                        {item.dietary && (
                                             <span
-                                                className="text-sm text-black opacity-75 mt-1">{pizza.dietary}</span>
+                                                className="text-sm text-black opacity-75 mt-1">{item.dietary}</span>
                                         )}
                                         {pendingCount > 0 && (
                                             <div className="mt-4 bg-white bg-opacity-25 rounded-2xl px-4 py-2">

@@ -10,9 +10,9 @@ interface FloatingOrderSummaryProps {
     onToggleOpen: () => void;
 }
 
-export const FloatingOrderSummary: React.FC<FloatingOrderSummaryProps> = ({
-                                                                              onToggleOpen,
-                                                                          }: FloatingOrderSummaryProps) => {
+export const FloatingOrderSummary = ({
+                                         onToggleOpen,
+                                     }: FloatingOrderSummaryProps) => {
     const t = useTranslations();
 
     const { totalItemsCount, currentOrderTotal, error } = useOrderStore(

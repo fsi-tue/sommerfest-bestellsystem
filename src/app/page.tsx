@@ -1,81 +1,57 @@
 'use client';
 
-import React, { useEffect, useState } from "react"; // Added useCallback, useMemo
+import React, { useState } from "react"; // Added useCallback, useMemo
 import WithSystemCheck from "@/app/WithSystemCheck"; // Keep HOC wrapper
-import { ItemDocument } from '@/model/item';
-
 import IntroductionSection from '@/app/components/order/IntroductionSection';
 import MenuSection from '@/app/components/order/MenuSection';
 import FloatingOrderSummary from '@/app/components/order/FloatingOrderSummary';
 import OrderSummary from "@/app/components/order/OrderSummary";
 
 import { useTranslations } from 'next-intl';
-import useOrderStore from '@/app/zustand/order'
+import { useItems } from "@/lib/fetch/item";
+import { Loading } from "@/app/components/Loading";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 const Page: React.FC = () => {
-    const [items, setItems] = useState<{ [_id: string]: ItemDocument[] }>({});
-    const [isMenuLoading, setIsMenuLoading] = useState(true); // Add loading state for menu
     const [ordersOpen, setOrdersOpen] = useState(false);
     const t = useTranslations();
-    const { setError } = useOrderStore();
 
-    // --- Data Fetching ---
-    useEffect(() => {
-        setIsMenuLoading(true);
-        fetch("/api/pizza") // Consider moving fetch logic to a dedicated service/hook
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    const error = data?.message ?? response?.statusText;
-                    throw new Error(error);
-                }
-                // Assuming data is already grouped by _id, otherwise group it here if needed
-                setItems(data);
-            })
-            .catch(error => {
-                const msg = t('errors.failed_to_load_menu', { message: error.message });
-                console.error(msg, error);
-                setError(msg);
-            })
-            .finally(() => {
-                setIsMenuLoading(false);
-            });
-    }, []);
+    const { status, data, error, isFetching } = useItems()
 
+    if (isFetching) {
+        return <Loading message={t('loading_menu')}/>
+    }
 
-    // --- Render ---
-    return (
-        // Using a fragment as the outer div is provided by layout.tsx
-        <div>
-            {!ordersOpen ? (
-                <div className="max-w-4xl mx-auto space-y-6">
-                    <IntroductionSection/>
+    if (error) {
+        return <ErrorMessage error={error.message}/>;
+    }
 
+    if (!data) {
+        return null;
+    }
+
+    if (!ordersOpen) {
+        return (
+            <div className="max-w-4xl mx-auto space-y-6">
+                <IntroductionSection/>
+
+                <div className="bg-white p-6 md:p-8 rounded-2xl shadow-md mb-24">
                     <div
-                        className="bg-white p-6 md:p-8 rounded-2xl shadow-md mb-24">
-                        {isMenuLoading && !Object.keys(items).length ? (
-                            <div className="text-center p-10">{t('loading_menu')}</div> // Show loading indicator until item is loaded
-                        ) : (
-                            <div
-                                className="flex flex-col md:flex-row justify-between">
-                                <MenuSection
-                                    items={items}
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {!isMenuLoading && (
-                        <FloatingOrderSummary
-                            onToggleOpen={() => setOrdersOpen(true)}
+                        className="flex flex-col md:flex-row justify-between">
+                        <MenuSection
+                            items={data}
                         />
-                    )}
+                    </div>
                 </div>
-            ) : (
-                <OrderSummary onClose={() => setOrdersOpen(false)}/>
-            )}
-        </div>
-    );
+
+                <FloatingOrderSummary
+                    onToggleOpen={() => setOrdersOpen(true)}
+                />
+            </div>
+        )
+    } else {
+        return <OrderSummary onClose={() => setOrdersOpen(false)}/>
+    }
 };
 
 export default WithSystemCheck(Page);

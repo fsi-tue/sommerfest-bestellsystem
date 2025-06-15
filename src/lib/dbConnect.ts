@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import { MONGO_CONFIG } from "@/config";
+import { MONGO_URI } from "@/config";
 
 declare global {
     var mongoose: any
 }
 
-let MONGODB_URI: string = process.env.MONGO_URI ?? MONGO_CONFIG.MONGO_URI;
+let MONGODB_URI: string = process.env.MONGO_URI ?? MONGO_URI;
 if (!MONGODB_URI || MONGODB_URI === '') {
     throw new Error(
         "Please define the MONGO_URI environment variable inside .env.local",
@@ -39,7 +39,7 @@ async function dbConnect() {
             heartbeatFrequencyMS: 10000, // Send heartbeat every 10 seconds
 
             // Additional performance settings
-            maxIdleTimeMS: 5*60*1000, // Close connections after 5 min of inactivity
+            maxIdleTimeMS: 5 * 60 * 1000, // Close connections after 5 min of inactivity
             compressors: 'zlib',
 
             // Retry settings

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dbConnect from "@/lib/dbConnect";
-import { requireAuth } from "@/lib/serverAuth";
+import { requireAuth } from "@/lib/auth/serverAuth";
 import { OrderModel } from "@/model/order";
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "bson";

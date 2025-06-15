@@ -25,7 +25,6 @@ const Header = () => {
     const headerEmoji = "🍕";
 
     return (
-        // Sticky header container, responsive padding, background, shadow, rounded corners, max width
         <header className="sticky top-0 bg-white shadow z-10 rounded-2xl p-2 md:p-4 mb-5 w-full max-w-7xl mx-auto">
             <div className="container mx-auto flex justify-between items-center px-2 md:px-4 py-4">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">

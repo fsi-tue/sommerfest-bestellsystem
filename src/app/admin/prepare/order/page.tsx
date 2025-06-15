@@ -4,14 +4,16 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle, Minus, Pizza, Plus, ScanIcon, XIcon } from 'lucide-react';
 import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
 import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/model/order';
-import { timeslotToUTCDate, timeslotToLocalTime } from '@/lib/time';
+import { timeslotToLocalTime, timeslotToUTCDate } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
 import Button from '@/app/components/Button';
-import { ItemDocument } from "@/model/item";
-import { ordersSortedByTimeslots } from "@/lib/order";
 import { Heading } from "@/app/components/layout/Heading";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { UTCDate } from "@date-fns/utc";
+import { Loading } from "@/app/components/Loading";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useItems } from "@/lib/fetch/item";
+import { updateOrder, useOrders } from "@/lib/fetch/order";
 
 interface ItemType {
     id: string;
@@ -24,30 +26,24 @@ interface ItemType {
 const PizzaInventory = ({
                             inventory,
                             onChangeItemStatus,
-                            onDeliverPizzas
                         }: {
     inventory: Map<string, number>;
     onChangeItemStatus: (assignments: Map<string, number>, status: ItemStatus) => void;
-    onDeliverPizzas: (assignments: Map<string, number>) => void;
 }) => {
     const [selectedPizzas, setSelectedPizzas] = useState<Map<string, number>>(new Map());
-    const [items, setItems] = useState<ItemType[]>([]);
 
-    useEffect(() => {
-        fetch("/api/pizza")
-            .then(async response => {
-                const data = await response.json() as ItemDocument[]
-                setItems(data.map(item => ({
-                    id: item._id.toString(),
-                    name: item.name,
-                    type: item.type,
-                    dietary: item.dietary
-                }) as ItemType))
-            })
-            .catch(error => {
-                console.error('Error fetching items menu:', error);
-            })
-    }, []);
+    const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useItems();
+    const items: ItemType[] = useMemo(() => {
+        if (!itemsData) {
+            return [];
+        }
+        return itemsData.map(item => ({
+            id: item._id.toString(),
+            name: item.name,
+            type: item.type,
+            dietary: item.dietary
+        }));
+    }, [itemsData]);
 
     const handleQuantityChange = (type: string, delta: number) => {
         const currentSelected = selectedPizzas.get(type) ?? 0;
@@ -69,6 +65,13 @@ const PizzaInventory = ({
 
     const totalSelected = Array.from(selectedPizzas.values()).reduce((sum, count) => sum + count, 0);
 
+    if (itemsLoading) {
+        return <Loading/>;
+    }
+    if (itemsError) {
+        return <ErrorMessage error={itemsError.message}/>;
+    }
+
     return (
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-6">
@@ -76,17 +79,10 @@ const PizzaInventory = ({
                     <div className="flex items-center gap-2">
                         <Button
                             onClick={() => handleStatus(ITEM_STATUSES.READY)}
-                            className=" text-black px-6 py-3 border rounded-2xl font-medium transition-colors flex items-center gap-2"
+                            className="text-black px-6 py-3 border rounded-2xl font-medium transition-colors flex items-center gap-2"
                         >
                             <CheckCircle className="w-5 h-5"/>
                             Mark {totalSelected} Pizza{totalSelected > 1 ? 's' : ''} ready
-                        </Button>
-                        <Button
-                            onClick={() => handleStatus(ITEM_STATUSES.DELIVERED)}
-                            className=" bg-green-400 text-white px-6 py-3 border rounded-2xl font-medium transition-colors flex items-center gap-2"
-                        >
-                            <CheckCircle className="w-5 h-5"/>
-                            Mark {totalSelected} Pizza{totalSelected > 1 ? 's' : ''} delivered
                         </Button>
                     </div>
                 )}
@@ -95,7 +91,7 @@ const PizzaInventory = ({
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {items.map((item) => {
                     const selected = selectedPizzas.get(item.name) ?? 0;
-                    const count = inventory.get(item.name) ?? 0
+                    const count = inventory.get(item.name) ?? 0;
 
                     return (
                         <div
@@ -106,9 +102,7 @@ const PizzaInventory = ({
                         >
                             <div className="text-center mb-3">
                                 <h3 className="font-bold text-lg capitalize">{item.name}</h3>
-                                <p className="text-3xl font-bold text-gray-800 mt-2">
-                                    {count}
-                                </p>
+                                <p className="text-3xl font-bold text-gray-800 mt-2">{count}</p>
                                 <p className="text-sm text-gray-500">available</p>
                             </div>
 
@@ -124,9 +118,7 @@ const PizzaInventory = ({
                                     <Minus className="w-5 h-5"/>
                                 </Button>
 
-                                <span className="w-12 text-center font-bold text-lg">
-                  {selected}
-                </span>
+                                <span className="w-12 text-center font-bold text-lg">{selected}</span>
 
                                 <Button
                                     onClick={() => handleQuantityChange(item.name, +1)}
@@ -147,7 +139,7 @@ const PizzaInventory = ({
     );
 };
 
-// Simplified Order Card
+// Simplified Order Card (unchanged)
 const OrderCard = ({
                        order,
                        isOverdue,
@@ -193,25 +185,25 @@ const OrderCard = ({
                 ))}
             </div>
 
-            <div className="mt-3">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                        className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${progress}%` }}
-                    />
+            {(order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED) && (
+                <div className="mt-3">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">{readyItems}/{totalItems} ready</p>
                 </div>
-                <p className="text-xs text-gray-600 mt-1">{readyItems}/{totalItems} ready</p>
-            </div>
+            )}
 
             <div className="mt-3 flex flex-row gap-2">
-                {(order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED) &&
-                    (
-                        <Button onClick={() => onDeliver(order._id.toString())} rateLimitMs={500}
-                                className={`${order.isPaid ? 'bg-green-400' : 'bg-red-500'} text-white px-3 py-1 border rounded-2xl font-medium transition-colors flex items-center gap-2`}>
-                            Deliver
-                        </Button>
-
-                    )}
+                {(order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED) && (
+                    <Button onClick={() => onDeliver(order._id.toString())} rateLimitMs={500}
+                            className={`${order.isPaid ? 'bg-green-400' : 'bg-red-500'} text-white px-3 py-1 border rounded-2xl font-medium transition-colors flex items-center gap-2`}>
+                        Deliver
+                    </Button>
+                )}
                 <Button onClick={() => onPay(order._id.toString())} rateLimitMs={500}
                         className={`px-3 py-1 border rounded-2xl font-medium transition-colors flex items-center gap-2 ${
                             !order.isPaid ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
@@ -223,7 +215,7 @@ const OrderCard = ({
     );
 };
 
-// QR Scanner Modal
+// QR Scanner Modal (unchanged)
 const QRScannerModal = ({ isOpen, onClose, onScan }: {
     isOpen: boolean;
     onClose: () => void;
@@ -259,31 +251,48 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
 };
 
 const OrderManagerDashboard = () => {
-    const [orders, setOrders] = useState<OrderDocument[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
     const [inventory, setInventory] = useState<Map<string, number>>(new Map());
     const [searchFilter, setSearchFilter] = useState('');
     const [showScanner, setShowScanner] = useState(false);
     const [activeTab, setActiveTab] = useState<'active' | 'ready' | 'completed'>('active');
-    const fetchOrders = async () => {
-        const response = await fetch('/api/order', { credentials: 'include', });
-        const data = await response.json();
 
-        if (!response.ok) {
-            const error = data.message ?? response.statusText
-            console.error(error)
-            setError(error)
-            return;
+    const { data: orders, error, isFetching } = useOrders(5000);
+
+    // Mutations
+    const payMutation = useMutation({
+        mutationFn: async (orderId: string) => {
+            const isPaid = orders?.find((order) => order._id.toString() === orderId)?.isPaid ?? false;
+            const response = await fetch(`/api/order/${orderId}/pay`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isPaid: !isPaid })
+            });
+            return response.json();
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+    });
+
+    const updateOrderMutation = useMutation({
+        mutationFn: async ({ orderId, order }: {
+            orderId: string;
+            order: OrderDocument
+        }) => updateOrder(orderId, order),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+    });
+
+    // Update inventory when orders change
+    useEffect(() => {
+        if (orders) {
+            updateInventoryFromOrders(orders);
         }
+    }, [orders]);
 
-        setOrders(data);
-        updateInventoryFromOrders(data);
-    };
-    const updateInventoryFromOrders = (orders: OrderDocument[]) => {
+    function updateInventoryFromOrders(orders: OrderDocument[]) {
         const newInventory = new Map<string, number>();
-
         for (const order of orders) {
-            if (order.status === ORDER_STATUSES.READY || order.status === ORDER_STATUSES.DELIVERED || order.status === ORDER_STATUSES.CANCELLED) {
+            if (order.status === ORDER_STATUSES.READY_FOR_PICKUP || order.status === ORDER_STATUSES.COMPLETED || order.status === ORDER_STATUSES.CANCELLED) {
                 continue;
             }
             order.items.forEach(item => {
@@ -293,44 +302,20 @@ const OrderManagerDashboard = () => {
                 }
             });
         }
-
         setInventory(newInventory);
-    };
-    const handlePayment = (orderId: string) => {
-        const isPaid = orders.find((order) => order._id.toString() === orderId)?.isPaid ?? false
-
-        fetch(`/api/order/${orderId}/pay`, {
-            method: 'PUT',
-            credentials: 'include',
-            body: JSON.stringify({ isPaid: !isPaid })
-        })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    const error = data?.message ?? response.statusText;
-                    throw new Error(error);
-                }
-                fetchOrders()
-            })
-            .catch(error => console.error('Error fetching orders:', error));
     }
 
-    const handleItemStatus = async (assignments: Map<string, number>, status: ItemStatus) => {
-        // Create a new Map to avoid mutating the original
-        const updatedAssignments = new Map(assignments);
+    async function handleItemStatus(assignments: Map<string, number>, status: ItemStatus) {
+        if (!orders) {
+            return;
+        }
 
-        // Track which orders need updating
-        const ordersToUpdate = new Set<typeof orders[0]>();
-
-        // Sort orders by timeslot
-        const sortedOrders = ordersSortedByTimeslots(orders);
-
+        const ordersToUpdate = new Set<OrderDocument>();
         assignments.forEach((count, type) => {
             let remainingCount = count;
 
-            // Iterate through orders and items
-            for (const order of sortedOrders) {
-                if (order.status === ORDER_STATUSES.DELIVERED || order.status === ORDER_STATUSES.CANCELLED) {
+            for (const order of orders) {
+                if (order.status === ORDER_STATUSES.COMPLETED || order.status === ORDER_STATUSES.CANCELLED) {
                     continue;
                 }
 
@@ -340,7 +325,6 @@ const OrderManagerDashboard = () => {
                         remainingCount--;
                         ordersToUpdate.add(order);
 
-                        // Break early if we've assigned all items of this type
                         if (remainingCount === 0) {
                             break;
                         }
@@ -350,127 +334,62 @@ const OrderManagerDashboard = () => {
                     break;
                 }
             }
-
-            // Update the assignments map with remaining count
-            updatedAssignments.set(type, remainingCount);
         });
 
-        // Send update requests for each modified order
-        Array.from(ordersToUpdate).forEach(order => {
-            fetch('/api/order', {
-                method: 'PUT',
-                credentials: 'include',
-                body: JSON.stringify({
-                    id: order._id.toString(),
-                    order: order
-                })
+        // Update orders using mutation
+        for (const order of Array.from(ordersToUpdate)) {
+            updateOrderMutation.mutate({
+                orderId: order._id.toString(),
+                order
             });
-
-            // Refresh orders
-            fetchOrders();
-        });
-
-
-        return updatedAssignments;
-    };
-
-    const handleDeliverPizzas = async (assignments: Map<string, number>) => {
-        const newInventory = new Map(inventory);
-        assignments.forEach((count, type) => {
-            const current = newInventory.get(type) || 0;
-            const remaining = current - count;
-            if (remaining <= 0) {
-                newInventory.delete(type);
-            } else {
-                newInventory.set(type, remaining);
-            }
-        });
-        setInventory(newInventory);
-
-        // Update orders
-        const updatedOrders = [...orders];
-        assignments.forEach((count, type) => {
-            let remaining = count;
-
-            for (const order of updatedOrders) {
-                if (remaining === 0) {
-                    break;
-                }
-
-                for (const item of order.items) {
-                    if (remaining === 0) {
-                        break;
-                    }
-
-                    if (item.item.name === type && item.status === ITEM_STATUSES.READY) {
-                        item.status = ITEM_STATUSES.DELIVERED;
-                        remaining--;
-                    }
-                }
-            }
-        });
-
-        setOrders(updatedOrders);
-
-        // Check for completed orders
-        for (const order of updatedOrders) {
-            const allDelivered = order.items.every(item =>
-                item.status === ITEM_STATUSES.DELIVERED
-            );
-
-            if (allDelivered && order.status !== ORDER_STATUSES.DELIVERED) {
-                await markOrderDelivered(order._id.toString());
-            }
         }
-    };
+    }
 
-    const markOrderDelivered = async (orderId: string) => {
-        const order = orders.find(o => o._id.toString() === orderId);
+    function markOrderDelivered(orderId: string) {
+        const order = orders?.find(o => o._id.toString() === orderId);
         if (!order) {
             return;
         }
 
         const updatedOrder = {
             ...order,
-            status: ORDER_STATUSES.DELIVERED,
+            status: ORDER_STATUSES.COMPLETED,
             finishedAt: new UTCDate()
-        };
+        } as OrderDocument;
 
-        try {
-            await fetch('/api/order', {
-                method: 'PUT',
-                credentials: 'include',
-                body: JSON.stringify({ id: orderId, order: updatedOrder })
-            });
+        updateOrderMutation.mutate({ orderId, order: updatedOrder });
+    }
 
-            fetchOrders();
-        } catch (error) {
-            console.error('Error updating order:', error);
-        }
-    };
+    function handlePayment(orderId: string) {
+        payMutation.mutate(orderId);
+    }
 
-    const handleBarcodeScan = (barcode: IDetectedBarcode[]) => {
+    function handleBarcodeScan(barcode: IDetectedBarcode[]) {
         const linkToOrder = barcode[0].rawValue;
         const extractedId = linkToOrder.split('/').pop();
         if (extractedId) {
             setSearchFilter(extractedId);
         }
-    };
+    }
 
     const filteredOrders = useMemo(() => {
+        if (!orders) {
+            return [];
+        }
+
         let filtered = orders;
 
         // Tab filter
         if (activeTab === 'active') {
             filtered = filtered.filter(o =>
                 o.status === ORDER_STATUSES.ORDERED ||
-                o.status === ORDER_STATUSES.IN_PREPARATION
+                o.status === ORDER_STATUSES.ACTIVE
             );
         } else if (activeTab === 'ready') {
-            filtered = filtered.filter(o => o.status === ORDER_STATUSES.READY);
+            filtered = filtered.filter(o => o.status === ORDER_STATUSES.READY_FOR_PICKUP);
         } else if (activeTab === 'completed') {
             filtered = filtered.filter(o =>
-                o.status === ORDER_STATUSES.DELIVERED ||
+                o.status === ORDER_STATUSES.COMPLETED ||
                 o.status === ORDER_STATUSES.CANCELLED
             );
         }
@@ -481,7 +400,10 @@ const OrderManagerDashboard = () => {
             filtered = filtered.filter(order =>
                 order.name.toLowerCase().includes(search) ||
                 order._id.toString().includes(search) ||
-                order.items.some(item => item.item.name.toLowerCase().includes(search) || item.item.dietary?.toLowerCase()?.includes(search))
+                order.items.some(item =>
+                    item.item.name.toLowerCase().includes(search) ||
+                    item.item.dietary?.toLowerCase()?.includes(search)
+                )
             );
         }
 
@@ -495,18 +417,20 @@ const OrderManagerDashboard = () => {
 
     // Check for overdue orders
     const overdueOrders = useMemo(() => {
-        const now = Date.now()
+        const now = Date.now();
         return filteredOrders.filter(order =>
-            (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED) &&
+            (order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED) &&
             timeslotToUTCDate(order.timeslot).getTime() < now
         );
     }, [filteredOrders]);
 
-    useEffect(() => {
-        fetchOrders();
-        const interval = setInterval(fetchOrders, 5000);
-        return () => clearInterval(interval);
-    }, []);
+    if (error) {
+        return <ErrorMessage error={error.message}/>;
+    }
+
+    if (isFetching && !orders) {
+        return <Loading/>;
+    }
 
     return (
         <>
@@ -530,19 +454,14 @@ const OrderManagerDashboard = () => {
                 <div className="bg-red-100 border-2 border-red-300 rounded-xl p-4 mb-6 flex items-center gap-3">
                     <AlertTriangle className="w-6 h-6 text-red-600"/>
                     <span className="font-medium text-red-800">
-            {overdueOrders.length} order{overdueOrders.length > 1 ? 's' : ''} overdue!
-          </span>
+                        {overdueOrders.length} order{overdueOrders.length > 1 ? 's' : ''} overdue!
+                    </span>
                 </div>
-            )}
-
-            {error && (
-                <ErrorMessage error={error}/>
             )}
 
             <div className="mb-8">
                 <PizzaInventory
                     inventory={inventory}
-                    onDeliverPizzas={handleDeliverPizzas}
                     onChangeItemStatus={handleItemStatus}
                 />
             </div>
@@ -585,9 +504,9 @@ const OrderManagerDashboard = () => {
             {/* Orders Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredOrders.map(order => {
-                    const now = Date.now()
-                    const isOverdue = (order.status !== ORDER_STATUSES.DELIVERED && order.status !== ORDER_STATUSES.CANCELLED)
-                        && timeslotToUTCDate(order.timeslot).getTime() < now
+                    const now = Date.now();
+                    const isOverdue = (order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED)
+                        && timeslotToUTCDate(order.timeslot).getTime() < now;
 
                     return (
                         <OrderCard

@@ -102,8 +102,8 @@ translation:
     manage:
       database:
         title: Database >w<
-        enable_system: Enabwe system uwu
-        prepare_database: Initiawize DB nya~
+        enable_changes: Enabwe changes uwu
+        reset_database: Weset DB nya~
         delete_database: Dewete DB TwT
         system_state: 'System: {state}'
 

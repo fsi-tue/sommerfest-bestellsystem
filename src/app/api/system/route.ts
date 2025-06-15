@@ -1,28 +1,34 @@
-// Fill the database
-import { requireAuth } from "@/lib/serverAuth";
 import dbConnect from "@/lib/dbConnect";
-import { System } from "@/model/system";
-import { CONSTANTS } from "@/config";
+import { getSystem, requireAuth } from "@/lib/auth/serverAuth";
+import { UTCDate } from "@date-fns/utc";
+import { SystemDocument, SystemModel } from "@/model/system";
 import { NextResponse } from "next/server";
+import { SYSTEM_NAME } from "@/config";
 
-// Thanks to https://medium.com/phantom3/next-js-14-build-prerender-error-fix-f3c51de2fe1d
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+/**
+ * GET the system status
+ * @constructor
+ */
+export async function GET(request: Request) {
+    await dbConnect();
+    return Response.json({ system: await getSystem(), timestamp: new UTCDate() });
+}
 
 /**
  * Set the system status
  * @constructor
  */
-export async function POST(
+export async function PUT(
     request: Request,
-    { params }: { params: Promise<{ status: string }> }
 ) {
     await dbConnect();
     await requireAuth();
 
     // Set the system status
-    const system = await System.findOne({ name: CONSTANTS.SYSTEM_NAME });
+    const system = await SystemModel.findOne({ name: SYSTEM_NAME });
 
     if (!system) {
         console.error("Unable to find system");
@@ -31,8 +37,8 @@ export async function POST(
         }, { status: 500 });
     }
 
-    const { status } = await params;
-    system.status = status as 'active' | 'inactive' | 'maintenance';
+    const updatedSystem = (await request.json()) as SystemDocument
+    Object.assign(system, updatedSystem)
 
     // Save the updated system
     await system.save();

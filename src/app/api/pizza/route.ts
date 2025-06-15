@@ -1,6 +1,6 @@
 import { ItemModel } from "@/model/item";
 import dbConnect from "@/lib/dbConnect";
-import { requireAuth } from "@/lib/serverAuth";
+import { requireAuth } from "@/lib/auth/serverAuth";
 import { NextResponse } from "next/server";
 
 

@@ -4,8 +4,9 @@ import Footer from "@/app/components/layout/Footer";
 import "./globals.css";
 import { Metadata } from "next";
 import React from "react";
-import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import Providers from "@/app/providers";
+import { NextIntlClientProvider } from "next-intl";
 
 
 export const metadata: Metadata = {
@@ -25,11 +26,13 @@ export default async function RootLayout({
         <body>
         <main className="max-h-fit flex flex-col bg-gray-50">
             <NextIntlClientProvider>
-                <Header/>
-                <div className="p-4 md:p-8 my-5 w-full max-w-7xl mx-auto min-h-screen">
-                    {children}
-                </div>
-                <Footer/>
+                <Providers>
+                    <Header/>
+                    <div className="p-4 md:p-8 my-5 w-full max-w-7xl mx-auto min-h-screen">
+                        {children}
+                    </div>
+                    <Footer/>
+                </Providers>
             </NextIntlClientProvider>
         </main>
         </body>
