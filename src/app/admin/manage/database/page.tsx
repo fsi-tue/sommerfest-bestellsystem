@@ -66,10 +66,6 @@ export default function ManagePage() {
         }
     }, [data])
 
-    const handleConfigChange = (e) => {
-        setConfigData(e.target.value);
-    };
-
     const saveConfig = () => {
         if (!data) {
             return;
@@ -224,7 +220,9 @@ export default function ManagePage() {
                         <div className="relative">
                     <textarea
                         value={configData}
-                        onChange={handleConfigChange}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                            setConfigData(e.target.value);
+                        }}
                         className="w-full h-80 p-4 text-sm font-mono bg-slate-900 text-slate-100 rounded-2xl border border-slate-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
                         placeholder="Enter your JSON configuration here..."
                         spellCheck={false}

@@ -18,7 +18,7 @@ let currentConfig: EditableConfig = { ...DEFAULT_EDITABLE_CONFIG };
  * Loads configuration from MongoDB.
  * If no configuration is found for the SYSTEM_NAME, it creates one with default values.
  */
-export async function initializeAndLoadConfig(): Promise<EditableConfig> {
+async function initializeAndLoadConfig(): Promise<EditableConfig> {
     try {
         let systemDoc = await SystemModel.findOne({ name: SYSTEM_NAME });
 

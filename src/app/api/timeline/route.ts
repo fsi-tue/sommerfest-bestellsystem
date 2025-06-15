@@ -15,7 +15,7 @@ import {
 import { TimeSlot, timeslotToUTCDate } from "@/lib/time";
 import { AggregatedSlotData } from "@/model/timeslot";
 import { OrderConfig, TimeSlotConfig } from "@/model/config";
-import { getSystem, requireActiveSystem } from "@/lib/auth/serverAuth";
+import { getSystem } from "@/lib/auth/serverAuth";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -35,7 +35,7 @@ async function fetchAndMapItems(): Promise<Record<string, ItemDocument>> {
 /**
  * Aligns a given date to the start of its time slot and optionally shifts it by a number of slots.
  */
-export function getAlignedSlotStartTime(date: Date, slotSizeMinutes: number, pastSlotsToOffset: number): Date {
+function getAlignedSlotStartTime(date: Date, slotSizeMinutes: number, pastSlotsToOffset: number): Date {
     let alignedTime = startOfMinute(date);
     const minutesOverSlot = alignedTime.getMinutes() % slotSizeMinutes;
     alignedTime = subMinutes(alignedTime, minutesOverSlot);
@@ -46,7 +46,7 @@ export function getAlignedSlotStartTime(date: Date, slotSizeMinutes: number, pas
 /**
  * Generates an array of time slots.
  */
-export function generateTimeSlots(
+function generateTimeSlots(
     initialStartTime: Date,
     numSlots: number,
     slotSizeMinutes: number
@@ -70,7 +70,7 @@ export function generateTimeSlots(
 /**
  * Aggregates orders into their respective time slots, summing item sizes.
  */
-export function aggregateOrdersIntoSlots(
+function aggregateOrdersIntoSlots(
     orders: OrderDocument[],
     timeSlots: TimeSlot[],
     itemsById: Record<string, ItemDocument>
@@ -109,7 +109,7 @@ export function aggregateOrdersIntoSlots(
 /**
  * Formats the aggregated slot data for the API response.
  */
-export function formatResponseData(
+function formatResponseData(
     ORDER_CONFIG: OrderConfig,
     TIME_SLOT_CONFIG: TimeSlotConfig,
     timeSlots: TimeSlot[],
