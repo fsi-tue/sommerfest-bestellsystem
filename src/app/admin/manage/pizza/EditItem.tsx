@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Item, ItemDocument } from "@/model/item";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import Button from "@/app/components/Button";
-import { ITEM_CONFIG } from "@/config";
 import { useTranslations } from "next-intl";
 
 
@@ -22,7 +21,6 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
             price: 0,
             size: 1,
             enabled: true,
-            max: ITEM_CONFIG.MAX_ITEMS
         }
     );
     const t = useTranslations();
@@ -95,9 +93,6 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
 											className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localItem.type}</span>}
                     {localItem.dietary && <span
 											className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">{localItem.dietary}</span>}
-                    <span className="text-sm font-medium text-gray-700 py-1 px-3 rounded-full bg-gray-200">
-        {localItem.max} items available
-      </span>
                 </div>
                 <div className="flex gap-2 mb-4">
                     {!isNew ? (
@@ -177,17 +172,6 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                             />
                             <span className="ml-2">€</span>
                         </div>
-                    </div>
-                    <div className="flex flex-col">
-                        <label
-                            className="text-sm font-semibold mb-1">{t('admin.manage.pizza.edit_item.max_items_available')}</label>
-                        <input
-                            type="number"
-                            value={localItem.max}
-                            onChange={(event) => updateItem({ max: Number.parseInt(event.target.value) })}
-                            className="border border-gray-100 px-3 py-2 rounded-md w-full focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="Max Items"
-                        />
                     </div>
                 </div>
             </div>

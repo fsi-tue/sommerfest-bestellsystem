@@ -1,39 +1,33 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { Database } from "lucide-react";
+import { Database, MessageSquare } from "lucide-react";
 import Button from "@/app/components/Button";
 import { Heading } from "@/app/components/layout/Heading";
 
 import { useTranslations } from 'next-intl';
-import { SystemStatus } from "@/model/system";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { System } from "@/model/system";
+import { useSystem } from "@/lib/fetch/system";
+import { Loading } from "@/app/components/Loading";
+import ErrorMessage from "@/app/components/ErrorMessage";
+import { EditableConfig } from "@/model/config";
+
 
 export default function ManagePage() {
+    const queryClient = useQueryClient();
     const [message, setMessage] = useState('');
-    const [enable, setEnable] = useState(false)
-    const states: SystemStatus[] = ['active', 'inactive']
-    const [status, setStatus] = useState<'active' | 'inactive' | 'maintenance'>('active')
+    const [enableChanges, setEnable] = useState(false);
+    const [systemMessage, setSystemMessage] = useState('');
+    const [configData, setConfigData] = useState('');
     const t = useTranslations();
 
-    const deleteDatabase = () => {
-        if (!enable) {
+    const resetSystem = () => {
+        if (!enableChanges) {
             return;
         }
 
-        fetch('/api/manage/db/delete', {
-            method: 'POST',
-            credentials: 'include',
-        })
-            .then(() => setMessage('Database deleted'))
-            .catch((error) => setMessage(error))
-    }
-
-    const prepareDatabase = () => {
-        if (!enable) {
-            return;
-        }
-
-        fetch('/api/manage/db/prepare', {
+        fetch('/api/system/reset', {
             method: 'POST',
             credentials: 'include',
         })
@@ -44,86 +38,207 @@ export default function ManagePage() {
             })
     }
 
-    const getSystemStatus = () => {
-        fetch('/api/manage/system/status', {
-            credentials: 'include',
-        })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    const error = data?.message ?? response.statusText;
-                    throw new Error(error);
-                }
-                return data;
-            })
-            .then(data => setStatus(data.status))
-            .catch((error) => {
-                console.error('There was an error!', error);
-                setMessage('Error getting system status')
-            })
-    }
+    const { data, error, isFetching } = useSystem();
+
+    const systemMutation = useMutation({
+        mutationFn: async (system: System) => {
+            const response = await fetch(`/api/system`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(system)
+            });
+            return response.json();
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['system'] }),
+    });
 
     useEffect(() => {
-        getSystemStatus()
-    }, [])
+        if (data) {
+            if (data.status.message) {
+                setMessage(data.status.message);
+            } else if (data.status.active) {
+                setMessage('Active System');
+            } else {
+                setMessage('Inactive System');
+            }
+            setConfigData(JSON.stringify(data.config, null, 2));
+        }
+    }, [data])
 
-    const updateSystemStatus = (status: SystemStatus) => {
-        fetch(`/api/manage/system/status/${status}`, {
-            method: 'POST',
-            credentials: 'include',
-        })
-            .then(() => {
-                setMessage(`System ${status}`)
-                setStatus(status)
-            })
-            .catch((error) => {
-                console.error('Error updating system status', error);
-                setMessage(error)
-            })
+    const handleConfigChange = (e) => {
+        setConfigData(e.target.value);
+    };
+
+    const saveConfig = () => {
+        if (!data) {
+            return;
+        }
+
+        try {
+            const parsedConfig = JSON.parse(configData) as EditableConfig;
+            systemMutation.mutate({ ...data, config: parsedConfig })
+            console.log('Saving config:', parsedConfig);
+        } catch (error) {
+            console.error('Invalid JSON:', error);
+        }
+    };
+
+    if (isFetching) {
+        return <Loading message={t('withsystemcheck.check_system_status')}/>
     }
-    return (
-        <div>
-            <Heading title={t('admin.manage.database.title')} description={message}
-                     icon={<Database className="w-10 h-10 text-primary-500"/>}/>
 
-            <div className="w-full px-2 py-2">
-                <div className="bg-white border border-gray-100 rounded-2xl shadow-md p-4 relative">
-                    <div className="mb-4 flex items-center gap-4">
-                        <label htmlFor="enable" className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('admin.manage.database.enable_system')}
-                        </label>
-                        <input
-                            type="checkbox"
-                            id="enable"
-                            name="enable"
-                            checked={enable}
-                            onChange={() => setEnable(!enable)}
-                            className="h-4 w-4 text-primary-950 focus:ring-primary-800 border-gray-100 rounded"
-                        />
-                    </div>
-                    <div className="flex gap-2 flex-wrap justify-start">
-                        <Button
-                            onClick={prepareDatabase}
-                            className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-gray-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            {t('admin.manage.database.prepare_database')}
-                        </Button>
-                        <Button
-                            onClick={deleteDatabase}
-                            className="rounded-full px-4 py-2 text-sm font-medium transition duration-200 bg-red-300 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            {t('admin.manage.database.delete_database')}
-                        </Button>
-                    </div>
-                    <div className="flex gap-2 flex-wrap justify-start mt-4">
-                        {states.map(state => (
+    if (error) {
+        return <ErrorMessage error={error.message}/>;
+    }
+
+    if (!data) {
+        return null;
+    }
+
+    return (
+        <div className="min-h-screen">
+            <Heading
+                title={t('admin.manage.database.title')}
+                description={message}
+                icon={<Database className="size-10 text-blue-600"/>}
+            />
+
+            <div className="container mx-auto px-4 py-6 max-w-4xl">
+                <div
+                    className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8 space-y-8">
+
+                    {/* System Controls Section */}
+                    <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+                            System Controls
+                        </h3>
+
+                        {/* Enable Changes Toggle */}
+                        <div
+                            className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-200/50">
+                            <label htmlFor="enableChanges" className="text-sm font-medium text-slate-700 flex-1">
+                                {t('admin.manage.database.enable_changes')}
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    id="enableChanges"
+                                    name="enableChanges"
+                                    checked={enableChanges}
+                                    onChange={() => setEnable(!enableChanges)}
+                                    className="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-primary-50 checked:bg-primary-800 checked:border-primary-800"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Button
-                                key={state}
-                                disabled={state === status}
-                                className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200 ${state === status ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed`}
-                                onClick={() => updateSystemStatus(state)}
+                                onClick={resetSystem}
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 bg-slate-200 text-slate-700 hover:bg-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-200"
+                                disabled={!enableChanges}
                             >
-                                {t('admin.manage.database.system_state', { state: state })}
+                                {t('admin.manage.database.reset_database')}
                             </Button>
-                        ))}
+
+                            {data && (
+                                <Button
+                                    className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                        data.status.active
+                                            ? 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md focus:ring-emerald-500'
+                                            : 'bg-slate-200 text-slate-700 hover:bg-slate-300 hover:shadow-md focus:ring-slate-500'
+                                    }`}
+                                    disabled={!enableChanges}
+                                    onClick={() => {
+                                        systemMutation.mutate({ ...data, status: { active: !data?.status.active } })
+                                    }}
+                                >
+                                    <div
+                                        className={`size-2 rounded-full ${data.status.active ? 'bg-white' : 'bg-slate-500'}`}/>
+                                    {data.status.active ? 'Active System' : 'Inactive System'}
+                                </Button>
+                            )}
+                        </div>
+
+                        {/* System Message Input */}
+                        {data && (
+                            <div className="space-y-3">
+                                <label htmlFor="systemMessage" className="block text-sm font-medium text-slate-700">
+                                    System Message
+                                </label>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="relative col-span-2">
+                                        <input
+                                            type="text"
+                                            id="systemMessage"
+                                            name="systemMessage"
+                                            placeholder="Enter system message..."
+                                            className="w-full px-4 py-3 pl-11 text-sm bg-white border border-slate-300 rounded-2xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 placeholder-slate-400"
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSystemMessage(e.target.value)}
+                                        />
+                                        <div
+                                            className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                            <MessageSquare className="size-4 text-slate-400"/>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                                            data.status.active
+                                                ? 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-md focus:ring-emerald-500'
+                                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300 hover:shadow-md focus:ring-slate-500'
+                                        }`}
+                                        disabled={!enableChanges}
+                                        onClick={() => {
+                                            systemMutation.mutate({
+                                                ...data,
+                                                status: { active: false, message: systemMessage }
+                                            })
+                                        }}
+                                    >
+                                        <div className="size-2 rounded-full"/>
+                                        Set
+                                    </Button>
+                                </div>
+                                <p className="text-xs text-slate-500">
+                                    This message will be displayed to users when the system status changes.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Configuration Section */}
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 flex-1">
+                                Configuration Editor
+                            </h3>
+                            <Button
+                                onClick={saveConfig}
+                                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                Save Config
+                            </Button>
+                        </div>
+
+                        <div className="relative">
+                    <textarea
+                        value={configData}
+                        onChange={handleConfigChange}
+                        className="w-full h-80 p-4 text-sm font-mono bg-slate-900 text-slate-100 rounded-2xl border border-slate-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                        placeholder="Enter your JSON configuration here..."
+                        spellCheck={false}
+                    />
+                            <div
+                                className="absolute top-3 right-3 text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded-md">
+                                JSON
+                            </div>
+                        </div>
+
+                        <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <strong>Note:</strong> This configuration is editable JSON data. Make sure to maintain valid
+                            JSON syntax when making changes.
+                        </div>
                     </div>
                 </div>
             </div>

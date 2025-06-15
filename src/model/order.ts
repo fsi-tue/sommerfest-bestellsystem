@@ -5,9 +5,9 @@ import { timeslotToUTCDate } from "@/lib/time";
 // Status enums with better type safety
 export const ORDER_STATUSES = {
     ORDERED: 'ordered',
-    IN_PREPARATION: 'inPreparation',
-    READY: 'ready',
-    DELIVERED: 'delivered',
+    ACTIVE: 'inPreparation',
+    READY_FOR_PICKUP: 'ready',
+    COMPLETED: 'delivered',
     CANCELLED: 'cancelled'
 } as const;
 

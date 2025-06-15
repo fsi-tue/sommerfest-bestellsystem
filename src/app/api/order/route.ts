@@ -2,10 +2,9 @@ import { NextResponse } from 'next/server';
 import mongoose, { Types } from 'mongoose';
 
 import dbConnect from '@/lib/dbConnect';
-import { requireActiveSystem, requireAuth } from '@/lib/serverAuth';
+import { requireActiveSystem, requireAuth } from '@/lib/auth/serverAuth';
 import { ITEM_STATUS_VALUES, OrderModel } from '@/model/order';
 import { ItemModel } from '@/model/item';
-import { ORDER_AMOUNT_THRESHOLDS } from '@/config';
 
 const dbReady = dbConnect();
 
@@ -38,7 +37,9 @@ export async function GET() {
                     },
                 },
             },
-        ]);
+        ])
+            // Sort them
+            .sort({ timeslot: 1 });
 
         return NextResponse.json(orders);
     }).catch((err) => {
@@ -52,7 +53,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
     return withDB(async () => {
-        await requireActiveSystem();
+        const system = await requireActiveSystem();
+
+        const MAX_ORDER_THRESHOLD = system.config.ORDER_CONFIG.ORDER_AMOUNT_THRESHOLDS.MAX
 
         const body = (await req.json()) as {
             items: Record<string, { _id: string; size: number }[]>;
@@ -70,7 +73,7 @@ export async function POST(req: Request) {
         }
 
         const newSize = flatItems.reduce((acc, i) => acc + i.size, 0);
-        if (newSize > ORDER_AMOUNT_THRESHOLDS.MAX) {
+        if (newSize > MAX_ORDER_THRESHOLD) {
             return NextResponse.json(
                 { message: 'Too many items for one order' },
                 { status: 400 },
@@ -92,6 +95,7 @@ export async function POST(req: Request) {
                                 $match: {
                                     timeslot: body.timeslot,
                                     status: { $ne: 'cancelled' },
+
                                 },
                             },
                             { $unwind: '$items' },
@@ -117,12 +121,9 @@ export async function POST(req: Request) {
             }
 
             const alreadyBooked = capacity?.[0]?.total ?? 0;
-            if (
-                alreadyBooked + newSize >
-                ORDER_AMOUNT_THRESHOLDS.MAX
-            ) {
+            if (alreadyBooked + newSize > MAX_ORDER_THRESHOLD) {
                 throw new Error(
-                    'The time slot is already full. Please choose another one.',
+                    'The timeslot is already full. Please choose another one.',
                 );
             }
 

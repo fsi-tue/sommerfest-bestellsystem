@@ -5,16 +5,18 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 
 import { useTranslations } from 'next-intl';
 import useOrderStore from "@/app/zustand/order";
 import { AggregatedSlotData } from "@/model/timeslot";
-import { ORDER_AMOUNT_THRESHOLDS, TIME_SLOT_CONFIG } from "@/config";
 import { timeslotToLocalTime } from "@/lib/time";
 import { useShallow } from "zustand/react/shallow";
+import { useSystem } from "@/lib/fetch/system";
 
 const Timeline = ({
                       noClick
                   }: { noClick: boolean } = { noClick: false }) => {
+    // All hooks must be called at the top level, in the same order every time
     const [timeslots, setTimeslots] = useState<AggregatedSlotData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
     const t = useTranslations();
 
     const { setTimeslot, order, totalItems } = useOrderStore(
@@ -24,6 +26,8 @@ const Timeline = ({
             totalItems: state.getTotalItemCount()
         }))
     );
+
+    const { data, error: systemError, isFetching } = useSystem();
 
     // Generate fallback timeslots
     const generateFallbackSlots = useCallback(() => {
@@ -71,8 +75,19 @@ const Timeline = ({
         }
     }, [generateFallbackSlots]);
 
+    const handleBarClick = useCallback((event: any) => {
+        if (!noClick && event?.activeLabel) {
+            setTimeslot(event.activeLabel);
+        }
+    }, [noClick, setTimeslot]);
+
     // Enhanced timeslots with selected state highlighting
     const enhancedTimeslots = useMemo(() => {
+        if (!data) {
+            return timeslots;
+        }
+
+        const TIME_SLOT_CONFIG = data.config.TIME_SLOT_CONFIG;
         const selectedTime = timeslotToLocalTime(order.timeslot);
         return timeslots.map(slot => ({
             ...slot,
@@ -83,19 +98,20 @@ const Timeline = ({
                 ordersAmount: totalItems > 0 ? totalItems : 1
             })
         }));
-    }, [timeslots, order.timeslot, totalItems]);
-
-    const handleBarClick = useCallback((event: any) => {
-        if (!noClick && event?.activeLabel) {
-            setTimeslot(event.activeLabel);
-        }
-    }, [noClick, setTimeslot]);
+    }, [timeslots, order.timeslot, totalItems, data]);
 
     useEffect(() => {
-        fetchTimeline();
-        const interval = setInterval(fetchTimeline, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS * 1000);
-        return () => clearInterval(interval);
-    }, [fetchTimeline]);
+        if (data) {
+            const TIME_SLOT_CONFIG = data.config.TIME_SLOT_CONFIG;
+            fetchTimeline();
+            const interval = setInterval(fetchTimeline, TIME_SLOT_CONFIG.UPDATE_EVERY_SECONDS * 1000);
+            return () => clearInterval(interval);
+        }
+    }, [fetchTimeline, data]);
+
+    if (!data) {
+        return null;
+    }
 
     if (isLoading) {
         return (
@@ -120,7 +136,7 @@ const Timeline = ({
                     margin={{ top: 5, right: 30, left: -30, bottom: 5 }}
                 >
                     <XAxis dataKey="time"/>
-                    <YAxis domain={[0, ORDER_AMOUNT_THRESHOLDS.MAX]}/>
+                    <YAxis domain={[0, data.config.ORDER_CONFIG.ORDER_AMOUNT_THRESHOLDS.MAX]}/>
                     <Tooltip/>
                     <Bar dataKey="ordersAmount" name="Orders" fill="#007bff">
                         {enhancedTimeslots.map((entry, index) => (

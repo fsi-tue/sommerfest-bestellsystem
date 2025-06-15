@@ -3,12 +3,11 @@ import Item from "@/app/components/order/Item";
 import { useTranslations } from 'next-intl';
 
 interface MenuSectionProps {
-    items: { [_id: string]: ItemDocument[] };
+    items: ItemDocument[]
 }
 
 const MenuSection = ({ items }: MenuSectionProps) => {
-    const availableItems = Object.values(items)
-        .flatMap(itemList => itemList)
+    const availableItems = items
         .filter(item => item.enabled);
 
     const t = useTranslations();

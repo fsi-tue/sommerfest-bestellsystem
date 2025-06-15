@@ -1,5 +1,4 @@
 import { Document, model, Model, Schema, Types } from "mongoose";
-import { ITEM_CONFIG } from "@/config";
 
 export interface Item {
     name: string;
@@ -8,7 +7,6 @@ export interface Item {
     dietary?: string;
     ingredients?: string[];
     size: number;
-    max: number;
     enabled: boolean;
     createdAt?: Date;
 }
@@ -27,7 +25,6 @@ export const itemSchema = new Schema<ItemDocument>(
         dietary: { type: String },
         ingredients: { type: [String] },
         size: { type: Number, required: true, default: 1, min: 0.1, max: 1 },
-        max: { type: Number, default: ITEM_CONFIG.MAX_ITEMS },
         enabled: { type: Boolean, default: true },
         createdAt: { type: Date, default: Date.now },
     },

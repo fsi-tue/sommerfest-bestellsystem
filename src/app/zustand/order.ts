@@ -2,7 +2,6 @@ import { ApiOrder, OrderDocument } from '@/model/order'
 import { ItemDocument } from '@/model/item'
 import { timeslotToDate, timeslotToUTCTime } from '@/lib/time'
 import { create } from 'zustand'
-import { ORDER_AMOUNT_THRESHOLDS, ORDER_CONFIG, TIME_SLOT_CONFIG } from '@/config'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
 const initialOrder: ApiOrder = {
@@ -38,7 +37,6 @@ interface OrderState {
 
     // Utilities
     clearAllOrders: () => void
-    getBlockedTimeslotDateUntil: () => Date
     getOrderById: (id: string) => OrderDocument | undefined
     getCurrentOrderTotal: () => number
     getItemCount: (itemId: string) => number
@@ -79,14 +77,12 @@ const useOrderStore = create<OrderState>()(
             /* ---------- timeslot with validation ---------- */
             setTimeslot: (slot) =>
                 set((s) => {
-                    const BUFFER = TIME_SLOT_CONFIG.SIZE_MINUTES * TIME_SLOT_CONFIG.TIMESLOTS_AS_BUFFER
                     const cutoff = new Date()
-                    cutoff.setMinutes(cutoff.getMinutes() + BUFFER)
 
                     try {
                         const tsDate = timeslotToDate(slot)
                         if (tsDate < cutoff) {
-                            return { ...s, error: 'Selected timeslot is too soon or in the past.' }
+                            return { ...s, error: 'Selected timeslot is in the past.' }
                         }
                         return {
                             ...s,
@@ -102,15 +98,6 @@ const useOrderStore = create<OrderState>()(
             /* ---------- add / remove items ---------- */
             addToOrder: (item) =>
                 set((s) => {
-                    const total = Object.values(s.currentOrder.items).reduce(
-                        (t, arr) => t + arr.length,
-                        0
-                    )
-                    if (total >= ORDER_AMOUNT_THRESHOLDS.MAX) {
-                        setTimeout(() => s.clearError(), 1000)
-                        return { ...s, error: 'Max. amount of items reached' }
-                    }
-
                     const id = item._id.toString()
                     const updated = [...(s.currentOrder.items[id] ?? []), item]
 
@@ -145,13 +132,6 @@ const useOrderStore = create<OrderState>()(
 
             /* ---------- misc utilities ---------- */
             clearAllOrders: () => set({ orders: [], currentOrder: initialOrder, error: null }),
-
-            getBlockedTimeslotDateUntil: () => {
-                const buf = ORDER_CONFIG.TIMESLOTS_BUFFER
-                const d = new Date()
-                d.setMinutes(d.getMinutes() + buf)
-                return d
-            },
 
             getOrderById: (id) => get().orders.find((o) => o._id.toString() === id),
 

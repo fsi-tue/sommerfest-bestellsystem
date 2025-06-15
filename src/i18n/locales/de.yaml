@@ -103,8 +103,8 @@ translation:
     manage:
       database:
         title: Datenbank
-        enable_system: System aktivieren
-        prepare_database: DB initialisieren
+        enable_changes: Änderungen erlauben
+        reset_database: DB zurücksetzen
         delete_database: DB löschen
         system_state: 'System: {state}'
 

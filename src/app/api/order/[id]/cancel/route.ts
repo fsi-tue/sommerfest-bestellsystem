@@ -1,5 +1,4 @@
 import dbConnect from "@/lib/dbConnect";
-import mongoose from "mongoose";
 import { ORDER_STATUSES, OrderModel } from "@/model/order";
 import { NextRequest } from "next/server";
 import { ObjectId } from "bson";
@@ -34,10 +33,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         }
 
         // Check if the order is already delivered or ready
-        if (ORDER_STATUSES.DELIVERED === foundOrder.status ||
-            ORDER_STATUSES.READY === foundOrder.status ||
+        if (ORDER_STATUSES.COMPLETED === foundOrder.status ||
+            ORDER_STATUSES.READY_FOR_PICKUP === foundOrder.status ||
             ORDER_STATUSES.CANCELLED === foundOrder.status ||
-            ORDER_STATUSES.IN_PREPARATION === foundOrder.status) {
+            ORDER_STATUSES.ACTIVE === foundOrder.status) {
             return new Response(`Order was already ${foundOrder.status}. Cannot cancel!`, { status: 400 });
         }
 

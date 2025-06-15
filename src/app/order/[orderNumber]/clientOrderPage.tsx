@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { timeslotToUTCDate, timeslotToLocalTime } from "@/lib/time";
-import { Order, OrderStatus } from "@/model/order";
+import { timeslotToLocalTime, timeslotToUTCDate } from "@/lib/time";
+import { Order, ORDER_STATUSES, OrderStatus } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
 import { Loading } from "@/app/components/Loading";
 import Button from "@/app/components/Button";
@@ -90,15 +90,15 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
     }) => t(`order_status.status.${order.status}`) ?? t('order_status.status.default')
     const getStatusColor = (status: OrderStatus) => {
         switch (status) {
-            case 'ordered':
+            case ORDER_STATUSES.ORDERED:
                 return 'bg-primary-100 text-primary-800';
-            case 'inPreparation':
+            case ORDER_STATUSES.ACTIVE:
                 return 'bg-orange-100 text-orange-800';
-            case 'ready':
+            case ORDER_STATUSES.READY_FOR_PICKUP:
                 return 'bg-green-100 text-green-800';
-            case 'delivered':
+            case ORDER_STATUSES.COMPLETED:
                 return 'bg-gray-100 text-gray-800';
-            case 'cancelled':
+            case ORDER_STATUSES.CANCELLED:
                 return 'bg-red-100 text-red-800';
             default:
                 return 'bg-gray-100 text-gray-800';
@@ -142,7 +142,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                             <span
                                 className="text-sm text-gray-500">{t('order_status.order')} #{orderNumber.slice(-8)}</span>
                             <span className={`text-sm font-medium ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
-                                {order.isPaid ? t('order_status.paid') : t('order_status.status.unpaid')}
+                                {order.isPaid ? t('order_status.status.paid') : t('order_status.status.unpaid')}
                             </span>
                         </div>
 

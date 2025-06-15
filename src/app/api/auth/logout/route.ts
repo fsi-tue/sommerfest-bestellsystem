@@ -1,4 +1,4 @@
-import { requireAuth } from "@/lib/serverAuth";
+import { requireAuth } from "@/lib/auth/serverAuth";
 import { Session } from "@/model/session";
 import dbConnect from "@/lib/dbConnect";
 

@@ -1,4 +1,3 @@
-import { CONSTANTS } from "@/config";
 import dbConnect from "@/lib/dbConnect";
 import { Session } from "@/model/session";
 
@@ -6,9 +5,11 @@ import crypto from 'crypto';
 import { addHours } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { getSystem } from "@/lib/auth/serverAuth";
 
 export async function POST(request: NextRequest) {
     await dbConnect()
+    const system = await getSystem();
 
     const { token } = await request.json();
     if (!token) {
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
 
         if (token === correct_token) {
             const sessionToken = crypto.randomBytes(64).toString('hex');
-            const expiresAt = addHours(new Date(), CONSTANTS.LIFETIME_BEARER_HOURS);
+            const expiresAt = addHours(new Date(), system.config.LIFETIME_BEARER_HOURS);
 
             // Save session to database
             const session = new Session();
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
-                maxAge: CONSTANTS.LIFETIME_BEARER_HOURS * 60 * 60, // Use your constant
+                maxAge: system.config.LIFETIME_BEARER_HOURS * 60 * 60, // Use your constant
                 path: '/'
             });
 
