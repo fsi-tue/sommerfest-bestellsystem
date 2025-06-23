@@ -107,7 +107,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-red-100 text-red-800'
                                 }`}>
-                                    {localItem.enabled ? '✓ Enabled' : '✕ Disabled'}
+                                    {localItem.enabled ? t('Admin.Manage.Items.Status.enabled') : t('Admin.Manage.Items.Status.disabled')}
                                 </span>
                                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
                                     €{localItem.price.toFixed(2)}
@@ -133,7 +133,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('admin.manage.pizza.edit_item.name')}
+                                            {t('Admin.Manage.Items.Property.name')}
                                         </label>
                                         <input
                                             type="text"
@@ -146,7 +146,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('admin.manage.pizza.edit_item.type')}
+                                            {t('Admin.Manage.Items.Property.type')}
                                         </label>
                                         <input
                                             type="text"
@@ -159,11 +159,11 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('admin.manage.pizza.edit_item.dietary')}
+                                            {t('Admin.Manage.Items.Property.dietary')}
                                         </label>
                                         <input
                                             type="text"
-                                            value={localItem.dietary || ''}
+                                            value={localItem.dietary ?? ''}
                                             onChange={(e) => updateItem({ dietary: e.target.value })}
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                             placeholder="e.g., Vegan, Vegetarian, Gluten Free"
@@ -181,7 +181,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            {t('admin.manage.pizza.edit_item.price')}
+                                            {t('Admin.Manage.Items.Property.price')}
                                         </label>
                                         <div className="relative">
                                             <input
@@ -199,7 +199,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
 
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Size
+                                            {t('Admin.Manage.Items.Property.size')}
                                         </label>
                                         <input
                                             type="number"
@@ -222,7 +222,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                                 className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                                             />
                                             <span className="text-sm font-medium text-gray-700">
-                                                Item is available for ordering
+                                                {t('Admin.Manage.Items.Status.itemIsAvailable')}
                                             </span>
                                         </label>
                                     </div>
@@ -236,7 +236,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                 <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
                     <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-500">
-                            {isNew ? 'Ready to add this item?' : 'Save your changes'}
+                            {isNew ? t('Admin.Manage.Items.readyToCreate') : t('Admin.Manage.Items.saveChanges')}
                         </div>
                         <div className="flex items-center space-x-3">
                             {!isNew && (
@@ -245,7 +245,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                     disabled={isLoading}
                                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:opacity-50"
                                 >
-                                    {localItem.enabled ? 'Disable' : 'Enable'}
+                                    {localItem.enabled ? t('Admin.Manage.Items.Actions.disable') : t('Admin.Manage.Items.Actions.enable')}
                                 </Button>
                             )}
                             <Button
@@ -259,7 +259,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                         <span>{isNew ? 'Creating...' : 'Saving...'}</span>
                                     </div>
                                 ) : (
-                                    isNew ? t('admin.manage.pizza.edit_item.create') : t('admin.manage.pizza.edit_item.update')
+                                    isNew ? t('Admin.Manage.Items.Actions.create') : t('Admin.Manage.Items.Actions.update')
                                 )}
                             </Button>
                         </div>

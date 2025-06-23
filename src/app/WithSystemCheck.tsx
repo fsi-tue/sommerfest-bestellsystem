@@ -18,7 +18,7 @@ const WithSystemCheck = <P extends object>(
         const { data, error, isFetching } = useSystem()
 
         if (isFetching) {
-            return <Loading message={t('withsystemcheck.check_system_status')}/>
+            return <Loading message={t('SystemCheck.check_system_status')}/>
         }
 
         if (error) {
@@ -40,11 +40,11 @@ const WithSystemCheck = <P extends object>(
                         <Construction className="w-4 h-4 text-red-400"/>
                     </div>
                     <h1 className="text-2xl font-semibold text-gray-900">
-                        {t('withsystemcheck.system_inactive')}
+                        {t('SystemCheck.system_inactive')}
                     </h1>
                 </div>
                 <p className="text-gray-500 text-md">
-                    {data.status.message ?? t('withsystemcheck.system_unavailable_message')}
+                    {data.status.message ?? t('SystemCheck.system_unavailable_message')}
                 </p>
             </div>
         )

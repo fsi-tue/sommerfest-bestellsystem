@@ -60,19 +60,19 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
 
     // Rest of your component logic
     const cancelOrder = () => {
-        if (!fetchedOrder) {
+        if (!order) {
             return;
         }
 
         fetch(`/api/order/${orderId}/cancel`, {
             method: 'PUT',
             credentials: 'include',
-            body: JSON.stringify({ name: fetchedOrder.name }),
+            body: JSON.stringify({ name: order.name }),
         })
             .then(response => {
                 if (response.ok) {
                     setOrder({
-                        ...fetchedOrder,
+                        ...order,
                         status: 'cancelled' as OrderStatus
                     });
                 } else {
@@ -86,7 +86,7 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
 
     const statusToText = (order: {
         status: OrderStatus
-    }) => t(`order_status.status.${order.status}`) ?? t('order_status.status.default')
+    }) => t(`OrderStatus.status.${order.status}`) ?? t('OrderStatus.status.default')
     const getStatusColor = (status: OrderStatus) => {
         switch (status) {
             case ORDER_STATUSES.ORDERED:
@@ -105,11 +105,11 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
     };
 
     if (order === null && isLoading) {
-        return <Loading message={t('order_status.suspense.loading')}/>;
+        return <Loading message={t('OrderStatus.suspense.loading')}/>;
     }
 
     if (!order) {
-        return <div className="p-6 text-center"><h1 className="text-xl">{t('order_status.not_found')}</h1></div>;
+        return <div className="p-6 text-center"><h1 className="text-xl">{t('OrderStatus.not_found')}</h1></div>;
     }
 
     return (
@@ -121,7 +121,7 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
 
                 {order.status !== 'cancelled' && (
                     <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
-                        <p className="text-sm text-gray-600 mb-1">{t('order_status.status.ready_by')}</p>
+                        <p className="text-sm text-gray-600 mb-1">{t('OrderStatus.status.ready_by')}</p>
                         <p className="text-3xl font-light text-blue-600">
                             {timeslotToLocalTime(formatDate(timeslotToUTCDate(order.timeslot), 'HH:mm'))}
                         </p>
@@ -138,13 +138,13 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
 
             <div className="px-6 pb-6">
                 <div className="max-w-sm mx-auto space-y-4">
-                    <div className="p-6">
+                    <div className="py-6 md:p-6">
                         <div className="flex justify-between items-center mb-4">
                             <span
-                                className="text-sm text-gray-500">{t('order_status.order')} #{orderId.slice(-8)}</span>
+                                className="text-sm text-gray-500">{t('OrderStatus.order')} #{orderId.slice(-8)}</span>
                             <span
                                 className={`text-sm font-medium ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
-                                {order.isPaid ? t('order_status.status.paid') : t('order_status.status.unpaid')}
+                                {order.isPaid ? t('OrderStatus.status.paid') : t('OrderStatus.status.unpaid')}
                             </span>
                         </div>
 
@@ -158,14 +158,14 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
                         </div>
 
                         <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between text-lg font-semibold">
-                            <span>{t('order_status.total')}</span>
+                            <span>{t('OrderStatus.total')}</span>
                             <span>€{order?.items?.reduce((total, item) => total + item.price, 0).toFixed(2)}</span>
                         </div>
                     </div>
 
                     {/* QR Code Card */}
                     <div className="p-6 text-center">
-                        <p className="text-sm text-gray-600 mb-4">{t('order_status.show_at_pickup')}</p>
+                        <p className="text-sm text-gray-600 mb-4">{t('OrderStatus.show_at_pickup')}</p>
                         <div className="flex justify-center">
                             <OrderQR orderId={orderId}/>
                         </div>
@@ -183,7 +183,7 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
                             onClick={cancelOrder}
                             className="w-full py-4 text-red-600 bg-white border border-red-200 rounded-2xl font-medium hover:bg-red-50 transition-colors"
                         >
-                            {t('order_status.cancel_order')}
+                            {t('OrderStatus.cancel_order')}
                         </Button>
                     )}
                 </div>

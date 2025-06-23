@@ -29,16 +29,16 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
             setIsButtonDisabled(true)
             if (totalItemsCount === 0) {
                 // Select items
-                setText(t('cart.messages.empty_cart'))
+                setText(t('OrderSummary.messages.empty_cart'))
             } else if (order.name === '') {
                 // Set name
-                setText(t('cart.messages.name_not_set'))
+                setText(t('OrderSummary.messages.name_not_set'))
             } else if (!order.timeslot) {
                 // Select timeslot
-                setText(t('cart.messages.timeslot_not_selected'))
+                setText(t('OrderSummary.messages.timeslot_not_selected'))
             } else {
                 // Order
-                setText(t('order.order_button.order_now'))
+                setText(t('Order.order_button.order_now'))
                 setIsButtonDisabled(false)
             }
         }, [order, totalItemsCount])

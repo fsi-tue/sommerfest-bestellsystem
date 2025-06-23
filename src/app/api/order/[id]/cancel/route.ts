@@ -28,6 +28,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
         // Find the order by ID
         const foundOrder = await OrderModel.findById(id);
 
+        // Check if the name is also the same
         if (!foundOrder || foundOrder.name !== name) {
             return new Response('Order not found', { status: 404 });
         }

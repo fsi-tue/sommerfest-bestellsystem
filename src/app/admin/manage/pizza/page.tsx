@@ -28,7 +28,7 @@ const Page = () => {
 
     return (
         <div>
-            <Heading title={t('admin.manage.pizza.title')} description={t('admin.manage.pizza.subtitle')}
+            <Heading title={t('Admin.Manage.Items.title')} description={t('Admin.Manage.Items.subtitle')}
                      icon={<Wrench className="w-10 h-10 text-gray-900"/>}/>
 
             {/* New Item */}

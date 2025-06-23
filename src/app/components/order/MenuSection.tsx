@@ -23,7 +23,7 @@ const MenuSection = ({ items }: MenuSectionProps) => {
                         />
                     ))
                 ) : (
-                    <p className="text-gray-500">{t('components.menusection.loading')}</p>
+                    <p className="text-gray-500">{t('Misc.menusection.loading')}</p>
                 )}
             </ul>
         </div>

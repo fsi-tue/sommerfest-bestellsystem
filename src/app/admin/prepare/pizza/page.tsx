@@ -86,7 +86,7 @@ const PizzaMakerStation = () => {
 
     return (
         <div>
-            <Heading title={t('admin.prepare.title')} description={t('admin.prepare.subtitle')}
+            <Heading title={t('Admin.Prepare.title')} description={t('Admin.Prepare.subtitle')}
                      icon={<Clock className="w-10 h-10 text-gray-900"/>}/>
 
 
@@ -114,7 +114,7 @@ const PizzaMakerStation = () => {
                         ))}
                     </div>
                     {upcomingItems.size === 0 && (
-                        <span className="text-gray-400">{t('admin.prepare.no_open_orders')} 🎉</span>
+                        <span className="text-gray-400">{t('Admin.Prepare.no_open_orders')} 🎉</span>
                     )}
                 </div>
 

@@ -69,7 +69,7 @@ const Page = () => {
 
                         <div>
                             <label htmlFor="token" className="block text-sm font-medium text-gray-700">
-                                {t('login.fsik_token')}
+                                {t('LoginPage.fsik_token')}
                             </label>
                             <div className="mt-1">
                                 <input
@@ -94,7 +94,7 @@ const Page = () => {
                 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
                 disabled:opacity-75 disabled:cursor-not-allowed transition-all duration-200"
                             >
-                                {isLoading ? t('login.authenticating') : t('login.login')}
+                                {isLoading ? t('LoginPage.authenticating') : t('LoginPage.login')}
                             </Button>
                         </div>
 

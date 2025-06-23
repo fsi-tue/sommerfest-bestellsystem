@@ -57,10 +57,11 @@ export default function ManagePage() {
         if (data) {
             if (data.status.message) {
                 setMessage(data.status.message);
+                setSystemMessage(data.status.message);
             } else if (data.status.active) {
-                setMessage('Active System');
+                setMessage(t('Admin.Manage.Database.Status.activeSystem'));
             } else {
-                setMessage('Inactive System');
+                setMessage(t('Admin.Manage.Database.Status.disabledSystem'));
             }
             setConfigData(JSON.stringify(data.config, null, 2));
         }
@@ -81,7 +82,7 @@ export default function ManagePage() {
     };
 
     if (isFetching) {
-        return <Loading message={t('withsystemcheck.check_system_status')}/>
+        return <Loading message={t('SystemCheck.check_system_status')}/>
     }
 
     if (error) {
@@ -95,7 +96,7 @@ export default function ManagePage() {
     return (
         <div className="min-h-screen">
             <Heading
-                title={t('admin.manage.database.title')}
+                title={t('Admin.Manage.Database.title')}
                 description={message}
                 icon={<Database className="size-10 text-blue-600"/>}
             />
@@ -104,7 +105,7 @@ export default function ManagePage() {
                 <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
                     <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-4 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            System Controls
+                            {t('Admin.Manage.Database.SystemControls.title')}
                         </h2>
                     </div>
                     <div className="p-6 space-y-6">
@@ -112,7 +113,7 @@ export default function ManagePage() {
                         <div
                             className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-200/50">
                             <label htmlFor="enableChanges" className="text-sm font-medium text-slate-700 flex-1">
-                                {t('admin.manage.database.enable_changes')}
+                                {t('Admin.Manage.Database.Actions.enable_changes')}
                             </label>
                             <div className="relative">
                                 <input
@@ -133,7 +134,7 @@ export default function ManagePage() {
                                 className="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 bg-slate-200 text-slate-700 hover:bg-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-200"
                                 disabled={!enableChanges}
                             >
-                                {t('admin.manage.database.reset_database')}
+                                {t('Admin.Manage.Database.Actions.reset_database')}
                             </Button>
 
                             {data && (
@@ -150,7 +151,7 @@ export default function ManagePage() {
                                 >
                                     <div
                                         className={`size-2 rounded-full ${data.status.active ? 'bg-white' : 'bg-slate-500'}`}/>
-                                    {data.status.active ? 'Active System' : 'Inactive System'}
+                                    {data.status.active ? t('Admin.Manage.Database.Status.activeSystem') : t('Admin.Manage.Database.Status.disabledSystem')}
                                 </Button>
                             )}
                         </div>
@@ -159,7 +160,7 @@ export default function ManagePage() {
                         {data && (
                             <div className="space-y-3">
                                 <label htmlFor="systemMessage" className="block text-sm font-medium text-slate-700">
-                                    System Message
+                                    {t('Admin.Manage.Database.SystemMessage.title')}
                                 </label>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="relative col-span-2">
@@ -167,7 +168,8 @@ export default function ManagePage() {
                                             type="text"
                                             id="systemMessage"
                                             name="systemMessage"
-                                            placeholder="Enter system message..."
+                                            value={systemMessage}
+                                            placeholder={t('Admin.Manage.Database.Actions.enterSystemMessage')}
                                             className="w-full px-4 py-3 pl-11 text-sm bg-white border border-slate-300 rounded-2xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 placeholder-slate-400"
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSystemMessage(e.target.value)}
                                         />
@@ -191,11 +193,11 @@ export default function ManagePage() {
                                         }}
                                     >
                                         <div className="size-2 rounded-full"/>
-                                        Set
+                                        {t('Admin.Manage.Database.Actions.set')}
                                     </Button>
                                 </div>
                                 <p className="text-xs text-slate-500">
-                                    This message will be displayed to users when the system status changes.
+                                    {t('Admin.Manage.Database.SystemMessage.disclaimer')}
                                 </p>
                             </div>
                         )}
@@ -205,13 +207,13 @@ export default function ManagePage() {
                     <div className="p-6 space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 flex-1">
-                                Configuration Editor
+                                {t('Admin.Manage.Database.ConfigurationEditor.title')}
                             </h3>
                             <Button
                                 onClick={saveConfig}
                                 className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                             >
-                                Save Config
+                                {t('Admin.Manage.Database.Actions.saveConfig')}
                             </Button>
                         </div>
 
@@ -232,8 +234,7 @@ export default function ManagePage() {
                         </div>
 
                         <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                            <strong>Note:</strong> This configuration is editable JSON data. Make sure to maintain valid
-                            JSON syntax when making changes.
+                            {t('Admin.Manage.Database.ConfigurationEditor.disclaimer')}
                         </div>
                     </div>
                 </div>

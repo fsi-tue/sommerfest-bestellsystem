@@ -18,7 +18,7 @@ const Footer = () => {
                 Informatik
                 Tübingen</a>
                 <span className="mx-1">|</span>
-                {t('footer.fuel')}
+                {t('Footer.fuel')}
                 <a href="https://github.com/Zeilenschubser/"
                    className="font-medium text-primary-600 hover:underline">Zeilenschubser</a> & <a
                 href="https://github.com/am9zZWY" className="font-medium text-primary-600 hover:underline">Josef

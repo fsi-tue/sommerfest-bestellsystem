@@ -15,7 +15,7 @@ interface ItemProps {
 export const Item = ({ item }: ItemProps) => {
     return (
         <article className="bg-white border-b border-gray-100 hover:bg-gray-50 transition-all duration-200">
-            <div className="px-4 py-6 flex items-start justify-between gap-4">
+            <div className="px-4 py-6 flex flex-col md:flex-row items-start justify-between gap-4">
                 <ItemDetails
                     item={item}
                 />
@@ -35,12 +35,11 @@ interface ItemDetailsProps {
 const ItemDetails = ({
                          item,
                      }: ItemDetailsProps) => {
-    const t = useTranslations();
     const hasIngredients = (item.ingredients && item.ingredients.length > 0) ?? false
 
     return (
         <div className="flex-1 min-w-0 cursor-pointer">
-            <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1 transition-colors">
+            <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-purple-700 transition-colors">
                 {item.name}
             </h3>
 
@@ -52,7 +51,7 @@ const ItemDetails = ({
 
             <div className="flex items-baseline gap-1">
           <span className="text-lg font-bold text-gray-900">
-            {item.price.toFixed(2)}{t('cart.currency')}
+            {item.price.toFixed(2)}€
           </span>
             </div>
         </div>
@@ -99,11 +98,11 @@ interface AddButtonProps {
 }
 
 const AddButton = ({ isInCart, itemCount, itemName, itemPrice, onAddItem }: AddButtonProps) => {
-    const baseClasses = "font-medium px-4 py-2 rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-1 min-w-[80px] text-sm disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
+    const baseClasses = "relative font-semibold px-5 py-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 min-w-[110px] text-sm transform active:scale-95 overflow-hidden"
 
     const variantClasses = !isInCart
-        ? "bg-orange-100 hover:bg-orange-200 border-2 border-gray-200 hover:border-orange-500 text-gray-700 hover:text-orange-600"
-        : "bg-white hover:bg-orange-50 border-2 border-gray-200 hover:border-orange-500 text-gray-700 hover:text-orange-600"
+        ? "bg-white text-primary-700 hover:text-primary-800 hover:bg-primary-50 before:absolute before:inset-0 before:p-[2px] before:bg-gradient-to-r before:from-primary-400 before:via-orange-500 before:to-yellow-500 hover:before:from-primary-500 hover:before:via-orange-600 hover:before:to-red-600 before:rounded-xl before:transition-all before:duration-300 after:absolute after:inset-[2px] after:bg-white hover:after:bg-primary-50 after:rounded-[10px] after:transition-all after:duration-300"
+        : "bg-white text-primary-800 hover:text-primary-900 before:absolute before:inset-0 before:p-[2px] before:bg-gradient-to-r before:from-primary-300 before:to-primary-400 hover:before:from-primary-400 hover:before:to-primary-500 before:rounded-xl before:transition-all before:duration-300 after:absolute after:inset-[2px] after:bg-white after:rounded-[10px]"
 
     const t = useTranslations();
 
@@ -113,20 +112,32 @@ const AddButton = ({ isInCart, itemCount, itemName, itemPrice, onAddItem }: AddB
             className={`${baseClasses} ${variantClasses}`}
             aria-label={`Add ${itemName} to cart`}
         >
-            <div className="flex items-center justify-center min-w-[60px] px-3">
-                <span>{t('order.item.button.add')} {itemPrice.toFixed(2)}{t('cart.currency')} </span>
-                {isInCart && (
-                    <div className="relative">
-                        <Plus className="transition-transform group-hover:rotate-90"/>
-                        <span
-                            className="absolute -top-2 -right-4 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                                                {itemCount}
-                                            </span>
-                    </div>
+            <div className="flex items-center justify-center gap-2 relative z-10">
+                {!isInCart ? (
+                    <>
+                        <Plus className="w-4 h-4"/>
+                        <span className="font-bold">
+                            {itemPrice.toFixed(2)}€ {t('Order.item.button.add')}
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <span className="font-medium">
+                            {t('Order.item.button.more')} {itemPrice.toFixed(2)}€
+                        </span>
+                        <div className="relative ml-1">
+                            <Plus className="w-4 h-4 transition-transform hover:rotate-180"/>
+                            <span
+                                className="absolute -top-2 -right-3 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-bounce">
+                                {itemCount}
+                            </span>
+                        </div>
+                    </>
                 )}
             </div>
         </Button>
     )
 }
+
 
 export default Item

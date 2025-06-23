@@ -19,7 +19,7 @@ const SearchInput = ({
     const [value, setValue] = useState(searchValue);
     const inputRef = useRef<HTMLInputElement>(null);
     const t = useTranslations();
-    placeholder = placeholder || t('components.searchinput.placeholder');
+    placeholder = placeholder || t('Misc.searchinput.placeholder');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;

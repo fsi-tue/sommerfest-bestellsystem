@@ -14,11 +14,11 @@ const Header = () => {
     const isSignedIn = useIsSignedIn()
 
     const adminLinks = [
-        { to: `/admin/prepare/pizza`, text: t('header.adminlinks.prepare') }, // does not work yet
-        { to: `/admin/prepare/order`, text: t('header.adminlinks.manage_orders') },
-        { to: `/admin/manage/database`, text: t('header.adminlinks.manage_db') },
-        { to: `/admin/manage/pizza`, text: t('header.adminlinks.manage_items') },
-        { to: `/admin/logout`, text: t('header.adminlinks.logout') },
+        { to: `/admin/prepare/pizza`, text: t('Header.AdminLinks.prepare') }, // does not work yet
+        { to: `/admin/prepare/order`, text: t('Header.AdminLinks.manage_orders') },
+        { to: `/admin/manage/database`, text: t('Header.AdminLinks.manage_db') },
+        { to: `/admin/manage/pizza`, text: t('Header.AdminLinks.manage_items') },
+        { to: `/admin/logout`, text: t('Header.AdminLinks.logout') },
     ];
 
     const headerText = t('app_title');
@@ -44,7 +44,7 @@ const Header = () => {
                            className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
                         >
                             <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-                            <span className="font-medium">{t('header.menu.home')}</span>
+                            <span className="font-medium">{t('Header.Menu.home')}</span>
                         </a>
 
                         <a
@@ -52,7 +52,7 @@ const Header = () => {
                             className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
                         >
                             <List className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-                            <span className="font-medium">{t('header.menu.orders')}</span>
+                            <span className="font-medium">{t('Header.Menu.orders')}</span>
                         </a>
                     </div>
 
@@ -63,7 +63,7 @@ const Header = () => {
                                 className="flex items-center space-x-2 text-black hover:text-primary-500 transition-colors duration-200 group"
                             >
                                 <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"/>
-                                <span className="font-medium">{t('header.menu.login')}</span>
+                                <span className="font-medium">{t('Header.Menu.login')}</span>
                             </a>
                         </div>
                     )}

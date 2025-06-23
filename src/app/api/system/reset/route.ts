@@ -117,7 +117,7 @@ export async function POST() {
     const pizzas = [
         {
             name: 'Salami half',
-            price: 8,
+            price: 4,
             dietary: 'meat',
             type: 'pizza',
             ingredients: pizzasByName['Salami'],
@@ -125,7 +125,7 @@ export async function POST() {
         },
         {
             name: 'Ham and mushrooms half',
-            price: 8,
+            price: 4,
             dietary: 'meat',
             type: 'pizza',
             ingredients: pizzasByName['Ham and mushrooms'],
@@ -133,17 +133,17 @@ export async function POST() {
         },
         {
             name: 'Capricciosa half',
-            price: 8,
+            price: 4,
             type: 'pizza',
             dietary: 'meat',
             ingredients: pizzasByName['Capricciosa'],
             size: 0.5
         },
-        { name: 'Margherita half', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 1 },
-        { name: 'Veggies half', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 1 },
+        { name: 'Margherita half', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 0.5 },
+        { name: 'Veggies half', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 0.5 },
         {
             name: 'Margherita vegan half',
-            price: 6,
+            price: 3,
             dietary: 'vegan',
             type: 'pizza',
             ingredients: pizzasByName['Margherita vegan'],
@@ -151,7 +151,7 @@ export async function POST() {
         },
         {
             name: 'Capricciosa vegan half',
-            price: 6,
+            price: 3,
             dietary: 'vegan',
             type: 'pizza',
             ingredients: pizzasByName['Capricciosa vegan'],

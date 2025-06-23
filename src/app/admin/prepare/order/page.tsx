@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo, useState } from 'react';
-import { CheckCircle, ClockIcon, Pizza, ScanIcon, TriangleAlert, XCircle } from 'lucide-react';
+import { CheckCircle, ClockIcon, Pizza, QrCodeIcon, TriangleAlert, XCircle } from 'lucide-react';
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemTicketDocumentWithItem, TICKET_STATUS } from '@/model/ticket';
@@ -14,49 +14,59 @@ import { Loading } from "@/app/components/Loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrders } from "@/lib/fetch/order";
 import { useTickets } from "@/lib/fetch/ticket";
-
+import { useTranslations } from "next-intl";
 
 const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = false }: {
     selectedTickets: Set<string>,
     ticket: ItemTicketDocumentWithItem;
     handleToggleTicket: (ticketId: string) => void;
     selectable?: boolean;
-}) => (
-    <div className={`flex items-center justify-between p-2 rounded border ${
-        selectedTickets.has(ticket._id.toString())
-            ? 'bg-blue-50 border-blue-300'
-            : 'bg-white border-gray-200'
-    }`}>
-        <div className="flex items-center gap-2">
-            {selectable && (
-                <input
-                    type="checkbox"
-                    checked={selectedTickets.has(ticket._id.toString())}
-                    onChange={() => handleToggleTicket(ticket._id.toString())}
-                    className="w-4 h-4"
-                />
-            )}
-            <div>
-                <span className="font-medium">{ticket.itemTypeRef.name}</span>
-                <span className="text-xs text-gray-500 ml-2">
-                        #{ticket._id.toString().slice(-6)}
-                    </span>
-                {ticket.timeslot && (
-                    <span className="text-xs text-gray-400 ml-2">
-                            {timeslotToLocalTime(ticket.timeslot)}
-                        </span>
+}) => {
+    const t = useTranslations();
+
+    return (
+        <div
+            className={`group flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+                selectedTickets.has(ticket._id.toString())
+                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-300 shadow-sm'
+                    : 'bg-white border-gray-100 hover:border-gray-200'
+            }`}>
+            <div className="flex items-center gap-3">
+                {selectable && (
+                    <div className="relative">
+                        <input
+                            type="checkbox"
+                            checked={selectedTickets.has(ticket._id.toString())}
+                            onChange={() => handleToggleTicket(ticket._id.toString())}
+                            className="w-5 h-5 rounded-md border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 transition-colors"
+                        />
+                    </div>
                 )}
+                <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">{ticket.itemTypeRef.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                            #{ticket._id.toString().slice(-6)}
+                        </span>
+                        {ticket.timeslot && (
+                            <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-md">
+                                {timeslotToLocalTime(ticket.timeslot)}
+                            </span>
+                        )}
+                    </div>
+                </div>
             </div>
-        </div>
-        {ticket.orderId && (
-            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+            {ticket.orderId && (
+                <span
+                    className="text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 px-3 py-1.5 rounded-full">
                     Order #{ticket.orderId.toString().slice(-6)}
                 </span>
-        )}
-    </div>
-);
+            )}
+        </div>
+    );
+};
 
-const TicketTracker = ({
+const ItemTracker = ({
                            tickets,
                            orders,
                            onMarkReady,
@@ -69,6 +79,7 @@ const TicketTracker = ({
 }) => {
     const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
     const [assignMode, setAssignMode] = useState(false);
+    const t = useTranslations();
 
     // Group tickets by status and type
     const ticketGroups = useMemo(() => {
@@ -93,6 +104,10 @@ const TicketTracker = ({
         });
 
         return orders.filter(order => {
+            if (order.status !== ORDER_STATUSES.ACTIVE && order.status !== ORDER_STATUSES.ORDERED && order.status !== ORDER_STATUSES.READY_FOR_PICKUP) {
+                return false;
+            }
+
             const orderTypes = order.items.map(item => item._id.toString());
             return Array.from(selectedTypes).some(type => orderTypes.includes(type));
         });
@@ -115,53 +130,65 @@ const TicketTracker = ({
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-lg">Item Tracker</h3>
+                <h3 className="font-bold text-xl text-gray-900">{t('Admin.OrderManager.ItemTracker.title')}</h3>
                 {selectedTickets.size > 0 && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                         <Button
                             onClick={() => setAssignMode(!assignMode)}
-                            className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                         >
-                            {assignMode ? 'Cancel' : 'Assign to Order'}
+                            {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder')}
                         </Button>
                         <Button
                             onClick={() => setSelectedTickets(new Set())}
-                            className="bg-gray-500 text-white px-3 py-1 rounded text-sm"
+                            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200"
                         >
-                            Clear
+                            {t('Admin.OrderManager.Actions.clear')}
                         </Button>
                     </div>
                 )}
             </div>
 
             {/* Active tickets */}
-            <div className="border rounded-lg p-4">
-                <h4 className="font-medium mb-3 text-orange-600">🔥 Being Prepared</h4>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-2xl p-6 shadow-sm">
+                <h4 className="font-bold mb-4 text-orange-700 flex items-center gap-2 text-lg">
+                    {t('Admin.OrderManager.ItemTracker.beingPrepared')}
+                    <span className="bg-orange-200 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
+                        {ticketGroups.active.length}
+                    </span>
+                </h4>
+                <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                     {ticketGroups.active.map(ticket => (
-                        <div key={ticket._id.toString()} className="flex items-center gap-2">
+                        <div key={ticket._id.toString()} className="flex items-center gap-3">
                             <TicketItem ticket={ticket} selectedTickets={selectedTickets}
                                         handleToggleTicket={handleToggleTicket}/>
                             <Button
                                 onClick={() => onMarkReady(ticket._id.toString())}
-                                className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
                             >
-                                Ready
+                                {t('Admin.OrderManager.Actions.markReady')}
                             </Button>
                         </div>
                     ))}
                     {ticketGroups.active.length === 0 && (
-                        <p className="text-gray-500 text-sm">No items</p>
+                        <div className="text-center py-8">
+                            <p className="text-gray-500 text-sm">No items being prepared</p>
+                        </div>
                     )}
                 </div>
             </div>
 
             {/* Ready tickets (unassigned) */}
-            <div className="border rounded-lg p-4">
-                <h4 className="font-medium mb-3 text-green-600">✅ Ready</h4>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-sm">
+                <h4 className="font-bold mb-4 text-green-700 flex items-center gap-2 text-lg">
+                    {t('Admin.OrderManager.ItemTracker.readyForAssignment')}
+                    <span className="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                        {ticketGroups.ready.length}
+                    </span>
+                </h4>
+                <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                     {ticketGroups.ready.map(ticket => (
                         <TicketItem
                             key={ticket._id.toString()}
@@ -171,38 +198,44 @@ const TicketTracker = ({
                             handleToggleTicket={handleToggleTicket}/>
                     ))}
                     {ticketGroups.ready.length === 0 && (
-                        <p className="text-gray-500 text-sm">No unassigned ready items</p>
+                        <div className="text-center py-8">
+                            <p className="text-gray-500 text-sm">{t('Admin.OrderManager.ItemTracker.noReadyItemsAvailable')}</p>
+                        </div>
                     )}
                 </div>
             </div>
 
             {/* Order assignment panel */}
             {assignMode && selectedTickets.size > 0 && (
-                <div className="border-2 border-blue-400 rounded-lg p-4 bg-blue-50">
-                    <h4 className="font-medium mb-3">Select Order to Assign</h4>
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-6 shadow-lg animate-in slide-in-from-top duration-300">
+                    <h4 className="font-bold mb-4 text-blue-800 text-lg">{t('Admin.OrderManager.ItemTracker.selectOrderToAssign')}</h4>
+                    <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                         {compatibleOrders.map(order => (
                             <div
                                 key={order._id.toString()}
-                                className="flex justify-between items-center p-2 bg-white rounded border hover:border-blue-400 cursor-pointer"
+                                className="flex justify-between items-center p-4 bg-white rounded-xl border-2 border-gray-100 hover:border-blue-300 cursor-pointer transition-all duration-200 hover:shadow-md group"
                                 onClick={() => handleAssign(order._id.toString())}
                             >
-                                <div>
-                                    <span className="font-medium">{order.name}</span>
-                                    <span className="text-xs text-gray-500 ml-2">
-                                        #{order._id.toString().slice(-6)}
-                                    </span>
-                                    <div className="text-xs text-gray-600">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="font-semibold text-gray-900">{order.name}</span>
+                                        <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                                            #{order._id.toString().slice(-6)}
+                                        </span>
+                                    </div>
+                                    <div className="text-sm text-gray-600">
                                         {order.items.map(i => i.name).join(', ')}
                                     </div>
                                 </div>
-                                <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+                                <span className="text-sm bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-3 py-2 rounded-lg font-medium">
                                     {timeslotToLocalTime(order.timeslot)}
                                 </span>
                             </div>
                         ))}
                         {compatibleOrders.length === 0 && (
-                            <p className="text-gray-500 text-sm">No compatible orders found</p>
+                            <div className="text-center py-8">
+                                <p className="text-gray-500 text-sm">{t('Admin.OrderManager.ItemTracker.noCompatibleOrdersFound')}</p>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -218,6 +251,8 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
     onDeliver: (ignoreTickets: boolean) => void;
     onTogglePaid: () => void;
 }) => {
+    const t = useTranslations()
+
     const [ignoreTickets, setIgnoreTickets] = useState(false);
 
     // Check if order can be delivered
@@ -250,55 +285,75 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
     const isActive = order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED;
 
     return (
-        <div className={`bg-white rounded-lg border-2 p-4 ${
-            !order.isPaid ? 'border-red-400' : canDeliver ? 'border-green-400' : 'border-gray-200'
+        <div className={`bg-white rounded-2xl border-2 p-6 shadow-sm transition-all duration-200 ${
+            !order.isPaid
+                ? 'border-red-300 bg-gradient-to-br from-red-50 to-pink-50'
+                : canDeliver
+                    ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50'
+                    : 'border-gray-200'
         }`}>
-            <div className="flex justify-between items-start mb-3">
+            <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="font-bold">{order.name}</h3>
-                    <p className="text-sm text-gray-500">#{order._id.toString().slice(-6)}</p>
+                    <h3 className="font-bold text-xl text-gray-900 mb-1">{order.name}</h3>
+                    <p className="text-sm font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md w-fit">
+                        #{order._id.toString().slice(-6)}
+                    </p>
                 </div>
-                <div className="flex flex-row gap-1 items-center">
+                <div className="flex flex-col gap-2 items-end">
                     {!order.isPaid && (
-                        <div
-                            className="bg-red-50 text-red-700 text-sm p-2 rounded-xl w-fit flex flex-row gap-1 items-center">
-                            <TriangleAlert/> Not Paid
+                        <div className="bg-gradient-to-r from-red-100 to-red-200 text-red-800 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
+                            <TriangleAlert className="w-4 h-4"/>
+                            {t('Admin.OrderManager.Orders.notPaid')}
                         </div>
                     )}
-                    <div className="bg-gray-100 text-sm p-2 rounded-xl w-fit flex flex-row gap-1 items-center">
-                        <ClockIcon/> {timeslotToLocalTime(order.timeslot)}
+                    <div className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
+                        <ClockIcon className="w-4 h-4"/>
+                        {timeslotToLocalTime(order.timeslot)}
                     </div>
                 </div>
             </div>
 
-            <div className="space-y-1 mb-3">
-                {order.items.map((item, idx) => (
-                    <div key={`${item._id.toString()}-${idx}`} className="text-sm flex justify-between">
-                        <span>{item.name}</span>
-                    </div>
-                ))}
+            <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <div className="space-y-2">
+                    {order.items.map((item, idx) => (
+                        <div key={`${item._id.toString()}-${idx}`} className="flex justify-between items-center text-sm">
+                            <span className="font-medium text-gray-700">{item.name}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {isActive && (
-                <div className="flex gap-2">
+                <div className="flex gap-3 items-center">
                     <Button
                         onClick={() => onDeliver(ignoreTickets)}
-                        className={`flex-1 py-2 rounded flex items-center gap-1 ${
+                        className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
                             canDeliver
-                                ? 'bg-green-500 text-white hover:bg-green-600'
-                                : 'bg-gray-300 text-gray-500'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm hover:shadow-md'
+                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                         }`}
+                        disabled={!canDeliver && !ignoreTickets}
                     >
-                        <CheckCircle className="w-4 h-4 mr-1"/>
-                        Deliver
+                        <CheckCircle className="w-5 h-5"/>
+                        {t('Admin.OrderManager.Actions.deliverOrder')}
                     </Button>
-                    <input type="checkbox" checked={ignoreTickets} onChange={() => setIgnoreTickets(!ignoreTickets)}/>
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={ignoreTickets}
+                            onChange={() => setIgnoreTickets(!ignoreTickets)}
+                            className="w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-xs text-gray-600">{t('Admin.OrderManager.Actions.force')}</span>
+                    </div>
+
                     <Button
                         onClick={onTogglePaid}
-                        className={`px-3 py-2 rounded ${
+                        className={`px-4 py-3 rounded-xl font-bold transition-all duration-200 ${
                             order.isPaid
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-red-100 text-red-700'
+                                ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 hover:from-green-200 hover:to-green-300'
+                                : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 hover:from-red-200 hover:to-red-300'
                         }`}
                     >
                         {order.totalPrice}€
@@ -307,10 +362,10 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
             )}
 
             {!isActive && (
-                <div className={`text-center py-2 rounded ${
+                <div className={`text-center py-3 rounded-xl font-medium ${
                     order.status === ORDER_STATUSES.COMPLETED
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800'
+                        : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
                 }`}>
                     {order.status}
                 </div>
@@ -330,15 +385,18 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl max-w-sm w-full p-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">Scan Order QR</h3>
-                    <Button onClick={onClose} className="p-1">
-                        <XCircle className="w-5 h-5"/>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-900">Scan Order QR</h3>
+                    <Button
+                        onClick={onClose}
+                        className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                    >
+                        <XCircle className="w-6 h-6 text-gray-500"/>
                     </Button>
                 </div>
-                <div className="w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
+                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 border-2 border-gray-200">
                     <Scanner
                         onScan={(result) => {
                             const code = result[0]?.rawValue;
@@ -356,6 +414,7 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
 
 // Main component
 export default function OrderManagerDashboard() {
+    const t = useTranslations()
     const queryClient = useQueryClient();
     const [searchFilter, setSearchFilter] = useState('');
     const [showScanner, setShowScanner] = useState(false);
@@ -463,29 +522,46 @@ export default function OrderManagerDashboard() {
 
     return (
         <>
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: #f1f5f9;
+                    border-radius: 3px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #cbd5e1;
+                    border-radius: 3px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #94a3b8;
+                }
+            `}</style>
+
             <Heading
-                title="Delivery Station"
-                description="Track items and deliver orders"
+                title={t('Admin.OrderManager.title')}
+                description={t('Admin.OrderManager.description')}
                 icon={<Pizza className="w-8 h-8 text-orange-500"/>}
             >
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-3 items-center">
                     <SearchInput
                         search={setSearchFilter}
                         searchValue={searchFilter}
                     />
                     <Button
                         onClick={() => setShowScanner(true)}
-                        className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600"
+                        className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
                     >
-                        <ScanIcon className="w-4 h-4"/>
+                        <QrCodeIcon className="w-6 h-6"/>
                     </Button>
                 </div>
             </Heading>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="lg:col-span-1">
-                    <div className="bg-white rounded-xl p-6 shadow-sm border sticky top-4">
-                        <TicketTracker
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-gray-100 sticky top-4">
+                        <ItemTracker
                             tickets={tickets}
                             orders={orders}
                             onMarkReady={(ticketId) => markTicketReadyMutation.mutate(ticketId)}
@@ -499,9 +575,14 @@ export default function OrderManagerDashboard() {
 
                 {/* Orders */}
                 <div className="lg:col-span-1">
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-lg">Active Orders</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                            <h3 className="font-bold text-xl text-gray-900">{t('Admin.OrderManager.Orders.activeOrders')}</h3>
+                            <span className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+                                {filteredOrders.length}
+                            </span>
+                        </div>
+                        <div className="space-y-4">
                             {filteredOrders.map(order => (
                                 <DeliveryOrderCard
                                     key={order._id.toString()}
@@ -519,7 +600,10 @@ export default function OrderManagerDashboard() {
                             ))}
                         </div>
                         {filteredOrders.length === 0 && (
-                            <p className="text-gray-500 text-center py-8">No active orders</p>
+                            <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                                <p className="text-gray-500 text-lg">{t('Admin.OrderManager.Orders.noActiveOrders')}</p>
+                                <p className="text-gray-400 text-sm mt-1">{t('Admin.OrderManager.Orders.ordersWillAppearHere')}</p>
+                            </div>
                         )}
                     </div>
                 </div>

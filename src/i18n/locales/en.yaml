@@ -1,181 +1,257 @@
 translation:
-  lang_emoji: 🇺🇸
+  lang_emoji: 🇬🇧
   app_title: Pizza-Byte
   loading_menu: Loading menu...
 
-  errors:
-    failed_to_load_menu: 'Menu loading error: {message}'
+  Errors:
+    failed_to_load_menu: 'Error loading menu: {message}'
 
-  header:
-    adminlinks:
+  Header:
+    AdminLinks:
       prepare: Preparation
       manage_db: Database
       manage_orders: Orders
       manage_items: Items
-      logout: Logout
-    menu:
-      login: Login
+      logout: Log out
+    Menu:
+      login: Log in
       home: Home
       orders: Orders
 
-  footer:
-    fuel: Code & Pizza by
+  Footer:
+    fuel: "Code & pizza by "
 
-  order:
-    # When ordering something
+  Order:
     introduction:
-      choose_your_item: Choose product
-      pick_up_time: Pickup time
-      pay_in_cash: Cash payment
-      closer: Have a great evening!
+      choose_your_item: Choose your item
+      pick_up_time: Pick-up time
+      pay_in_cash: Pay in cash
+      closer: Have a nice evening!
     item:
       button:
         add: Add
+        more: Another one?
     order_summary:
       add: Add pizzas
       open_order_summary: Go to cart
     order_button:
-      order_now: Order
+      order_now: Order now
 
-  order_status:
+  OrderStatus:
     order: Order
     total: Total
     not_found: Order not found
 
     suspense:
       loading: Loading order...
-    show_at_pickup: Show this page at pickup
+    show_at_pickup: Show this page when picking up
     thank_you:
       qr:
-        title: Thanks for your order! 🍕
+        title: Thank you for your order! 🍕
         your_order_number: 'Order No.:'
         instructions: Please pay at the counter.
-        order_again: New order
-        view_orders: My orders
+        order_again: Place another order
+        view_orders: View my orders
     status:
       ready_by: Ready by
       ordered: Ordered
-      active: In preparation
+      active: In progress
       ready: Ready for pickup!
       completed: Picked up
       cancelled: Cancelled
       default: Status unknown :(
       paid: Paid
-      unpaid: Unpaid
+      unpaid: Not paid
       error: Error
     cancel_order: Cancel order
 
-  cart:
-    title: Cart
+  OrderSummary:
+    title: Your order
     messages:
-      empty_cart: Cart empty.
+      empty_cart: Cart is empty.
       add_note: Add note
       add_more_products: Add more items
       name_not_set: Name missing
-      timeslot_not_selected: Time slot missing
-    timeslot:
-      title: Time slot
-      subtitle: Choose pickup time.
-    order:
+      timeslot_not_selected: Timeslot missing
+    Timeslot:
+      title: Timeslot
+      subtitle: Select pick-up time.
+    OrderDetails:
+      yourDetails: Your details
       name: Name
       name_placeholder: Your name
-    items: Items
-    total_price: Total
-    currency: €
-    select_timeslot: Select your desired pickup time
-    open_order_summary: Go to overview
+    Summary:
+      title: Order summary
+      subtotal: 'Subtotal ({amount} items)'
+      total_price: Total
 
-  order_overview:
+    select_timeslot: Select your desired pick-up time
+    items: Items
+    open_order_summary: Go to summary
+
+  OrderList:
     history:
       title: History
       subtitle: Your recent orders.
     recent:
       title: Current
-      orders_found: '{count, plural, =0 {No orders} =1 {One order} other {# orders}} '
+      orders_found: '{count, plural, =0 {No orders} =1 {One order} other {# orders}}'
       no_orders_yet: No orders yet.
       messages:
-        first_order: You'll see your orders here.
+        first_order: Your orders will appear here.
     timeline:
       title: Timeline
       subtitle: Live orders.
+    Actions:
+      deleteLocalOrders: Delete local orders
 
-  admin:
-    manage:
-      database:
+  Admin:
+    Manage:
+      Database:
         title: Database
-        enable_changes: Enable changes
-        reset_database: Reset DB
-        delete_database: Delete DB
-        system_state: 'System: {state}'
+        SystemControls:
+          title: System controls
 
-      order:
-        errors:
-          order_not_found: Order not found.
-          barcode_fail: 'Barcode error: ID not readable'
-        order_history: History
-        scan_qr_code_text: QR scan for order
-        show_finished: Show completed
-        hide_finished: Hide completed
-        status: 'Status:'
-        price: 'Price:'
-        items: 'Items:'
-        order_date: 'Date:'
-        timeslot: 'Time slot:'
-        comment: 'Note:'
-        paid: Paid
-        not_paid: Outstanding
+        Status:
+          systemState: 'System: {state}'
+          activeSystem: System active
+          disabledSystem: System inactive
 
-      pizza:
-        errors:
-          error_fetching: 'Error: Items not loaded'
+        Actions:
+          enable_changes: Allow changes
+          reset_database: Reset database
+          delete_database: Delete database
+          enterSystemMessage: Enter system message
+          saveConfig: Save configuration
+          set: Set
+
+        SystemMessage:
+          title: System message
+          disclaimer: This message will be shown to users when the system status changes.
+
+        ConfigurationEditor:
+          title: Configuration editor
+          disclaimer: "Note: This configuration consists of editable JSON data. Please ensure valid JSON syntax when making changes."
+
+      Items:
         title: Items
         subtitle: Create & edit items.
-        new_pizza_name: New item
-        edit_item:
-          enabled: Active
-          disabled: Inactive
-          disable: Disable
-          enable: Enable
-          items_available: '{items} available'
-          update: Save
-          create: Create
+
+        errors:
+          error_fetching: 'Error: Items could not be loaded'
+
+        readyToCreate: Ready to add this item?
+        saveChanges: Save your changes
+
+        Status:
+          enabled: ✓ Active
+          disabled: ✕ Inactive
+          itemIsAvailable: Item is available for ordering
+
+        Property:
           name: Name
           type: Type
           dietary: Details
           price: Price
+          size: Size
           max_items_available: Max. available
 
-    prepare:
-      title: Active Orders
-      subtitle: Tap when pizza is ready for oven
+        Actions:
+          disable: Deactivate
+          enable: Activate
+          update: Save
+          create: Create
+
+    Prepare:
+      title: Active orders
+      subtitle: Tap the pizza when it’s done. For half pizzas, just tap once!
+
       needed: '{amount} needed'
       current_time: 'Time: {currentTime}'
       open_orders: 'Open: '
-      no_open_orders: No open orders 🎉
+      no_open_orders: No open orders
       item: Item
-      timeslot: Time slot
+      timeslot: Timeslot
       name: Name
       status: Status
       is_done: ✅ Done
 
-  withsystemcheck:
+    OrderManager:
+      title: "Delivery Station"
+      description: "Track items and deliver orders"
+
+      # Item Tracker Section
+      ItemTracker:
+        title: "Item Tracker"
+        beingPrepared: "🔥 Being prepared"
+        readyForAssignment: "✅ Ready for assignment"
+        selectOrderToAssign: "Select order to assign"
+        noItemsBeingPrepared: "No items being prepared"
+        noReadyItemsAvailable: "No ready items available"
+        noCompatibleOrdersFound: "No compatible orders found"
+
+      # Buttons and Actions
+      Actions:
+        assignToOrder: "Assign to order"
+        cancel: "Cancel"
+        clear: "Clear"
+        markReady: "Mark ready"
+        deliverOrder: "Deliver order"
+        force: "Force"
+        scanOrderQR: "Scan order QR"
+
+      # Order Status and Information
+      Orders:
+        activeOrders: "Active orders"
+        orderPrefix: "Order #"
+        ticketPrefix: "#"
+        notPaid: "Not paid"
+        noActiveOrders: "No active orders"
+        ordersWillAppearHere: "Orders will appear here when available"
+
+      # QR Scanner Modal
+      QRScanner:
+        title: "Scan order QR"
+
+      # Status Messages
+      Status:
+        completed: "COMPLETED"
+        cancelled: "CANCELLED"
+
+      # Error Messages
+      Errors:
+        failedToDeliverOrder: "Failed to deliver order"
+
+      # Accessibility and Labels
+      Labels:
+        searchPlaceholder: "Search orders..."
+        selectTicket: "Select ticket"
+        ignoreTickets: "Ignore ticket requirements"
+        togglePaymentStatus: "Toggle payment status"
+        closeModal: "Close modal"
+
+      Format:
+        currency: "€"
+        timeFormat: "HH:mm"
+
+  SystemCheck:
     check_system_status: Checking system...
     system_inactive: System inactive
     system_unavailable_message: System maintenance. Please try again later.
 
-  components:
+  Misc:
     menusection:
       loading: Loading menu...
     timeline:
       loading: Loading timeline...
       warning: 'Warning: {error}. Showing fallback data.'
     errormessage:
-      please_try_again: Try again.
+      please_try_again: Please try again.
     searchinput:
       placeholder: Search...
 
-  login:
-    title: Helper Login # Or: Login
-    fsik_token: FSI/K Token
+  LoginPage:
+    title: Helfi Login
+    fsik_token: FSI/K token
     authenticating: Authenticating...
-    login: Login
+    login: Log in

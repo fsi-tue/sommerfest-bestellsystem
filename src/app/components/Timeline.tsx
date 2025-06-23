@@ -115,7 +115,7 @@ const Timeline = ({
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-[300px]">
-                <div className="text-gray-500">{t('components.timeline.loading')}</div>
+                <div className="text-gray-500">{t('Misc.timeline.loading')}</div>
             </div>
         );
     }
@@ -124,7 +124,7 @@ const Timeline = ({
         <div className="w-full">
             {error && (
                 <div className="mb-2 p-2 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-                    {t('components.timeline.warning', { error })}
+                    {t('Misc.timeline.warning', { error })}
                 </div>
             )}
 

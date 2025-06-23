@@ -23,8 +23,8 @@ export const FloatingOrderSummary = ({
     // Derive state instead of managing it
     const enableCart = totalItemsCount > 0;
     const text = totalItemsCount === 0
-        ? t('order.order_summary.add')
-        : t('order.order_summary.open_order_summary');
+        ? t('Order.order_summary.add')
+        : t('Order.order_summary.open_order_summary');
 
     if (totalItemsCount <= 0) {
         return null;

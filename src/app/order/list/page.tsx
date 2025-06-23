@@ -64,7 +64,7 @@ const Page = () => {
                     id: order._id.toString(),
                     items: order.items.map(item => item.name),
                     timeslot: order.timeslot,
-                    status: t(`order_status.status.${orderStatus}`),
+                    status: t(`OrderStatus.status.${orderStatus}`),
                     statusColor: statusToColor[orderStatus] ?? 'gray'
                 });
             });
@@ -82,10 +82,10 @@ const Page = () => {
                         <Package className="w-8 h-8 text-gray-400"/>
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        {t('order_overview.recent.no_orders_yet')}
+                        {t('OrderList.recent.no_orders_yet')}
                     </h3>
                     <p className="text-gray-500 max-w-sm mx-auto">
-                        {t('order_overview.recent.messages.first_order')}
+                        {t('OrderList.recent.messages.first_order')}
                     </p>
                 </div>
             );
@@ -121,7 +121,7 @@ const Page = () => {
 
                 <Button onClick={() => resetLocalStorage()}
                         className="text-black px-6 py-3 border rounded-2xl font-medium transition-colors flex items-center gap-2"
-                ><Trash2/> Delete local session</Button>
+                ><Trash2/>{t('OrderList.Actions.deleteLocalOrders')}</Button>
             </div>
         </div>
     );
@@ -135,11 +135,11 @@ const HeaderSection = React.memo(({ t }: { t: any }) => (
                 <Pizza className="w-4 h-4 text-yellow-500"/>
             </div>
             <h1 className="text-2xl font-semibold text-gray-900">
-                {t('order_overview.history.title')}
+                {t('OrderList.history.title')}
             </h1>
         </div>
         <p className="text-gray-500 text-sm">
-            {t('order_overview.history.subtitle')}
+            {t('OrderList.history.subtitle')}
         </p>
     </div>
 ));
@@ -148,10 +148,10 @@ const OrdersSection = React.memo(({ t, ordersCount, ordersList }: any) => (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100">
             <h2 className="text-lg font-semibold text-gray-900">
-                {t('order_overview.recent.title')}
+                {t('OrderList.recent.title')}
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-                {t('order_overview.recent.orders_found', { count: ordersCount })}
+                {t('OrderList.recent.orders_found', { count: ordersCount })}
             </p>
         </div>
         {ordersList}
@@ -172,7 +172,7 @@ const OrderItem = React.memo(({ t, order }: { t: any, order: any }) => (
                     </div>
                     <div className="min-w-0 flex flex-row items-center gap-3 mb-2">
                         <p className="text-sm font-medium text-gray-900 truncate">
-                            {t('order_status.order')} #{order.id.slice(-8)}
+                            {t('OrderStatus.order')} #{order.id.slice(-8)}
                         </p>
                         <p className="items-center px-2 py-1 rounded-md bg-white text-xs text-gray-900 flex gap-1">
                             <Clock className="w-3 h-3"/>
@@ -216,11 +216,11 @@ const TimelineSection = React.memo(({ t }: any) => (
                     <Clock className="w-4 h-4 text-purple-600"/>
                 </div>
                 <h2 className="text-lg font-semibold text-gray-900">
-                    {t('order_overview.timeline.title')}
+                    {t('OrderList.timeline.title')}
                 </h2>
             </div>
             <p className="text-sm text-gray-500">
-                {t('order_overview.timeline.subtitle')}
+                {t('OrderList.timeline.subtitle')}
             </p>
         </div>
         <div className="p-6">
