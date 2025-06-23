@@ -4,64 +4,75 @@ import { useEffect, useState } from "react";
 import { timeslotToLocalTime, timeslotToUTCDate } from "@/lib/time";
 import { Order, ORDER_STATUSES, OrderStatus } from "@/model/order";
 import OrderQR from "@/app/components/order/OrderQR";
-import { Loading } from "@/app/components/Loading";
 import Button from "@/app/components/Button";
 import ErrorMessage from "@/app/components/ErrorMessage";
 import { useTranslations } from 'next-intl';
 import { formatDate } from "date-fns";
+import useOrderStore from "@/app/zustand/order";
+import { useQuery } from "@tanstack/react-query";
+import { getOrder } from "@/lib/fetch/order";
+import { Loading } from "@/app/components/Loading";
 
-export default function ClientOrderPage({ orderNumber }: { orderNumber: string }) {
+export default function ClientOrderPage({ orderId }: { orderId: string }) {
     const [error, setError] = useState<string | null>(null);
     const [order, setOrder] = useState<Order | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const { getOrderById } = useOrderStore();
 
     const t = useTranslations();
 
-
     // Fetch order data
-    const fetchOrder = () => {
-        fetch(`/api/order/${orderNumber}`)
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    const error = data?.message ?? response.statusText;
-                    throw new Error(error);
-                }
-                return data;
-            })
-            .then(order => {
-                setOrder({ ...order });
-                setIsLoading(false);
-            })
-            .catch(error => {
-                setError(error.message || "An error occurred");
-                setIsLoading(false);
-            });
-    }
+    const { data: fetchedOrder, error: orderError, isFetching } = useQuery({
+        queryKey: ['order'],
+        queryFn: () => getOrder(orderId),
+        refetchInterval: 5000
+    })
 
     useEffect(() => {
-        fetchOrder()
-    }, [orderNumber]);
+        if (orderError) {
+            setError(orderError.message);
+        }
+    }, [orderError]);
 
     useEffect(() => {
-        const interval = setInterval(fetchOrder, 5000);
-        return () => clearInterval(interval);
-    }, []);
+        if (isFetching) {
+            setIsLoading(isFetching);
+        } else {
+            setIsLoading(false);
+        }
+    }, [isFetching]);
+
+    useEffect(() => {
+        const orderById = getOrderById(orderId);
+        if (orderById) {
+            setOrder(orderById);
+        }
+
+        if (fetchedOrder && order) {
+            setOrder({ ...order, ...{ status: fetchedOrder.status, isPaid: fetchedOrder.isPaid } });
+        } else if (fetchedOrder) {
+            setOrder(fetchedOrder)
+        }
+
+        setIsLoading(false);
+    }, [orderId, fetchedOrder]);
 
     // Rest of your component logic
     const cancelOrder = () => {
-        if (!order) {
+        if (!fetchedOrder) {
             return;
         }
 
-        fetch(`/api/order/${orderNumber}/cancel`, {
+        fetch(`/api/order/${orderId}/cancel`, {
             method: 'PUT',
             credentials: 'include',
+            body: JSON.stringify({ name: fetchedOrder.name }),
         })
             .then(response => {
                 if (response.ok) {
                     setOrder({
-                        ...order,
+                        ...fetchedOrder,
                         status: 'cancelled' as OrderStatus
                     });
                 } else {
@@ -71,18 +82,6 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
             .catch(error => {
                 setError(error.message);
             });
-    };
-
-    const hasComment = () => {
-        if (!order) {
-            return false;
-        }
-
-        return (
-            typeof order.comment === "string" &&
-            order.comment !== "" &&
-            order.comment.toLowerCase() !== "no comment"
-        );
     };
 
     const statusToText = (order: {
@@ -105,17 +104,16 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
         }
     };
 
-
-    if (isLoading) {
-        return <Loading message="Loading Order..."/>;
+    if (order === null && isLoading) {
+        return <Loading message={t('order_status.suspense.loading')}/>;
     }
+
     if (!order) {
-        return <div className="p-6 text-center"><h1 className="text-xl">{t('order.not_found')}</h1></div>;
+        return <div className="p-6 text-center"><h1 className="text-xl">{t('order_status.not_found')}</h1></div>;
     }
 
     return (
         <div className="p-6 max-w-md mx-auto rounded-2xl bg-white shadow-xl">
-            {/* Status Hero Section */}
             <div className="px-6 py-12 text-center">
                 <h1 className={`text-2xl px-4 py-2 font-semibold mb-6 text-gray-900 rounded-full max-w-sm mx-auto ${getStatusColor(order.status)}`}>
                     {statusToText(order)}
@@ -132,32 +130,36 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                         </p>
                     </div>
                 )}
+
+                <div>
+                    {order.name}
+                </div>
             </div>
 
             <div className="px-6 pb-6">
                 <div className="max-w-sm mx-auto space-y-4">
-
                     <div className="p-6">
                         <div className="flex justify-between items-center mb-4">
                             <span
-                                className="text-sm text-gray-500">{t('order_status.order')} #{orderNumber.slice(-8)}</span>
-                            <span className={`text-sm font-medium ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
+                                className="text-sm text-gray-500">{t('order_status.order')} #{orderId.slice(-8)}</span>
+                            <span
+                                className={`text-sm font-medium ${order.isPaid ? 'text-green-600' : 'text-red-600'}`}>
                                 {order.isPaid ? t('order_status.status.paid') : t('order_status.status.unpaid')}
                             </span>
                         </div>
 
                         <div className="space-y-3">
                             {order?.items?.map((item, index) => (
-                                <div key={`${item.item._id.toString()}-${index}`} className="flex justify-between">
-                                    <span className="text-gray-900">{item.item.name}</span>
-                                    <span className="text-gray-600">€{item.item.price.toFixed(2)}</span>
+                                <div key={`${item._id.toString()}-${index}`} className="flex justify-between">
+                                    <span className="text-gray-900">{item.name}</span>
+                                    <span className="text-gray-600">€{item.price.toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
 
                         <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between text-lg font-semibold">
                             <span>{t('order_status.total')}</span>
-                            <span>€{order?.items?.reduce((total, item) => total + item.item.price, 0).toFixed(2)}</span>
+                            <span>€{order?.items?.reduce((total, item) => total + item.price, 0).toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -165,7 +167,7 @@ export default function ClientOrderPage({ orderNumber }: { orderNumber: string }
                     <div className="p-6 text-center">
                         <p className="text-sm text-gray-600 mb-4">{t('order_status.show_at_pickup')}</p>
                         <div className="flex justify-center">
-                            <OrderQR orderId={orderNumber}/>
+                            <OrderQR orderId={orderId}/>
                         </div>
                     </div>
 

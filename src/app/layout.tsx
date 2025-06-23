@@ -27,11 +27,13 @@ export default async function RootLayout({
         <main className="max-h-fit flex flex-col bg-gray-50">
             <NextIntlClientProvider>
                 <Providers>
-                    <Header/>
-                    <div className="p-4 md:p-8 my-5 w-full max-w-7xl mx-auto min-h-screen">
-                        {children}
+                    <div className="mx-auto w-full max-w-7xl">
+                        <Header/>
+                        <div className="p-4 md:p-8 my-5 min-h-screen">
+                            {children}
+                        </div>
+                        <Footer/>
                     </div>
-                    <Footer/>
                 </Providers>
             </NextIntlClientProvider>
         </main>

@@ -1,12 +1,13 @@
 'use client'
 
 import Timeline from "@/app/components/Timeline";
-import { ChevronRight, Clock, Package, Pizza } from "lucide-react";
+import { ChevronRight, Clock, Package, Pizza, Trash2 } from "lucide-react";
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useMemo } from "react";
 import useOrderStore from "@/app/zustand/order";
 import { OrderDocument } from "@/model/order";
 import { timeslotToLocalTime } from "@/lib/time";
+import Button from "@/app/components/Button";
 
 const Page = () => {
     const { orders } = useOrderStore();
@@ -22,9 +23,9 @@ const Page = () => {
 
     const statusToColor: { [status: string]: string } = {
         ordered: "primary",
-        inPreparation: "orange",
+        active: "orange",
         ready: "green",
-        delivered: "gray",
+        completed: "gray",
         cancelled: "red"
     }
 
@@ -61,7 +62,7 @@ const Page = () => {
 
                 return ({
                     id: order._id.toString(),
-                    items: order.items.map(item => item.item.name),
+                    items: order.items.map(item => item.name),
                     timeslot: order.timeslot,
                     status: t(`order_status.status.${orderStatus}`),
                     statusColor: statusToColor[orderStatus] ?? 'gray'
@@ -99,6 +100,10 @@ const Page = () => {
         );
     }, [simpleOrders, t]);
 
+    function resetLocalStorage() {
+        localStorage.removeItem("order-storage");
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
@@ -113,6 +118,10 @@ const Page = () => {
                 <TimelineSection
                     t={t}
                 />
+
+                <Button onClick={() => resetLocalStorage()}
+                        className="text-black px-6 py-3 border rounded-2xl font-medium transition-colors flex items-center gap-2"
+                ><Trash2/> Delete local session</Button>
             </div>
         </div>
     );

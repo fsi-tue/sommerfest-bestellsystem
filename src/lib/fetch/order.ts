@@ -1,6 +1,14 @@
 import { OrderDocument } from "@/model/order";
 import { useQuery } from "@tanstack/react-query";
 
+export const getOrder = async (orderId: string): Promise<OrderDocument> => {
+    const response = await fetch(`/api/order/${orderId}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+    return await response.json();
+}
+
 export const getOrders = async (): Promise<OrderDocument[]> => {
     const response = await fetch('/api/order', {
         method: 'GET',

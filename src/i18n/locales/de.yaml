@@ -40,9 +40,10 @@ translation:
   order_status:
     order: Bestellung
     total: Gesamt
+    not_found: Bestellung nicht gefunden
 
     suspense:
-      loading: Lädt...
+      loading: Lädt Bestellung...
     show_at_pickup: Zeige diese Seite bei der Abholung
     thank_you:
       qr:
@@ -54,9 +55,9 @@ translation:
     status:
       ready_by: Fertig um
       ordered: Bestellt
-      inPreparation: In Arbeit
+      active: In Arbeit
       ready: Abholbereit!
-      delivered: Abgeholt
+      completed: Abgeholt
       cancelled: Storniert
       default: Status unbekannt :(
       paid: Bezahlt

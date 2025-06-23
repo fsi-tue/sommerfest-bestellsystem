@@ -8,7 +8,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=pass
     ports:
       - '27017:27017'
-    volumes: 
+    volumes:
       - db_data:/data/db.deprecated
     networks:
       - db
@@ -28,7 +28,7 @@ services:
       - ME_CONFIG_BASICAUTH_PASSWORD=tribes
     ports:
       - '8081:8081'
-    volumes: 
+    volumes:
       - db_data:/data/db.deprecated
     networks:
       - db

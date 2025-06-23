@@ -81,7 +81,6 @@ const Timeline = ({
         }
     }, [noClick, setTimeslot]);
 
-    // Enhanced timeslots with selected state highlighting
     const enhancedTimeslots = useMemo(() => {
         if (!data) {
             return timeslots;

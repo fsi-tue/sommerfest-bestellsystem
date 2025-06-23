@@ -17,7 +17,7 @@ import { EditableConfig } from "@/model/config";
 export default function ManagePage() {
     const queryClient = useQueryClient();
     const [message, setMessage] = useState('');
-    const [enableChanges, setEnable] = useState(false);
+    const [enableChanges, setEnableChanges] = useState(false);
     const [systemMessage, setSystemMessage] = useState('');
     const [configData, setConfigData] = useState('');
     const t = useTranslations();
@@ -100,16 +100,14 @@ export default function ManagePage() {
                 icon={<Database className="size-10 text-blue-600"/>}
             />
 
-            <div className="container mx-auto px-4 py-6 max-w-4xl">
-                <div
-                    className="bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8 space-y-8">
-
-                    {/* System Controls Section */}
-                    <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2">
+            <div className="max-w-4xl mx-auto p-6">
+                <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                    <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-4 border-b border-gray-200">
+                        <h2 className="text-xl font-semibold text-gray-900">
                             System Controls
-                        </h3>
-
+                        </h2>
+                    </div>
+                    <div className="p-6 space-y-6">
                         {/* Enable Changes Toggle */}
                         <div
                             className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-200/50">
@@ -122,7 +120,7 @@ export default function ManagePage() {
                                     id="enableChanges"
                                     name="enableChanges"
                                     checked={enableChanges}
-                                    onChange={() => setEnable(!enableChanges)}
+                                    onChange={() => setEnableChanges(!enableChanges)}
                                     className="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-primary-50 checked:bg-primary-800 checked:border-primary-800"
                                 />
                             </div>
@@ -204,7 +202,7 @@ export default function ManagePage() {
                     </div>
 
                     {/* Configuration Section */}
-                    <div className="space-y-6">
+                    <div className="p-6 space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-200 pb-2 flex-1">
                                 Configuration Editor

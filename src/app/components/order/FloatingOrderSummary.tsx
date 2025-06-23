@@ -1,4 +1,5 @@
-'use client';
+'use client'
+
 import React from "react";
 import useOrderStore from "@/app/zustand/order";
 import { ShoppingCart } from "lucide-react";
@@ -6,13 +7,9 @@ import Button from "@/app/components/Button";
 import { useTranslations } from 'next-intl';
 import { useShallow } from "zustand/react/shallow";
 
-interface FloatingOrderSummaryProps {
-    onToggleOpen: () => void;
-}
-
 export const FloatingOrderSummary = ({
-                                         onToggleOpen,
-                                     }: FloatingOrderSummaryProps) => {
+                                         onToggleAction,
+                                     }: { onToggleAction: () => void }) => {
     const t = useTranslations();
 
     const { totalItemsCount, currentOrderTotal, error } = useOrderStore(
@@ -56,7 +53,7 @@ export const FloatingOrderSummary = ({
                             </div>
 
                             <Button
-                                onClick={onToggleOpen}
+                                onClick={onToggleAction}
                                 disabled={!enableCart}
                                 className={`flex-1 text-center py-3 px-4 ${enableCart ? 'hover:shadow-inner hover:inset-shadow-2xs' : ''} rounded-lg transition-colors duration-200 text-white-800 font-bold text-2xl`}
                                 aria-label="View cart"

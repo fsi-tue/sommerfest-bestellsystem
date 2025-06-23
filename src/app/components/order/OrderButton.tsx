@@ -44,7 +44,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
         }, [order, totalItemsCount])
 
         // Function to order the pizzas
-        const orderPizza = () => {
+        const sendOrder = () => {
             if (isButtonDisabled || !order) {
                 return;
             }
@@ -72,7 +72,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
                         createNewOrder()
 
                         // Redirect to thank you page
-                        router.push(`/order/${createdOrder._id.toString()}/thank-you`, { scroll: true })
+                        router.push(`/order/${createdOrder._id.toString()}`, { scroll: true })
                     }
                 )
                 .catch(error => {
@@ -86,7 +86,7 @@ const OrderButton: React.FC<OrderButtonProps> = ({ setError }) => {
 
         return (
             <Button
-                onClick={orderPizza}
+                onClick={sendOrder}
                 className={`w-full md:w-auto font-semibold px-4 py-3 rounded-2xl bg-orange-500 text-white shadow-lg transition-all duration-300 ease-out ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-400'}`}
                 disabled={isButtonDisabled}
             >

@@ -6,19 +6,19 @@ import { OrderModel } from "@/model/order";
 import { SystemModel } from "@/model/system";
 import { EditableConfig } from "@/model/config";
 import { DEFAULT_EDITABLE_CONFIG, SYSTEM_NAME } from "@/config";
+import { ItemTicketModel } from "@/model/ticket";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 
-// --- CURRENT APP CONFIGURATION ---
 let currentConfig: EditableConfig = { ...DEFAULT_EDITABLE_CONFIG };
 
 /**
  * Loads configuration from MongoDB.
  * If no configuration is found for the SYSTEM_NAME, it creates one with default values.
  */
-async function initializeAndLoadConfig(): Promise<EditableConfig> {
+async function initAndLoadConfig(): Promise<EditableConfig> {
     try {
         let systemDoc = await SystemModel.findOne({ name: SYSTEM_NAME });
 
@@ -90,10 +90,13 @@ const pizzasByName = {
     "Capricciosa vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
 };
 
+/**
+ * Initialize the system if it does not exist.
+ * @constructor
+ */
 export async function GET() {
-    // Initialize system if it does not exist
     await dbConnect();
-    await initializeAndLoadConfig()
+    await initAndLoadConfig()
     return Response.json({ status: "success" });
 }
 
@@ -107,58 +110,59 @@ export async function POST() {
 
     await ItemModel.deleteMany({})
     await OrderModel.deleteMany({})
+    await ItemTicketModel.deleteMany({})
     await SystemModel.deleteMany({})
 
     // Add pizzas
     const pizzas = [
         {
-            name: 'Salami full',
+            name: 'Salami half',
             price: 8,
             dietary: 'meat',
             type: 'pizza',
             ingredients: pizzasByName['Salami'],
-            size: 1
+            size: 0.5
         },
         {
-            name: 'Ham and mushrooms full',
+            name: 'Ham and mushrooms half',
             price: 8,
             dietary: 'meat',
             type: 'pizza',
             ingredients: pizzasByName['Ham and mushrooms'],
-            size: 1
+            size: 0.5
         },
         {
-            name: 'Capricciosa full',
+            name: 'Capricciosa half',
             price: 8,
             type: 'pizza',
             dietary: 'meat',
             ingredients: pizzasByName['Capricciosa'],
-            size: 1
+            size: 0.5
         },
-        { name: 'Margherita full', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 1 },
-        { name: 'Veggies full', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 1 },
+        { name: 'Margherita half', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 1 },
+        { name: 'Veggies half', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 1 },
         {
-            name: 'Margherita vegan full',
+            name: 'Margherita vegan half',
             price: 6,
             dietary: 'vegan',
             type: 'pizza',
             ingredients: pizzasByName['Margherita vegan'],
-            size: 1
+            size: 0.5
         },
         {
-            name: 'Capricciosa vegan full',
+            name: 'Capricciosa vegan half',
             price: 6,
             dietary: 'vegan',
             type: 'pizza',
             ingredients: pizzasByName['Capricciosa vegan'],
-            size: 1
+            size: 0.5
         },
     ];
     for (const pizza of pizzas) {
         await new ItemModel(pizza).save();
     }
 
-    await initializeAndLoadConfig()
+    await initAndLoadConfig()
 
     return Response.json({ message: 'Successfully reset system' })
 }

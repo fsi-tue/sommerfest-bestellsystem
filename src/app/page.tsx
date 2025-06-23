@@ -16,7 +16,7 @@ const Page: React.FC = () => {
     const [ordersOpen, setOrdersOpen] = useState(false);
     const t = useTranslations();
 
-    const { status, data, error, isFetching } = useItems()
+    const { data, error, isFetching } = useItems()
 
     if (isFetching) {
         return <Loading message={t('loading_menu')}/>
@@ -45,7 +45,7 @@ const Page: React.FC = () => {
                 </div>
 
                 <FloatingOrderSummary
-                    onToggleOpen={() => setOrdersOpen(true)}
+                    onToggleAction={() => setOrdersOpen(true)}
                 />
             </div>
         )

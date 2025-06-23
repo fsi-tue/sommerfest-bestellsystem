@@ -1,10 +1,10 @@
-import { ApiOrder, OrderDocument } from '@/model/order'
+import { OrderDocument, SimpleOrder } from '@/model/order'
 import { ItemDocument } from '@/model/item'
 import { timeslotToDate, timeslotToUTCTime } from '@/lib/time'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
-const initialOrder: ApiOrder = {
+const initialOrder: SimpleOrder = {
     name: '',
     items: {},
     comment: '',
@@ -13,7 +13,7 @@ const initialOrder: ApiOrder = {
 
 interface OrderState {
     orders: OrderDocument[]
-    currentOrder: ApiOrder
+    currentOrder: SimpleOrder
     error: string | null
 
     // Error management
@@ -24,10 +24,10 @@ interface OrderState {
     createNewOrder: () => void
     addOrder: (order: OrderDocument) => void
     removeOrder: (orderId: string) => void
-    setCurrentOrder: (order: ApiOrder) => void
+    setCurrentOrder: (order: SimpleOrder) => void
 
     // Current order updates
-    updateOrder: (partial: Partial<ApiOrder>) => void
+    updateOrder: (partial: Partial<SimpleOrder>) => void
     setName: (name: string) => void
     setTimeslot: (slot: string) => void
 
@@ -147,7 +147,9 @@ const useOrderStore = create<OrderState>()(
 
             getTotalItemCount: () => {
                 const items = get().currentOrder.items
-                return Object.values(items).reduce((tot, arr) => tot + arr.length, 0)
+                return Object.values(items)
+                    .reduce((partialTotalSize, items) => partialTotalSize +
+                        items.reduce((partialItemSizes, a) => partialItemSizes + a.size, 0), 0);
             },
         }),
         {

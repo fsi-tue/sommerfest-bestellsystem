@@ -93,7 +93,7 @@ function aggregateOrdersIntoSlots(
             ) {
                 let orderTotalSize = 0;
                 for (const orderItem of order.items) {
-                    const itemDetails = itemsById[orderItem.item._id.toString()];
+                    const itemDetails = itemsById[orderItem._id.toString()];
                     if (itemDetails) {
                         orderTotalSize += itemDetails.size;
                     }

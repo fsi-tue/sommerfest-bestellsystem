@@ -1,225 +1,329 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle, Minus, Pizza, Plus, ScanIcon, XIcon } from 'lucide-react';
-import { IDetectedBarcode, Scanner } from "@yudiel/react-qr-scanner";
-import { ITEM_STATUSES, ItemStatus, ORDER_STATUSES, OrderDocument } from '@/model/order';
-import { timeslotToLocalTime, timeslotToUTCDate } from '@/lib/time';
+import React, { useMemo, useState } from 'react';
+import { CheckCircle, ClockIcon, Pizza, ScanIcon, TriangleAlert, XCircle } from 'lucide-react';
+import { Scanner } from "@yudiel/react-qr-scanner";
+import { ORDER_STATUSES, OrderDocument } from '@/model/order';
+import { ItemTicketDocumentWithItem, TICKET_STATUS } from '@/model/ticket';
+import { timeslotToLocalTime } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
 import Button from '@/app/components/Button';
 import { Heading } from "@/app/components/layout/Heading";
 import ErrorMessage from "@/app/components/ErrorMessage";
-import { UTCDate } from "@date-fns/utc";
 import { Loading } from "@/app/components/Loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useItems } from "@/lib/fetch/item";
-import { updateOrder, useOrders } from "@/lib/fetch/order";
+import { useOrders } from "@/lib/fetch/order";
+import { useTickets } from "@/lib/fetch/ticket";
 
-interface ItemType {
-    id: string;
-    name: string;
-    type: string;
-    dietary?: string;
-}
 
-// Pizza Inventory Component
-const PizzaInventory = ({
-                            inventory,
-                            onChangeItemStatus,
-                        }: {
-    inventory: Map<string, number>;
-    onChangeItemStatus: (assignments: Map<string, number>, status: ItemStatus) => void;
+const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = false }: {
+    selectedTickets: Set<string>,
+    ticket: ItemTicketDocumentWithItem;
+    handleToggleTicket: (ticketId: string) => void;
+    selectable?: boolean;
+}) => (
+    <div className={`flex items-center justify-between p-2 rounded border ${
+        selectedTickets.has(ticket._id.toString())
+            ? 'bg-blue-50 border-blue-300'
+            : 'bg-white border-gray-200'
+    }`}>
+        <div className="flex items-center gap-2">
+            {selectable && (
+                <input
+                    type="checkbox"
+                    checked={selectedTickets.has(ticket._id.toString())}
+                    onChange={() => handleToggleTicket(ticket._id.toString())}
+                    className="w-4 h-4"
+                />
+            )}
+            <div>
+                <span className="font-medium">{ticket.itemTypeRef.name}</span>
+                <span className="text-xs text-gray-500 ml-2">
+                        #{ticket._id.toString().slice(-6)}
+                    </span>
+                {ticket.timeslot && (
+                    <span className="text-xs text-gray-400 ml-2">
+                            {timeslotToLocalTime(ticket.timeslot)}
+                        </span>
+                )}
+            </div>
+        </div>
+        {ticket.orderId && (
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    Order #{ticket.orderId.toString().slice(-6)}
+                </span>
+        )}
+    </div>
+);
+
+const TicketTracker = ({
+                           tickets,
+                           orders,
+                           onMarkReady,
+                           onAssignToOrder
+                       }: {
+    tickets: ItemTicketDocumentWithItem[];
+    orders: OrderDocument[];
+    onMarkReady: (ticketId: string) => void;
+    onAssignToOrder: (ticketIds: string[], orderId: string) => void;
 }) => {
-    const [selectedPizzas, setSelectedPizzas] = useState<Map<string, number>>(new Map());
+    const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
+    const [assignMode, setAssignMode] = useState(false);
 
-    const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useItems();
-    const items: ItemType[] = useMemo(() => {
-        if (!itemsData) {
+    // Group tickets by status and type
+    const ticketGroups = useMemo(() => {
+        return {
+            active: tickets.filter(t => t.status === TICKET_STATUS.ACTIVE),
+            ready: tickets.filter(t => t.status === TICKET_STATUS.READY)
+        };
+    }, [tickets]);
+
+    // Filter orders that need selected ticket types
+    const compatibleOrders = useMemo(() => {
+        if (selectedTickets.size === 0) {
             return [];
         }
-        return itemsData.map(item => ({
-            id: item._id.toString(),
-            name: item.name,
-            type: item.type,
-            dietary: item.dietary
-        }));
-    }, [itemsData]);
 
-    const handleQuantityChange = (type: string, delta: number) => {
-        const currentSelected = selectedPizzas.get(type) ?? 0;
-        const newSelected = currentSelected + delta;
+        const selectedTypes = new Set<string>();
+        selectedTickets.forEach(ticketId => {
+            const ticket = tickets.find(t => t._id.toString() === ticketId);
+            if (ticket) {
+                selectedTypes.add(ticket.itemTypeRef._id.toString());
+            }
+        });
 
-        const newMap = new Map(selectedPizzas);
-        if (newSelected === 0) {
-            newMap.delete(type);
+        return orders.filter(order => {
+            const orderTypes = order.items.map(item => item._id.toString());
+            return Array.from(selectedTypes).some(type => orderTypes.includes(type));
+        });
+    }, [selectedTickets, tickets, orders]);
+
+    const handleToggleTicket = (ticketId: string) => {
+        const newSelected = new Set(selectedTickets);
+        if (newSelected.has(ticketId)) {
+            newSelected.delete(ticketId);
         } else {
-            newMap.set(type, newSelected);
+            newSelected.add(ticketId);
         }
-        setSelectedPizzas(newMap);
+        setSelectedTickets(newSelected);
     };
 
-    const handleStatus = (status: ItemStatus) => {
-        onChangeItemStatus(selectedPizzas, status);
-        setSelectedPizzas(new Map());
+    const handleAssign = (orderId: string) => {
+        onAssignToOrder(Array.from(selectedTickets), orderId);
+        setSelectedTickets(new Set());
+        setAssignMode(false);
     };
-
-    const totalSelected = Array.from(selectedPizzas.values()).reduce((sum, count) => sum + count, 0);
-
-    if (itemsLoading) {
-        return <Loading/>;
-    }
-    if (itemsError) {
-        return <ErrorMessage error={itemsError.message}/>;
-    }
 
     return (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-                {totalSelected !== 0 && (
-                    <div className="flex items-center gap-2">
+        <div className="space-y-4">
+            <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-lg">Item Tracker</h3>
+                {selectedTickets.size > 0 && (
+                    <div className="flex gap-2">
                         <Button
-                            onClick={() => handleStatus(ITEM_STATUSES.READY)}
-                            className="text-black px-6 py-3 border rounded-2xl font-medium transition-colors flex items-center gap-2"
+                            onClick={() => setAssignMode(!assignMode)}
+                            className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
                         >
-                            <CheckCircle className="w-5 h-5"/>
-                            Mark {totalSelected} Pizza{totalSelected > 1 ? 's' : ''} ready
+                            {assignMode ? 'Cancel' : 'Assign to Order'}
+                        </Button>
+                        <Button
+                            onClick={() => setSelectedTickets(new Set())}
+                            className="bg-gray-500 text-white px-3 py-1 rounded text-sm"
+                        >
+                            Clear
                         </Button>
                     </div>
                 )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {items.map((item) => {
-                    const selected = selectedPizzas.get(item.name) ?? 0;
-                    const count = inventory.get(item.name) ?? 0;
-
-                    return (
-                        <div
-                            key={item.name}
-                            className={`border-2 rounded-xl p-4 transition-all ${
-                                selected > 0 ? 'border-green-400 bg-green-50' : 'border-gray-200'
-                            }`}
-                        >
-                            <div className="text-center mb-3">
-                                <h3 className="font-bold text-lg capitalize">{item.name}</h3>
-                                <p className="text-3xl font-bold text-gray-800 mt-2">{count}</p>
-                                <p className="text-sm text-gray-500">available</p>
-                            </div>
-
-                            <div className="flex items-center justify-center gap-2">
-                                <Button
-                                    onClick={() => handleQuantityChange(item.name, -1)}
-                                    className={`p-2 rounded-lg transition-all ${
-                                        selected === 0
-                                            ? 'bg-gray-100 text-gray-400'
-                                            : 'bg-red-100 text-red-600 hover:bg-red-200'
-                                    }`}
-                                >
-                                    <Minus className="w-5 h-5"/>
-                                </Button>
-
-                                <span className="w-12 text-center font-bold text-lg">{selected}</span>
-
-                                <Button
-                                    onClick={() => handleQuantityChange(item.name, +1)}
-                                    className={`p-2 rounded-lg transition-all ${
-                                        selected >= count
-                                            ? 'bg-gray-100 text-gray-400'
-                                            : 'bg-green-100 text-green-600 hover:bg-green-200'
-                                    }`}
-                                >
-                                    <Plus className="w-5 h-5"/>
-                                </Button>
-                            </div>
+            {/* Active tickets */}
+            <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-3 text-orange-600">🔥 Being Prepared</h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {ticketGroups.active.map(ticket => (
+                        <div key={ticket._id.toString()} className="flex items-center gap-2">
+                            <TicketItem ticket={ticket} selectedTickets={selectedTickets}
+                                        handleToggleTicket={handleToggleTicket}/>
+                            <Button
+                                onClick={() => onMarkReady(ticket._id.toString())}
+                                className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                            >
+                                Ready
+                            </Button>
                         </div>
-                    );
-                })}
+                    ))}
+                    {ticketGroups.active.length === 0 && (
+                        <p className="text-gray-500 text-sm">No items</p>
+                    )}
+                </div>
             </div>
+
+            {/* Ready tickets (unassigned) */}
+            <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-3 text-green-600">✅ Ready</h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {ticketGroups.ready.map(ticket => (
+                        <TicketItem
+                            key={ticket._id.toString()}
+                            ticket={ticket}
+                            selectable={true}
+                            selectedTickets={selectedTickets}
+                            handleToggleTicket={handleToggleTicket}/>
+                    ))}
+                    {ticketGroups.ready.length === 0 && (
+                        <p className="text-gray-500 text-sm">No unassigned ready items</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Order assignment panel */}
+            {assignMode && selectedTickets.size > 0 && (
+                <div className="border-2 border-blue-400 rounded-lg p-4 bg-blue-50">
+                    <h4 className="font-medium mb-3">Select Order to Assign</h4>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {compatibleOrders.map(order => (
+                            <div
+                                key={order._id.toString()}
+                                className="flex justify-between items-center p-2 bg-white rounded border hover:border-blue-400 cursor-pointer"
+                                onClick={() => handleAssign(order._id.toString())}
+                            >
+                                <div>
+                                    <span className="font-medium">{order.name}</span>
+                                    <span className="text-xs text-gray-500 ml-2">
+                                        #{order._id.toString().slice(-6)}
+                                    </span>
+                                    <div className="text-xs text-gray-600">
+                                        {order.items.map(i => i.name).join(', ')}
+                                    </div>
+                                </div>
+                                <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+                                    {timeslotToLocalTime(order.timeslot)}
+                                </span>
+                            </div>
+                        ))}
+                        {compatibleOrders.length === 0 && (
+                            <p className="text-gray-500 text-sm">No compatible orders found</p>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-// Simplified Order Card (unchanged)
-const OrderCard = ({
-                       order,
-                       isOverdue,
-                       onPay,
-                       onDeliver,
-                   }: {
+// Order card with delivery functionality
+const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
     order: OrderDocument;
-    isOverdue: boolean;
-    onPay: (orderId: string) => void;
-    onDeliver: (orderId: string) => void;
+    tickets: ItemTicketDocumentWithItem[];
+    onDeliver: (ignoreTickets: boolean) => void;
+    onTogglePaid: () => void;
 }) => {
-    const readyItems = order.items.filter(item => item.status === ITEM_STATUSES.READY).length;
-    const totalItems = order.items.length;
-    const progress = (readyItems / totalItems) * 100;
+    const [ignoreTickets, setIgnoreTickets] = useState(false);
+
+    // Check if order can be delivered
+    const canDeliver = useMemo(() => {
+        // Count required items
+        const requiredItems = new Map<string, number>();
+        order.items.forEach(item => {
+            const typeId = item._id.toString();
+            requiredItems.set(typeId, (requiredItems.get(typeId) ?? 0) + 1);
+        });
+
+        // Count available tickets (assigned to this order or ready unassigned)
+        const availableItems = new Map<string, number>();
+        tickets.forEach(ticket => {
+            const typeId = ticket.itemTypeRef._id.toString();
+            if (ticket.status === TICKET_STATUS.READY && (ticket.orderId?.toString() === order._id.toString() || !ticket.orderId)) {
+                availableItems.set(typeId, (availableItems.get(typeId) ?? 0) + 1);
+            }
+        });
+
+        // Check if all required items are available
+        for (const [typeId, required] of requiredItems.entries()) {
+            if ((availableItems.get(typeId) ?? 0) < required) {
+                return false;
+            }
+        }
+        return true;
+    }, [order, tickets]);
+
+    const isActive = order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED;
 
     return (
-        <div className={`bg-white rounded-lg p-4 border-2 transition-all ${
-            isOverdue ? 'border-red-300 bg-red-50' : 'border-gray-200'
+        <div className={`bg-white rounded-lg border-2 p-4 ${
+            !order.isPaid ? 'border-red-400' : canDeliver ? 'border-green-400' : 'border-gray-200'
         }`}>
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex justify-between items-start mb-3">
                 <div>
-                    <h3 className="font-bold text-lg">{order.name}</h3>
-                    <p className="text-sm text-gray-600">#{order._id.toString().slice(-8)}</p>
+                    <h3 className="font-bold">{order.name}</h3>
+                    <p className="text-sm text-gray-500">#{order._id.toString().slice(-6)}</p>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    isOverdue ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
-                }`}>
-                    {timeslotToLocalTime(order.timeslot)}
+                <div className="flex flex-row gap-1 items-center">
+                    {!order.isPaid && (
+                        <div
+                            className="bg-red-50 text-red-700 text-sm p-2 rounded-xl w-fit flex flex-row gap-1 items-center">
+                            <TriangleAlert/> Not Paid
+                        </div>
+                    )}
+                    <div className="bg-gray-100 text-sm p-2 rounded-xl w-fit flex flex-row gap-1 items-center">
+                        <ClockIcon/> {timeslotToLocalTime(order.timeslot)}
+                    </div>
                 </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1 mb-3">
                 {order.items.map((item, idx) => (
-                    <div key={`${order._id.toString()}-${item.item._id.toString()}-${idx}`}
-                         className="flex items-center justify-between text-sm">
-                        <span className={item.status === ITEM_STATUSES.READY ? 'text-green-600 font-medium' : ''}>
-                          {item.item.name}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-full text-xs">
-                            {item.status}
-                        </span>
+                    <div key={`${item._id.toString()}-${idx}`} className="text-sm flex justify-between">
+                        <span>{item.name}</span>
                     </div>
                 ))}
             </div>
 
-            {(order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED) && (
-                <div className="mt-3">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                            className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                    <p className="text-xs text-gray-600 mt-1">{readyItems}/{totalItems} ready</p>
+            {isActive && (
+                <div className="flex gap-2">
+                    <Button
+                        onClick={() => onDeliver(ignoreTickets)}
+                        className={`flex-1 py-2 rounded flex items-center gap-1 ${
+                            canDeliver
+                                ? 'bg-green-500 text-white hover:bg-green-600'
+                                : 'bg-gray-300 text-gray-500'
+                        }`}
+                    >
+                        <CheckCircle className="w-4 h-4 mr-1"/>
+                        Deliver
+                    </Button>
+                    <input type="checkbox" checked={ignoreTickets} onChange={() => setIgnoreTickets(!ignoreTickets)}/>
+                    <Button
+                        onClick={onTogglePaid}
+                        className={`px-3 py-2 rounded ${
+                            order.isPaid
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                        }`}
+                    >
+                        {order.totalPrice}€
+                    </Button>
                 </div>
             )}
 
-            <div className="mt-3 flex flex-row gap-2">
-                {(order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED) && (
-                    <Button onClick={() => onDeliver(order._id.toString())} rateLimitMs={500}
-                            className={`${order.isPaid ? 'bg-green-400' : 'bg-red-500'} text-white px-3 py-1 border rounded-2xl font-medium transition-colors flex items-center gap-2`}>
-                        Deliver
-                    </Button>
-                )}
-                <Button onClick={() => onPay(order._id.toString())} rateLimitMs={500}
-                        className={`px-3 py-1 border rounded-2xl font-medium transition-colors flex items-center gap-2 ${
-                            !order.isPaid ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                    {!order.isPaid ? 'Unpaid!' : 'Paid'}
-                </Button>
-            </div>
+            {!isActive && (
+                <div className={`text-center py-2 rounded ${
+                    order.status === ORDER_STATUSES.COMPLETED
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
+                }`}>
+                    {order.status}
+                </div>
+            )}
         </div>
     );
 };
 
-// QR Scanner Modal (unchanged)
+// QR Scanner Modal
 const QRScannerModal = ({ isOpen, onClose, onScan }: {
     isOpen: boolean;
     onClose: () => void;
-    onScan: (barcode: IDetectedBarcode[]) => void;
+    onScan: (code: string) => void;
 }) => {
     if (!isOpen) {
         return null;
@@ -231,17 +335,17 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">Scan Order QR</h3>
                     <Button onClick={onClose} className="p-1">
-                        <XIcon size={20}/>
+                        <XCircle className="w-5 h-5"/>
                     </Button>
                 </div>
                 <div className="w-full aspect-square rounded-lg overflow-hidden bg-gray-100">
                     <Scanner
-                        allowMultiple={true}
-                        scanDelay={250}
-                        paused={false}
                         onScan={(result) => {
-                            onScan(result);
-                            onClose();
+                            const code = result[0]?.rawValue;
+                            if (code) {
+                                onScan(code.split('/').pop() ?? code);
+                                onClose();
+                            }
                         }}
                     />
                 </div>
@@ -250,284 +354,182 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
     );
 };
 
-const OrderManagerDashboard = () => {
+// Main component
+export default function OrderManagerDashboard() {
     const queryClient = useQueryClient();
-    const [inventory, setInventory] = useState<Map<string, number>>(new Map());
     const [searchFilter, setSearchFilter] = useState('');
     const [showScanner, setShowScanner] = useState(false);
-    const [activeTab, setActiveTab] = useState<'active' | 'ready' | 'completed'>('active');
 
-    const { data: orders, error, isFetching } = useOrders(5000);
+    const { data: orders, error: ordersError } = useOrders(5000);
+    const { data: tickets, error: ticketsError } = useTickets(5000);
 
-    // Mutations
-    const payMutation = useMutation({
-        mutationFn: async (orderId: string) => {
-            const isPaid = orders?.find((order) => order._id.toString() === orderId)?.isPaid ?? false;
-            const response = await fetch(`/api/order/${orderId}/pay`, {
+    // Mark ticket as ready mutation
+    const markTicketReadyMutation = useMutation({
+        mutationFn: async (ticketId: string) => {
+            const response = await fetch(`/api/order/ticket/`, {
                 method: 'PUT',
-                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ isPaid: !isPaid })
+                body: JSON.stringify({ id: ticketId, status: TICKET_STATUS.READY })
             });
             return response.json();
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tickets'] });
+        }
     });
 
-    const updateOrderMutation = useMutation({
-        mutationFn: async ({ orderId, order }: {
-            orderId: string;
-            order: OrderDocument
-        }) => updateOrder(orderId, order),
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] }),
+    // Deliver order mutation
+    const deliverOrderMutation = useMutation({
+        mutationFn: async ({ id, ignoreTickets }: { id: string, ignoreTickets: boolean }) => {
+            const response = await fetch(`/api/order/deliver`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, ignoreTickets: ignoreTickets })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message ?? 'Failed to deliver order');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
+            queryClient.invalidateQueries({ queryKey: ['tickets'] });
+        }
     });
 
-    // Update inventory when orders change
-    useEffect(() => {
-        if (orders) {
-            updateInventoryFromOrders(orders);
+    const assignTicketsMutation = useMutation({
+        mutationFn: async ({ ticketIds, orderId }: { ticketIds: string[]; orderId: string }) => {
+            const promises = ticketIds.map(ticketId =>
+                fetch(`/api/order/ticket`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: ticketId,
+                        orderId: orderId
+                    })
+                })
+            );
+            return Promise.all(promises);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tickets'] });
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
         }
-    }, [orders]);
+    });
 
-    function updateInventoryFromOrders(orders: OrderDocument[]) {
-        const newInventory = new Map<string, number>();
-        for (const order of orders) {
-            if (order.status === ORDER_STATUSES.READY_FOR_PICKUP || order.status === ORDER_STATUSES.COMPLETED || order.status === ORDER_STATUSES.CANCELLED) {
-                continue;
-            }
-            order.items.forEach(item => {
-                if (item.status === ITEM_STATUSES.PREPPING || item.status === ITEM_STATUSES.READY_TO_COOK || item.status === ITEM_STATUSES.COOKING) {
-                    const count = newInventory.get(item.item.name) ?? 0;
-                    newInventory.set(item.item.name, count + 1);
-                }
+    const togglePaidMutation = useMutation({
+        mutationFn: async ({ order, isPaid }: { order: OrderDocument; isPaid: boolean }) => {
+            const response = await fetch(`/api/order/`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: order._id.toString(), order: { ...order, isPaid: isPaid } })
             });
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
         }
-        setInventory(newInventory);
-    }
-
-    async function handleItemStatus(assignments: Map<string, number>, status: ItemStatus) {
-        if (!orders) {
-            return;
-        }
-
-        const ordersToUpdate = new Set<OrderDocument>();
-        assignments.forEach((count, type) => {
-            let remainingCount = count;
-
-            for (const order of orders) {
-                if (order.status === ORDER_STATUSES.COMPLETED || order.status === ORDER_STATUSES.CANCELLED) {
-                    continue;
-                }
-
-                for (const item of order.items) {
-                    if (item.item.name === type && remainingCount > 0 && item.status !== status) {
-                        item.status = status;
-                        remainingCount--;
-                        ordersToUpdate.add(order);
-
-                        if (remainingCount === 0) {
-                            break;
-                        }
-                    }
-                }
-                if (remainingCount === 0) {
-                    break;
-                }
-            }
-        });
-
-        // Update orders using mutation
-        for (const order of Array.from(ordersToUpdate)) {
-            updateOrderMutation.mutate({
-                orderId: order._id.toString(),
-                order
-            });
-        }
-    }
-
-    function markOrderDelivered(orderId: string) {
-        const order = orders?.find(o => o._id.toString() === orderId);
-        if (!order) {
-            return;
-        }
-
-        const updatedOrder = {
-            ...order,
-            status: ORDER_STATUSES.COMPLETED,
-            finishedAt: new UTCDate()
-        } as OrderDocument;
-
-        updateOrderMutation.mutate({ orderId, order: updatedOrder });
-    }
-
-    function handlePayment(orderId: string) {
-        payMutation.mutate(orderId);
-    }
-
-    function handleBarcodeScan(barcode: IDetectedBarcode[]) {
-        const linkToOrder = barcode[0].rawValue;
-        const extractedId = linkToOrder.split('/').pop();
-        if (extractedId) {
-            setSearchFilter(extractedId);
-        }
-    }
+    });
 
     const filteredOrders = useMemo(() => {
         if (!orders) {
             return [];
         }
 
-        let filtered = orders;
+        let filtered = orders.filter(o =>
+            o.status !== ORDER_STATUSES.COMPLETED &&
+            o.status !== ORDER_STATUSES.CANCELLED
+        );
 
-        // Tab filter
-        if (activeTab === 'active') {
-            filtered = filtered.filter(o =>
-                o.status === ORDER_STATUSES.ORDERED ||
-                o.status === ORDER_STATUSES.ACTIVE
-            );
-        } else if (activeTab === 'ready') {
-            filtered = filtered.filter(o => o.status === ORDER_STATUSES.READY_FOR_PICKUP);
-        } else if (activeTab === 'completed') {
-            filtered = filtered.filter(o =>
-                o.status === ORDER_STATUSES.COMPLETED ||
-                o.status === ORDER_STATUSES.CANCELLED
-            );
-        }
-
-        // Search filter
         if (searchFilter) {
             const search = searchFilter.toLowerCase();
             filtered = filtered.filter(order =>
                 order.name.toLowerCase().includes(search) ||
-                order._id.toString().includes(search) ||
-                order.items.some(item =>
-                    item.item.name.toLowerCase().includes(search) ||
-                    item.item.dietary?.toLowerCase()?.includes(search)
-                )
+                order._id.toString().includes(search)
             );
         }
 
-        // Sort by timeslot
-        return filtered.sort((a, b) => {
-            const timeA = timeslotToUTCDate(a.timeslot).getTime();
-            const timeB = timeslotToUTCDate(b.timeslot).getTime();
-            return timeA - timeB;
-        });
-    }, [orders, activeTab, searchFilter]);
+        return filtered.sort((a, b) => a.timeslot.localeCompare(b.timeslot));
+    }, [orders, searchFilter]);
 
-    // Check for overdue orders
-    const overdueOrders = useMemo(() => {
-        const now = Date.now();
-        return filteredOrders.filter(order =>
-            (order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED) &&
-            timeslotToUTCDate(order.timeslot).getTime() < now
-        );
-    }, [filteredOrders]);
-
-    if (error) {
-        return <ErrorMessage error={error.message}/>;
+    if (ordersError || ticketsError) {
+        return <ErrorMessage error={(ordersError?.message ?? ticketsError?.message) ?? 'Error'}/>;
     }
 
-    if (isFetching && !orders) {
+    if (!orders || !tickets) {
         return <Loading/>;
     }
 
     return (
         <>
-            <Heading title={"Order Manager"} description={"Handle all orders"}
-                     icon={<Pizza className="w-8 h-8 text-orange-500"/>}>
-                <div className="flex items-center gap-4">
-                    <div className="w-64">
-                        <SearchInput search={setSearchFilter} searchValue={searchFilter}/>
-                    </div>
+            <Heading
+                title="Delivery Station"
+                description="Track items and deliver orders"
+                icon={<Pizza className="w-8 h-8 text-orange-500"/>}
+            >
+                <div className="flex gap-2 items-center">
+                    <SearchInput
+                        search={setSearchFilter}
+                        searchValue={searchFilter}
+                    />
                     <Button
                         onClick={() => setShowScanner(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                        className="bg-primary-500 text-white px-4 py-2 rounded hover:bg-primary-600"
                     >
-                        <ScanIcon size={20}/>
-                        Scan QR
+                        <ScanIcon className="w-4 h-4"/>
                     </Button>
                 </div>
             </Heading>
 
-            {overdueOrders.length > 0 && (
-                <div className="bg-red-100 border-2 border-red-300 rounded-xl p-4 mb-6 flex items-center gap-3">
-                    <AlertTriangle className="w-6 h-6 text-red-600"/>
-                    <span className="font-medium text-red-800">
-                        {overdueOrders.length} order{overdueOrders.length > 1 ? 's' : ''} overdue!
-                    </span>
-                </div>
-            )}
-
-            <div className="mb-8">
-                <PizzaInventory
-                    inventory={inventory}
-                    onChangeItemStatus={handleItemStatus}
-                />
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
-                <div className="flex p-2">
-                    <button
-                        onClick={() => setActiveTab('active')}
-                        className={`flex-1 px-4 py-2 font-medium rounded-lg transition-colors ${
-                            activeTab === 'active'
-                                ? 'bg-primary-100 text-primary-700'
-                                : 'text-gray-600 hover:bg-gray-100'
-                        }`}
-                    >
-                        Active Orders
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('ready')}
-                        className={`flex-1 px-4 py-2 font-medium rounded-lg transition-colors ${
-                            activeTab === 'ready'
-                                ? 'bg-green-100 text-green-700'
-                                : 'text-gray-600 hover:bg-gray-100'
-                        }`}
-                    >
-                        Ready
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('completed')}
-                        className={`flex-1 px-4 py-2 font-medium rounded-lg transition-colors ${
-                            activeTab === 'completed'
-                                ? 'bg-gray-100 text-gray-700'
-                                : 'text-gray-600 hover:bg-gray-100'
-                        }`}
-                    >
-                        Completed
-                    </button>
-                </div>
-            </div>
-
-            {/* Orders Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredOrders.map(order => {
-                    const now = Date.now();
-                    const isOverdue = (order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED)
-                        && timeslotToUTCDate(order.timeslot).getTime() < now;
-
-                    return (
-                        <OrderCard
-                            key={order._id.toString()}
-                            order={order}
-                            isOverdue={isOverdue}
-                            onPay={handlePayment}
-                            onDeliver={markOrderDelivered}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-xl p-6 shadow-sm border sticky top-4">
+                        <TicketTracker
+                            tickets={tickets}
+                            orders={orders}
+                            onMarkReady={(ticketId) => markTicketReadyMutation.mutate(ticketId)}
+                            onAssignToOrder={(ticketIds, orderId) => assignTicketsMutation.mutate({
+                                ticketIds,
+                                orderId
+                            })}
                         />
-                    );
-                })}
+                    </div>
+                </div>
+
+                {/* Orders */}
+                <div className="lg:col-span-1">
+                    <div className="space-y-4">
+                        <h3 className="font-semibold text-lg">Active Orders</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                            {filteredOrders.map(order => (
+                                <DeliveryOrderCard
+                                    key={order._id.toString()}
+                                    order={order}
+                                    tickets={tickets}
+                                    onDeliver={(ignoreTickets: boolean) => deliverOrderMutation.mutate({
+                                        id: order._id.toString(),
+                                        ignoreTickets
+                                    })}
+                                    onTogglePaid={() => togglePaidMutation.mutate({
+                                        order: order,
+                                        isPaid: !order.isPaid
+                                    })}
+                                />
+                            ))}
+                        </div>
+                        {filteredOrders.length === 0 && (
+                            <p className="text-gray-500 text-center py-8">No active orders</p>
+                        )}
+                    </div>
+                </div>
             </div>
 
-            {/* QR Scanner Modal */}
             <QRScannerModal
                 isOpen={showScanner}
                 onClose={() => setShowScanner(false)}
-                onScan={handleBarcodeScan}
+                onScan={setSearchFilter}
             />
         </>
     );
-};
-
-export default OrderManagerDashboard;
+}

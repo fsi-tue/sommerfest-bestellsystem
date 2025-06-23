@@ -40,9 +40,10 @@ translation:
   order_status:
     order: Order
     total: Total
+    not_found: Order not found
 
     suspense:
-      loading: Loading...
+      loading: Loading order...
     show_at_pickup: Show this page at pickup
     thank_you:
       qr:
@@ -54,9 +55,9 @@ translation:
     status:
       ready_by: Ready by
       ordered: Ordered
-      inPreparation: In preparation
+      active: In preparation
       ready: Ready for pickup!
-      delivered: Picked up
+      completed: Picked up
       cancelled: Cancelled
       default: Status unknown :(
       paid: Paid

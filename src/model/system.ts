@@ -12,10 +12,6 @@ export interface System {
     config: EditableConfig;
 }
 
-/**
- * System document interface (extends Mongoose's Document).
- * Includes the `_id` field explicitly.
- */
 export interface SystemDocument extends System, Document {
     _id: Types.ObjectId;
 }

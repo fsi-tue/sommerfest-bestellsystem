@@ -37,7 +37,7 @@ export const formatDateTime = (date: Date) => {
  * Get the current time slot
  * @param timeslot
  */
-export const timeslotToUTCDate = (timeslot: string): Date => {
+export const timeslotToUTCDate = (timeslot?: string): Date => {
     if (!timeslot) {
         return new UTCDate();
     }
@@ -57,7 +57,7 @@ export const timeslotToUTCDate = (timeslot: string): Date => {
     );
 }
 
-export const timeslotToDate = (timeslot: string): Date => {
+export const timeslotToDate = (timeslot?: string): Date => {
     if (!timeslot) {
         return new Date();
     }
