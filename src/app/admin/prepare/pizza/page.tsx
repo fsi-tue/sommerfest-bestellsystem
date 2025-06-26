@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Clock, Trash2, X } from 'lucide-react';
+import { Clock, Trash2 } from 'lucide-react';
 import { Heading } from "@/app/components/layout/Heading";
 import { useTranslations } from 'next-intl';
 import { timeslotToDate, timeslotToLocalTime } from "@/lib/time";
@@ -12,6 +12,7 @@ import { deleteTicket, updateTicket, useTickets } from "@/lib/fetch/ticket";
 import { ItemTicketDocumentWithItem, TICKET_STATUS, TicketStatus } from "@/model/ticket";
 import Button from '@/app/components/Button';
 import SearchInput from "@/app/components/SearchInput";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 const PizzaMakerStation = () => {
     const queryClient = useQueryClient();
@@ -194,7 +195,7 @@ const PizzaMakerStation = () => {
                             disabled={selectedTickets.size === 0}
                             className="w-full py-4 text-lg font-semibold bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-xl"
                         >
-                            Mark Ready ({selectedTickets.size})
+                            {t('Admin.Prepare.Actions.markReady', { count: selectedTickets.size })}
                         </Button>
 
                         <Button
@@ -202,7 +203,7 @@ const PizzaMakerStation = () => {
                             disabled={selectedTickets.size === 0}
                             className="w-full py-4 text-lg font-semibold bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-xl"
                         >
-                            Mark Not Ready ({selectedTickets.size})
+                            {t('Admin.Prepare.Actions.markNotReady', { count: selectedTickets.size })}
                         </Button>
 
                         <Button
@@ -211,7 +212,7 @@ const PizzaMakerStation = () => {
                             className="w-full py-4 text-lg font-semibold bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-xl flex items-center justify-center gap-2"
                         >
                             <Trash2 className="w-5 h-5"/>
-                            Delete Tickets ({selectedTickets.size})
+                            {t('Admin.Prepare.Actions.deleteTickets', { count: selectedTickets.size })}
                         </Button>
                     </div>
 
@@ -226,38 +227,43 @@ const PizzaMakerStation = () => {
                                 return 1
                             }
                             return (timeslotToDate(a.timeslot)?.getTime() || 0) - (timeslotToDate(b.timeslot)?.getTime() || 0)
-                        }).map(ticket => (
-                            <button
-                                key={`${ticket._id.toString()}-${ticket.status}`}
-                                onClick={() => toggleTicketSelection(ticket._id.toString())}
-                                className={`
-                                    border-2 px-4 py-3 rounded-xl text-base flex items-center justify-between cursor-pointer
-                                    transition-all duration-200 hover:shadow-md
-                                    ${ticket.status !== TICKET_STATUS.DEMANDED && !selectedTickets.has(ticket._id.toString())
-                                    ? 'bg-green-50 border-green-200 text-gray-600'
-                                    : 'bg-white'
-                                }
-                                    ${ticket.status !== TICKET_STATUS.DEMANDED && selectedTickets.has(ticket._id.toString())
-                                    ? 'border-blue-500 border-green-200 text-gray-600'
-                                    : 'bg-white'
-                                }
-                                    ${selectedTickets.has(ticket._id.toString()) ? 'border-blue-500' : 'border-gray-200 hover:border-gray-300'}
-                                `}
-                            >
-                                <div className="flex flex-col">
-                                    <span className="font-semibold">{ticket.itemTypeRef.name}</span>
-                                    {ticket?.orderId && (
-                                        <span
-                                            className="text-sm text-gray-500">Order: {ticket.orderId.toString().slice(-6)}</span>
+                        }).map(ticket => {
+                            let color = ''
+                            let border = ''
+
+                            if (ticket.status === TICKET_STATUS.DEMANDED) {
+                                color = 'gray'
+                            } else {
+                                border = 'green'
+                            }
+
+                            if (selectedTickets.has(ticket._id.toString())) {
+                                border = 'primary'
+                            }
+
+                            return (
+                                <Button
+                                    key={`${ticket._id.toString()}-${ticket.status}`}
+                                    onClick={() => toggleTicketSelection(ticket._id.toString())}
+                                    color={color}
+                                    border={border}
+                                    className="px-4 py-3 rounded-xl text-base flex items-center justify-between"
+                                >
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold">{ticket.itemTypeRef.name}</span>
+                                        {ticket?.orderId && (
+                                            <span
+                                                className="text-sm text-gray-500">Order: {ticket.orderId.toString().slice(-6)}</span>
+                                        )}
+                                    </div>
+                                    {ticket.timeslot && (
+                                        <span className="bg-gray-100 py-1 px-3 rounded-full text-sm font-medium">
+                                            {timeslotToLocalTime(ticket.timeslot)}
+                                        </span>
                                     )}
-                                </div>
-                                {ticket.timeslot && (
-                                    <span className="bg-gray-100 py-1 px-3 rounded-full text-sm font-medium">
-                                        {timeslotToLocalTime(ticket.timeslot)}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
+                                </Button>
+                            );
+                        })}
                     </div>
 
                     {upcomingItems.size === 0 && (
@@ -316,17 +322,7 @@ const PizzaMakerStation = () => {
 
             {/* Error Toast */}
             {error && (
-                <div
-                    className="fixed bottom-8 right-8 bg-red-500 text-white rounded-xl px-6 py-4 flex items-center gap-3 shadow-2xl z-50">
-                    <AlertCircle className="w-6 h-6"/>
-                    <span className="font-medium">{error}</span>
-                    <button
-                        onClick={() => setError('')}
-                        className="ml-2 text-white hover:text-gray-200"
-                    >
-                        <X className="w-5 h-5"/>
-                    </button>
-                </div>
+                <ErrorMessage error={error}/>
             )}
         </>
     );

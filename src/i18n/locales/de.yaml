@@ -180,6 +180,11 @@ translation:
       status: Status
       is_done: ✅ Erledigt
 
+      Actions:
+        markReady: 'Fertig ({count})'
+        markNotReady: 'Nicht fertig ({count})'
+        deleteTickets: 'Tickets löschen ({count})'
+
     OrderManager:
       title: "Ausgabestation"
       description: "Verfolge Artikel und liefere Bestellungen aus"
@@ -196,7 +201,7 @@ translation:
 
       # Buttons and Actions
       Actions:
-        assignToOrder: "Bestellung zuweisen"
+        assignToOrder: "Bestellung zuweisen ({count})"
         cancel: "Abbrechen"
         clear: "Leeren"
         markReady: "Als fertig markieren"

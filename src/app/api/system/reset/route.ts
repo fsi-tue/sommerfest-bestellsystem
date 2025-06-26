@@ -81,13 +81,11 @@ async function initAndLoadConfig(): Promise<EditableConfig> {
 
 
 const pizzasByName = {
-    Salami: ["Cheese 🧀", "Tomato Sauce 🍅", "Salami 🍕"],
-    "Ham and mushrooms": ["Cheese 🧀", "Tomato Sauce 🍅", "Ham 🥓", "Mushrooms 🍄"],
-    Capricciosa: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Ham 🥓", "Basil 🌿"],
-    Margherita: ["Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"],
-    Veggies: ["Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Onions 🧅", "Green Peppers 🫑", "Olives 🫒"],
-    "Margherita vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Basil 🌿"],
-    "Capricciosa vegan": ["Vegan Cheese 🧀", "Tomato Sauce 🍅", "Mushrooms 🍄", "Artichokes 🌱", "Olives 🫒", "Basil 🌿"]
+    Salami: ["Cheese 🧀", "Salami 🍕"],
+    Margherita: ["Cheese 🧀", "Cherry Tomatoes 🍅", "Basil 🌿"],
+    Veggies: ["Cheese 🧀", "Mushrooms 🍄", "Onions 🧅", "Red Bell Peppers 🫑", "Tomatoes 🍅", "Olives 🫒"],
+    "Margherita vegan": ["Vegan Cheese 🧀", "Cherry Tomaten 🍅", "Basil 🌿"],
+    "Veggies vegan": ["Vegan Cheese 🧀", "Mushrooms 🍄", "Onions 🧅", "Red Bell Peppers 🫑", "Tomatoes 🍅", "Olives 🫒"],
 };
 
 /**
@@ -97,7 +95,7 @@ const pizzasByName = {
 export async function GET() {
     await dbConnect();
     await initAndLoadConfig()
-    return Response.json({ status: "success" });
+    return Response.json({ message: 'Successfully basic reconfigured system. You have to reset the database!' })
 }
 
 /**
@@ -123,22 +121,6 @@ export async function POST() {
             ingredients: pizzasByName['Salami'],
             size: 0.5
         },
-        {
-            name: 'Ham and mushrooms half',
-            price: 4,
-            dietary: 'meat',
-            type: 'pizza',
-            ingredients: pizzasByName['Ham and mushrooms'],
-            size: 0.5
-        },
-        {
-            name: 'Capricciosa half',
-            price: 4,
-            type: 'pizza',
-            dietary: 'meat',
-            ingredients: pizzasByName['Capricciosa'],
-            size: 0.5
-        },
         { name: 'Margherita half', price: 6, type: 'pizza', ingredients: pizzasByName['Margherita'], size: 0.5 },
         { name: 'Veggies half', price: 6, type: 'pizza', ingredients: pizzasByName['Veggies'], size: 0.5 },
         {
@@ -150,11 +132,11 @@ export async function POST() {
             size: 0.5
         },
         {
-            name: 'Capricciosa vegan half',
+            name: 'Veggies vegan half',
             price: 3,
             dietary: 'vegan',
             type: 'pizza',
-            ingredients: pizzasByName['Capricciosa vegan'],
+            ingredients: pizzasByName['Veggies vegan'],
             size: 0.5
         },
     ];
@@ -164,5 +146,5 @@ export async function POST() {
 
     await initAndLoadConfig()
 
-    return Response.json({ message: 'Successfully reset system' })
+    return Response.json({ message: 'Successfully reconfigured system' })
 }

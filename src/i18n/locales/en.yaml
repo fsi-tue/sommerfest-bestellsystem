@@ -178,6 +178,11 @@ translation:
       status: Status
       is_done: ✅ Done
 
+      Actions:
+        markReady: 'Mark Ready ({count})'
+        markNotReady: 'Mark Not Ready ({count})'
+        deleteTickets: 'Delete Tickets ({count})'
+
     OrderManager:
       title: "Delivery Station"
       description: "Track items and deliver orders"

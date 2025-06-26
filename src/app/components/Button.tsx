@@ -38,10 +38,15 @@ const Button = (button: ButtonProps) => {
     const isDisabled = button.disabled || isRateLimited;
     let color: string = '';
     if (button.color) {
-        if (button.color !== "white" && button.color !== "black") {
+        if (button.color !== "white" && button.color !== "black" && button.color !== "gray") {
             color = `bg-${button.color}-500`;
             if (!isDisabled) {
                 color += ` hover:bg-${button.color}-600`
+            }
+        } else if (button.color === "gray") {
+            color = `bg-${button.color}-100`;
+            if (!isDisabled) {
+                color += ` hover:bg-${button.color}-300`
             }
         } else if (button.color === "white") {
             color = "bg-white";

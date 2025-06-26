@@ -149,7 +149,7 @@ const ItemTracker = ({
                             textColor="white"
                             className="font-medium"
                         >
-                            {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder')}
+                            {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder', { count: selectedTickets.size })}
                         </Button>
                         <Button
                             onClick={() => setSelectedTickets(new Set())}
@@ -544,6 +544,12 @@ export default function OrderManagerDashboard() {
         },
     });
 
+    const retrieveOrder = (id: string) => {
+        if (window.confirm(`Are you sure you want to retrieve the order?`)) {
+            retrieveOrderMutation.mutate({ id });
+        }
+    }
+
     const assignTicketsMutation = useMutation({
         mutationFn: async ({ ticketIds, orderId }: { ticketIds: string[]; orderId: string }) => {
             const promises = ticketIds.map(ticketId =>
@@ -690,9 +696,7 @@ export default function OrderManagerDashboard() {
                                         id: order._id.toString(),
                                         ignoreTickets
                                     })}
-                                    onRetrieve={() => retrieveOrderMutation.mutate({
-                                        id: order._id.toString(),
-                                    })}
+                                    onRetrieve={() => retrieveOrder(order._id.toString())}
                                     onTogglePaid={() => togglePaidMutation.mutate({
                                         order: order,
                                         isPaid: !order.isPaid
