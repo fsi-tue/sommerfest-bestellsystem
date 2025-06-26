@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 const IntroductionSection = () => {
     const t = useTranslations();
     return (
-        <div className="bg-white text-gray-700 rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className="bg-white text-gray-700 rounded-2xl p-6 shadow-sm border-2 border-gray-100">
             <div className="font-light leading-relaxed space-y-6">
                 <ol className="list-none space-y-6">
                     <li className="flex flex-col md:flex-row md:items-baseline gap-2">

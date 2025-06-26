@@ -47,7 +47,7 @@ const SearchInput = ({
                     value={value}
                     onChange={handleChange}
                     placeholder={placeholder}
-                    className="w-full pl-10 pr-10 py-3 bg-white border border-gray-100 rounded-2xl
+                    className="w-full pl-10 pr-10 py-3 bg-white border-2 border-gray-100 rounded-2xl
                      text-gray-900 placeholder-gray-500
                      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
                      transition-all duration-200 ease-in-out

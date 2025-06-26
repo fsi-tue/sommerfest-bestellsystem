@@ -96,7 +96,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
 
     return (
         <div className="max-w-4xl mx-auto p-6">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
                 <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <div>
@@ -139,7 +139,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                             type="text"
                                             value={localItem.name}
                                             onChange={(e) => updateItem({ name: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                             placeholder="Enter item name"
                                         />
                                     </div>
@@ -152,7 +152,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                             type="text"
                                             value={localItem.type || ''}
                                             onChange={(e) => updateItem({ type: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                             placeholder="e.g., Pizza, Pasta, Salad"
                                         />
                                     </div>
@@ -165,7 +165,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                             type="text"
                                             value={localItem.dietary ?? ''}
                                             onChange={(e) => updateItem({ dietary: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                             placeholder="e.g., Vegan, Vegetarian, Gluten Free"
                                         />
                                     </div>
@@ -188,7 +188,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                                 type="number"
                                                 value={localItem.price}
                                                 onChange={(e) => updateItem({ price: Number.parseFloat(e.target.value) || 0 })}
-                                                className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                                className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                                 step="0.10"
                                                 min="0"
                                                 placeholder="0.00"
@@ -205,26 +205,24 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                             type="number"
                                             value={localItem.size}
                                             onChange={(e) => updateItem({ size: Number.parseFloat(e.target.value) || 0 })}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                             step="0.5"
                                             min="0"
-                                            placeholder="Size"
+                                            placeholder={t('Admin.Manage.Items.Property.size')}
                                         />
                                     </div>
 
                                     {/* Status Toggle */}
                                     <div className="pt-2">
-                                        <label className="flex items-center space-x-3 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={localItem.enabled}
-                                                onChange={(e) => updateItem({ enabled: e.target.checked })}
-                                                className="w-5 h-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-                                            />
-                                            <span className="text-sm font-medium text-gray-700">
-                                                {t('Admin.Manage.Items.Status.itemIsAvailable')}
-                                            </span>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('Admin.Manage.Items.Property.ingredients')}
                                         </label>
+                                        <textarea
+                                            value={localItem.ingredients?.join(',') ?? ''}
+                                            onChange={(e) => updateItem({ ingredients: e.target.value.split(',') })}
+                                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                            placeholder="Zutaten"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -243,7 +241,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                                 <Button
                                     onClick={() => saveItem({ enabled: !localItem.enabled })}
                                     disabled={isLoading}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:opacity-50"
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors disabled:opacity-50"
                                 >
                                     {localItem.enabled ? t('Admin.Manage.Items.Actions.disable') : t('Admin.Manage.Items.Actions.enable')}
                                 </Button>
@@ -251,7 +249,7 @@ const EditItem = ({ item, isNew }: EditItemProps) => {
                             <Button
                                 onClick={() => isNew ? createItem(localItem) : saveItem(localItem)}
                                 disabled={isLoading}
-                                className="px-6 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-2 text-sm font-medium text-white bg-primary-600 border-2 border-transparent rounded-lg hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isLoading ? (
                                     <div className="flex items-center space-x-2">

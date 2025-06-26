@@ -34,7 +34,7 @@ const WithSystemCheck = <P extends object>(
         }
 
         return (
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-gray-100">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                         <Construction className="w-4 h-4 text-red-400"/>

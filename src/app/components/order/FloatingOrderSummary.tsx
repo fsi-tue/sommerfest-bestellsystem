@@ -2,7 +2,7 @@
 
 import React from "react";
 import useOrderStore from "@/app/zustand/order";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, X } from "lucide-react";
 import Button from "@/app/components/Button";
 import { useTranslations } from 'next-intl';
 import { useShallow } from "zustand/react/shallow";
@@ -12,11 +12,12 @@ export const FloatingOrderSummary = ({
                                      }: { onToggleAction: () => void }) => {
     const t = useTranslations();
 
-    const { totalItemsCount, currentOrderTotal, error } = useOrderStore(
+    const { totalItemsCount, currentOrderTotal, error, setError } = useOrderStore(
         useShallow((state) => ({
             totalItemsCount: state.getTotalItemCount(),
             currentOrderTotal: state.getCurrentOrderTotal(),
-            error: state.error
+            error: state.error,
+            setError: state.setError
         }))
     )
 
@@ -72,6 +73,12 @@ export const FloatingOrderSummary = ({
                     {error && (
                         <div className="w-full text-center px-2 flex items-center justify-center h-full">
                             <p className="text-2xl bg-opacity-50 px-3 py-1 rounded">{error}</p>
+                            <button
+                                onClick={() => setError('')}
+                                className="ml-2 text-white hover:text-gray-200"
+                            >
+                                <X className="w-8 h-8"/>
+                            </button>
                         </div>
                     )}
                 </div>

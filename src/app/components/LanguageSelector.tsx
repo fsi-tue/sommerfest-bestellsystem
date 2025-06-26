@@ -28,7 +28,7 @@ export default function LanguageSelector({ className = '' }: Readonly<LanguageSe
             value={locale}
             onChange={onChange}
             className={`
-                rounded-full border border-gray-300 
+                rounded-full border-2 border-gray-300 
                 bg-white px-3 py-2 text-sm
                 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500
                 ${className}

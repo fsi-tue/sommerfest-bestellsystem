@@ -6,6 +6,9 @@ export const getOrder = async (orderId: string): Promise<OrderDocument> => {
         method: 'GET',
         credentials: 'include',
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json();
 }
 
@@ -14,6 +17,9 @@ export const getOrders = async (): Promise<OrderDocument[]> => {
         method: 'GET',
         credentials: 'include',
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json();
 }
 
@@ -24,6 +30,9 @@ export const updateOrder = async (orderId: string, order: OrderDocument) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: orderId, order })
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json();
 }
 

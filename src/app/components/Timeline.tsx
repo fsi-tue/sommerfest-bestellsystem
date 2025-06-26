@@ -123,7 +123,7 @@ const Timeline = ({
     return (
         <div className="w-full">
             {error && (
-                <div className="mb-2 p-2 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+                <div className="mb-2 p-2 bg-yellow-100 border-2 border-yellow-400 text-yellow-700 rounded">
                     {t('Misc.timeline.warning', { error })}
                 </div>
             )}

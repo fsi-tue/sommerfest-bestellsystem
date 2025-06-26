@@ -1,7 +1,17 @@
 'use client'
 
-import React, { useMemo, useState } from 'react';
-import { CheckCircle, CheckIcon, Clock, ClockIcon, Pizza, QrCodeIcon, TriangleAlert, XCircle } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+    CheckCircle,
+    CheckIcon,
+    Clock,
+    ClockIcon,
+    Pizza,
+    QrCodeIcon,
+    TriangleAlert,
+    Undo2,
+    XCircle
+} from 'lucide-react';
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemTicketDocumentWithItem, TICKET_STATUS } from '@/model/ticket';
@@ -9,7 +19,6 @@ import { timeslotToLocalTime } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
 import Button from '@/app/components/Button';
 import { Heading } from "@/app/components/layout/Heading";
-import ErrorMessage from "@/app/components/ErrorMessage";
 import { Loading } from "@/app/components/Loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrders } from "@/lib/fetch/order";
@@ -24,7 +33,7 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
 }) => {
     return (
         <div
-            className={`group flex items-center justify-between p-2 rounded-xl transition-all duration-200 hover:shadow-md ${
+            className={`group flex items-center justify-between p-2 rounded-xl transition-all duration-200 ${
                 selectedTickets.has(ticket._id.toString())
                     ? ' bg-blue-50 border-blue-300 shadow-sm'
                     : 'bg-white border-gray-100 hover:border-gray-200'
@@ -136,13 +145,17 @@ const ItemTracker = ({
                     <div className="flex gap-3">
                         <Button
                             onClick={() => setAssignMode(!assignMode)}
-                            className=" bg-blue-500 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                            color="primary"
+                            textColor="white"
+                            className="font-medium"
                         >
                             {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder')}
                         </Button>
                         <Button
                             onClick={() => setSelectedTickets(new Set())}
-                            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200"
+                            color="gray"
+                            textColor="white"
+                            className="font-medium"
                         >
                             {t('Admin.OrderManager.Actions.clear')}
                         </Button>
@@ -151,7 +164,7 @@ const ItemTracker = ({
             </div>
 
             {/* Active tickets */}
-            <div className="bg-gradient-to-br bg-orange-50  border-orange-200 rounded-2xl p-6 shadow-sm">
+            <div className=" bg-orange-50  border-orange-200 rounded-2xl p-6 shadow-sm">
                 <h4 className="font-bold mb-4 text-orange-700 flex items-center gap-2 text-lg">
                     {t('Admin.OrderManager.ItemTracker.beingPrepared')}
                     <span className="bg-orange-200 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -165,9 +178,11 @@ const ItemTracker = ({
                                         handleToggleTicket={handleToggleTicket}/>
                             <Button
                                 onClick={() => onMarkReady(ticket._id.toString())}
-                                className=" bg-green-500 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
+                                color="green"
+                                textColor="white"
+                                className="font-medium"
                             >
-                                <CheckIcon />
+                                <CheckIcon/>
                             </Button>
                         </div>
                     ))}
@@ -180,7 +195,7 @@ const ItemTracker = ({
             </div>
 
             {/* Ready tickets (unassigned) */}
-            <div className="bg-gradient-to-br bg-green-50  border-green-200 rounded-2xl p-6 shadow-sm">
+            <div className=" bg-green-50  border-green-200 rounded-2xl p-6 shadow-sm">
                 <h4 className="font-bold mb-4 text-green-700 flex items-center gap-2 text-lg">
                     {t('Admin.OrderManager.ItemTracker.readyForAssignment')}
                     <span className="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -207,13 +222,14 @@ const ItemTracker = ({
             {/* Order assignment panel */}
             {assignMode && selectedTickets.size > 0 && (
                 <div
-                    className="bg-gradient-to-br bg-blue-50  border-blue-300 rounded-2xl p-6 shadow-lg animate-in slide-in-from-top duration-300">
+                    className="bg-blue-50  border-blue-300 rounded-2xl p-6 shadow-lg animate-in slide-in-from-top duration-300">
                     <h4 className="font-bold mb-4 text-blue-800 text-lg">{t('Admin.OrderManager.ItemTracker.selectOrderToAssign')}</h4>
                     <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                         {compatibleOrders.map(order => (
-                            <div
+                            <Button
                                 key={order._id.toString()}
-                                className="flex justify-between items-center p-4 bg-white rounded-xl  border-gray-100 hover:border-blue-300 cursor-pointer transition-all duration-200 hover:shadow-md group"
+                                color="white"
+                                className="flex items-center w-full rounded-xl border-gray-100 group"
                                 onClick={() => handleAssign(order._id.toString())}
                             >
                                 <div className="flex-1">
@@ -232,7 +248,7 @@ const ItemTracker = ({
                                     className="text-sm  bg-gray-100 text-gray-700 px-3 py-2 rounded-lg font-medium">
                                     {timeslotToLocalTime(order.timeslot)}
                                 </span>
-                            </div>
+                            </Button>
                         ))}
                         {compatibleOrders.length === 0 && (
                             <div className="text-center py-8">
@@ -247,11 +263,11 @@ const ItemTracker = ({
 };
 
 // Order card with delivery functionality
-const OrderCard = ({ order, tickets, onDeliver, onActive, onTogglePaid }: {
+const OrderCard = ({ order, tickets, onDeliver, onRetrieve, onTogglePaid }: {
     order: OrderDocument;
     tickets: ItemTicketDocumentWithItem[];
     onDeliver: (ignoreTickets: boolean) => void;
-    onActive: () => void;
+    onRetrieve: () => void;
     onTogglePaid: () => void;
 }) => {
     const t = useTranslations()
@@ -295,9 +311,9 @@ const OrderCard = ({ order, tickets, onDeliver, onActive, onTogglePaid }: {
     return (
         <div className={`bg-white rounded-2xl  p-6 shadow-sm transition-all duration-200 ${
             !order.isPaid
-                ? 'border-red-300 bg-gradient-to-br bg-red-50'
+                ? 'border-red-300  bg-red-50'
                 : canDeliver
-                    ? 'border-green-300 bg-gradient-to-br bg-green-50'
+                    ? 'border-green-300  bg-green-50'
                     : 'border-gray-200'
         }`}>
             <div className="flex justify-between items-start mb-4">
@@ -364,11 +380,9 @@ const OrderCard = ({ order, tickets, onDeliver, onActive, onTogglePaid }: {
                     <>
                         <Button
                             onClick={() => onDeliver(ignoreTickets)}
-                            className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-                                canDeliver
-                                    ? ' bg-green-500 text-white shadow-sm hover:shadow-md'
-                                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                            }`}
+                            color={canDeliver ? 'green' : 'gray'}
+                            textColor="white"
+                            className="flex-1 py-3 flex items-center justify-center gap-2 font-medium"
                             disabled={!canDeliver && !ignoreTickets}
                         >
                             <CheckCircle className="w-5 h-5"/>
@@ -388,15 +402,15 @@ const OrderCard = ({ order, tickets, onDeliver, onActive, onTogglePaid }: {
                 )}
 
                 {!isActive && (
-                    <>
-                        <Button
-                            onClick={() => onDeliver(ignoreTickets)}
-                            className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 bg-gray-200 text-gray-500}`}
-                        >
-                            <CheckCircle className="w-5 h-5"/>
-                            {t('Admin.OrderManager.Actions.deliverOrder')}
-                        </Button>
-                    </>
+                    <Button
+                        onClick={() => onRetrieve()}
+                        color="red"
+                        textColor="white"
+                        className="flex-1 py-3 flex items-center justify-center gap-2 font-medium"
+                    >
+                        <Undo2 className="w-5 h-5"/>
+                        {t('Admin.OrderManager.Actions.retrieveOrder')}
+                    </Button>
                 )}
 
                 <Button
@@ -457,6 +471,7 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
 export default function OrderManagerDashboard() {
     const t = useTranslations()
     const queryClient = useQueryClient();
+    const [error, setError] = useState<string>();
     const [searchFilter, setSearchFilter] = useState('');
     const [showScanner, setShowScanner] = useState(false);
 
@@ -478,7 +493,10 @@ export default function OrderManagerDashboard() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tickets'] });
-        }
+        },
+        onError: (error) => {
+            setError(error.message);
+        },
     });
 
     // Deliver order mutation
@@ -498,7 +516,32 @@ export default function OrderManagerDashboard() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] });
             queryClient.invalidateQueries({ queryKey: ['tickets'] });
-        }
+        },
+        onError: (error) => {
+            setError(error.message);
+        },
+    });
+
+    const retrieveOrderMutation = useMutation({
+        mutationFn: async ({ id }: { id: string }) => {
+            const response = await fetch(`/api/order/retrieve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message ?? 'Failed to retrieve order');
+            }
+            return response.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
+            queryClient.invalidateQueries({ queryKey: ['tickets'] });
+        },
+        onError: (error) => {
+            setError(error.message);
+        },
     });
 
     const assignTicketsMutation = useMutation({
@@ -518,7 +561,10 @@ export default function OrderManagerDashboard() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tickets'] });
             queryClient.invalidateQueries({ queryKey: ['orders'] });
-        }
+        },
+        onError: (error) => {
+            setError(error.message);
+        },
     });
 
     const togglePaidMutation = useMutation({
@@ -532,7 +578,10 @@ export default function OrderManagerDashboard() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] });
-        }
+        },
+        onError: (error) => {
+            setError(error.message);
+        },
     });
 
     const filteredOrders = useMemo(() => {
@@ -564,9 +613,10 @@ export default function OrderManagerDashboard() {
         return filtered.sort((a, b) => a.timeslot.localeCompare(b.timeslot));
     }, [tab, orders, searchFilter]);
 
-    if (ordersError || ticketsError) {
-        return <ErrorMessage error={(ordersError?.message ?? ticketsError?.message) ?? 'Error'}/>;
-    }
+    useEffect(() => {
+        setError((ordersError?.message ?? ticketsError?.message));
+    }, [ordersError, ticketsError])
+
 
     if (!orders || !tickets) {
         return <Loading/>;
@@ -574,26 +624,6 @@ export default function OrderManagerDashboard() {
 
     return (
         <>
-            <style jsx global>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #f1f5f9;
-                    border-radius: 3px;
-                }
-
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #cbd5e1;
-                    border-radius: 3px;
-                }
-
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #94a3b8;
-                }
-            `}</style>
-
             <Heading
                 title={t('Admin.OrderManager.title')}
                 description={t('Admin.OrderManager.description')}
@@ -606,7 +636,7 @@ export default function OrderManagerDashboard() {
                     />
                     <Button
                         onClick={() => setShowScanner(true)}
-                        className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm"
                     >
                         <QrCodeIcon className="w-6 h-6"/>
                     </Button>
@@ -633,12 +663,16 @@ export default function OrderManagerDashboard() {
                     <div className="space-y-6">
                         <div className="flex items-center gap-3 bg-white rounded-2xl p-6 shadow-sm  border-gray-100">
                             <Button
-                                className={`border-2 p-2 rounded-xl ${tab === 'active' ? 'border-primary-50 bg-primary-200' : ''}`}
+                                color={tab === 'active' ? 'primary' : 'white'}
+                                textColor={tab === 'active' ? 'white' : 'black'}
+                                border="primary"
                                 onClick={() => setTab('active')}>
                                 {t('Admin.OrderManager.Orders.activeOrders')}
                             </Button>
                             <Button
-                                className={`border-2 p-2 rounded-xl ${tab === 'completed' ? 'border-primary-50 bg-primary-200' : ''}`}
+                                color={tab === 'completed' ? 'primary' : 'white'}
+                                textColor={tab === 'completed' ? 'white' : 'black'}
+                                border="primary"
                                 onClick={() => setTab('completed')}>
                                 {t('Admin.OrderManager.Orders.completedOrders')}
                             </Button>
@@ -656,12 +690,14 @@ export default function OrderManagerDashboard() {
                                         id: order._id.toString(),
                                         ignoreTickets
                                     })}
+                                    onRetrieve={() => retrieveOrderMutation.mutate({
+                                        id: order._id.toString(),
+                                    })}
                                     onTogglePaid={() => togglePaidMutation.mutate({
                                         order: order,
                                         isPaid: !order.isPaid
-                                    })} onActive={function (): void {
-                                    throw new Error('Function not implemented.');
-                                }}/>
+                                    })}
+                                />
                             ))}
                         </div>
                         {filteredOrders.length === 0 && (

@@ -6,6 +6,9 @@ const getItems = async (): Promise<ItemDocument[]> => {
         method: 'GET',
         credentials: 'include',
     })
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json()
 }
 

@@ -181,7 +181,7 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
                     {order.status !== 'cancelled' && (
                         <Button
                             onClick={cancelOrder}
-                            className="w-full py-4 text-red-600 bg-white border border-red-200 rounded-2xl font-medium hover:bg-red-50 transition-colors"
+                            className="w-full py-4 text-red-600 bg-white border-2 border-red-200 rounded-2xl font-medium hover:bg-red-50 transition-colors"
                         >
                             {t('OrderStatus.cancel_order')}
                         </Button>

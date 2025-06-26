@@ -102,7 +102,7 @@ export default function ManagePage() {
             />
 
             <div className="max-w-4xl mx-auto p-6">
-                <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
                     <div className="bg-gradient-to-r from-primary-50 to-primary-100 px-6 py-4 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
                             {t('Admin.Manage.Database.SystemControls.title')}
@@ -111,7 +111,7 @@ export default function ManagePage() {
                     <div className="p-6 space-y-6">
                         {/* Enable Changes Toggle */}
                         <div
-                            className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-200/50">
+                            className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border-2 border-slate-200/50">
                             <label htmlFor="enableChanges" className="text-sm font-medium text-slate-700 flex-1">
                                 {t('Admin.Manage.Database.Actions.enable_changes')}
                             </label>
@@ -122,7 +122,7 @@ export default function ManagePage() {
                                     name="enableChanges"
                                     checked={enableChanges}
                                     onChange={() => setEnableChanges(!enableChanges)}
-                                    className="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-primary-50 checked:bg-primary-800 checked:border-primary-800"
+                                    className="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border-2 border-primary-50 checked:bg-primary-800 checked:border-primary-800"
                                 />
                             </div>
                         </div>
@@ -170,7 +170,7 @@ export default function ManagePage() {
                                             name="systemMessage"
                                             value={systemMessage}
                                             placeholder={t('Admin.Manage.Database.Actions.enterSystemMessage')}
-                                            className="w-full px-4 py-3 pl-11 text-sm bg-white border border-slate-300 rounded-2xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 placeholder-slate-400"
+                                            className="w-full px-4 py-3 pl-11 text-sm bg-white border-2 border-slate-300 rounded-2xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 placeholder-slate-400"
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSystemMessage(e.target.value)}
                                         />
                                         <div
@@ -223,7 +223,7 @@ export default function ManagePage() {
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                             setConfigData(e.target.value);
                         }}
-                        className="w-full h-80 p-4 text-sm font-mono bg-slate-900 text-slate-100 rounded-2xl border border-slate-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                        className="w-full h-80 p-4 text-sm font-mono bg-slate-900 text-slate-100 rounded-2xl border-2 border-slate-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
                         placeholder="Enter your JSON configuration here..."
                         spellCheck={false}
                     />
@@ -233,7 +233,7 @@ export default function ManagePage() {
                             </div>
                         </div>
 
-                        <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border-2 border-slate-200">
                             {t('Admin.Manage.Database.ConfigurationEditor.disclaimer')}
                         </div>
                     </div>

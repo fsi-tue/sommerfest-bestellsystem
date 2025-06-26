@@ -7,6 +7,9 @@ const getSystem = async (): Promise<System> => {
         credentials: 'include',
         cache: 'no-store'
     })
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     const systemResponse = await response.json() as { system: SystemDocument }
     return systemResponse.system;
 }

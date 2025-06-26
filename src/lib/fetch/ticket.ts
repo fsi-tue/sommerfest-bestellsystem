@@ -6,6 +6,9 @@ export const getTickets = async (): Promise<ItemTicketDocumentWithItem[]> => {
         method: 'GET',
         credentials: 'include',
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json();
 }
 
@@ -16,6 +19,9 @@ export const updateTicket = async (ticketId: string, status: TicketStatus) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: ticketId, status })
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json();
 }
 
@@ -26,6 +32,9 @@ export const deleteTicket = async (ticketId: string) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: ticketId })
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
     return await response.json();
 }
 

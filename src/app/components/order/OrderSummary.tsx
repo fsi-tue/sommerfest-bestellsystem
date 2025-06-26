@@ -66,7 +66,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
             <div className="flex-1 overflow-y-auto">
                 <div className="px-4 py-4 space-y-4">
                     {/* Cart Items Section */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200">
                         {isEmpty ? (
                             <div className="text-center py-12 px-4">
                                 <div
@@ -108,7 +108,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
 
                                             <div className="flex justify-between items-center">
                                                 <div
-                                                    className="flex items-center bg-white border border-gray-300 rounded-lg">
+                                                    className="flex items-center bg-white border-2 border-gray-300 rounded-lg">
                                                     <Button
                                                         onClick={() => removeFromOrder(item)}
                                                         className="p-3 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-l-lg transition-colors"
@@ -144,7 +144,10 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
                     {!isEmpty && (
                         <>
                             {/* Customer Details Section */}
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 p-4">
+                                <span className="text-sm font-medium text-gray-600 mb-2">
+                                    {t('OrderSummary.Info.Name')}
+                                </span>
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                     <User className="h-5 w-5 mr-2 text-primary-600"/>
                                     {t('OrderSummary.OrderDetails.yourDetails')}
@@ -160,7 +163,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
                                         type="text"
                                         value={order.name}
                                         placeholder={t("OrderSummary.OrderDetails.name_placeholder")}
-                                        className="w-full px-4 py-4 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                        className="w-full px-4 py-4 text-base border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                                         onChange={(e) => setName(e.target.value)}
                                         required
                                     />
@@ -168,14 +171,17 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
                             </div>
 
                             {/* Pickup Time Section */}
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 p-4">
+                                <span className="text-sm font-medium text-gray-600 mb-2">
+                                    {t('OrderSummary.Info.Timeslot')}
+                                </span>
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                                     <Clock className="h-5 w-5 mr-2 text-primary-600"/>
                                     {t('OrderSummary.Timeslot.title')}
                                 </h2>
 
                                 {order.timeslot && (
-                                    <div className="mb-4 p-3 bg-primary-50 border border-primary-200 rounded-lg">
+                                    <div className="mb-4 p-3 bg-primary-50 border-2 border-primary-200 rounded-lg">
                                         <div className="flex items-center space-x-2">
                                             <Clock className="h-4 w-4 text-primary-600"/>
                                             <span className="text-primary-800 font-medium">
@@ -189,7 +195,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
                             </div>
 
                             {/* Order Summary */}
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 p-4">
                                 <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('OrderSummary.Summary.title')}</h2>
 
                                 <div className="space-y-3">
@@ -229,7 +235,7 @@ const OrderSummary: React.FC<OrderSummaryPageProps> = ({ onClose }) => {
                 ) : (
                     <div className="space-y-3">
                         <div className="flex justify-between items-center text-sm text-gray-600">
-                            <span>Ready to place your order?</span>
+                            <span>{t('OrderSummary.Info.Order')}</span>
                             <span className="font-semibold text-lg">€{getCurrentOrderTotal().toFixed(2)}</span>
                         </div>
                         <OrderButton setError={setError}/>

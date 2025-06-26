@@ -10,13 +10,13 @@ translation:
     AdminLinks:
       prepare: Vorbereitung
       manage_db: Datenbank
-      manage_orders: Bestellungen
+      manage_orders: Ausgabe
       manage_items: Artikel
       logout: Abmelden
     Menu:
       login: Anmelden
       home: Startseite
-      orders: Bestellungen
+      orders: Meine Bestellungen
 
   Footer:
     fuel: "Code & Pizza von "
@@ -24,8 +24,8 @@ translation:
   Order:
     introduction:
       choose_your_item: Wähle dein Produkt
-      pick_up_time: Abholzeit
-      pay_in_cash: Barzahlung
+      pick_up_time: Wähle deine Abholzeit
+      pay_in_cash: Zahle in bar
       closer: Einen schönen Abend!
     item:
       button:
@@ -73,9 +73,12 @@ translation:
       add_more_products: Weitere Artikel hinzufügen
       name_not_set: Name fehlt
       timeslot_not_selected: Zeitfenster fehlt
+    Info:
+      Name: "Durch die Angabe deines Namens können wir die Bestellung leichter zuordnen."
+      Timeslot: "Wenn du auf den Graphen tippst, kannst du ein Zeitfenster auswählen."
+      Order: 'Wenn du die auf "Jetzt bestellen" klickst, schließt du die Bestellung direkt ab. Die Bezahlung erfolgt bar.'
     Timeslot:
       title: Zeitfenster
-      subtitle: Wähle eine Abholzeit.
     OrderDetails:
       yourDetails: Deine Angaben
       name: Name
@@ -155,6 +158,7 @@ translation:
           price: Preis
           size: Größe
           max_items_available: Max. verfügbar
+          ingredients: Zutaten
 
         Actions:
           disable: Deaktivieren
@@ -197,6 +201,7 @@ translation:
         clear: "Leeren"
         markReady: "Als fertig markieren"
         deliverOrder: "Bestellung ausliefern"
+        retrieveOrder: "Bestellung zurückziehen"
         force: "Erzwingen"
         scanOrderQR: "Bestell-QR scannen"
 

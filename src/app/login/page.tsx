@@ -80,7 +80,7 @@ const Page = () => {
                                     onChange={(e) => setToken(e.target.value)}
                                     autoComplete="current-password"
                                     required
-                                    className="block w-full rounded-md border-gray-100 border py-2 px-3 text-gray-900 placeholder-gray-400
+                                    className="block w-full rounded-md border-gray-100 border-2 py-2 px-3 text-gray-900 placeholder-gray-400
                   focus:border-primary-500 focus:outline-none focus:ring-primary-500 shadow-sm"
                                 />
                             </div>
@@ -90,7 +90,7 @@ const Page = () => {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex w-full justify-center rounded-md border border-transparent bg-primary-600 py-3 px-4 text-sm font-medium text-white shadow-sm
+                                className="flex w-full justify-center rounded-md border-2 border-transparent bg-primary-600 py-3 px-4 text-sm font-medium text-white shadow-sm
                 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
                 disabled:opacity-75 disabled:cursor-not-allowed transition-all duration-200"
                             >

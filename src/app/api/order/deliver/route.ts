@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { Types } from 'mongoose';
 import { ORDER_STATUSES, OrderModel } from '@/model/order'; // [[13]]
-import { ItemTicketModel, TICKET_STATUS } from '@/model/ticket';
+import { ItemTicketDocument, ItemTicketDocumentWithItem, ItemTicketModel, TICKET_STATUS } from '@/model/ticket';
 import dbConnect from "@/lib/db";
 
 const dbReady = dbConnect();
@@ -44,10 +44,10 @@ export async function POST(req: Request) {
             });
 
             try {
-                const ticketsToDeliver: typeof ItemTicketModel.schema['methods'] = [];
+                const ticketsToDeliver = [] as ItemTicketDocument[];
 
                 for (const [itemTypeId, requiredCount] of required.entries()) {
-                    /* 3.1 Already assigned tickets (READY or ACTIVE) */
+                    /* 1.1. Already assigned tickets (READY or ACTIVE) */
                     const alreadyAssigned = await ItemTicketModel.find({
                         itemTypeRef: itemTypeId,
                         orderId: order._id,
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
                     let remaining = requiredCount - readyAssigned.length - activeAssigned;
 
-                    /* 3.2 Pull READY, unassigned tickets if still needed */
+                    /* 1.2. Pull READY, unassigned tickets if still needed */
                     if (remaining > 0) {
                         const readyUnassigned = await ItemTicketModel.find({
                             itemTypeRef: itemTypeId,
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
                         remaining -= readyUnassigned.length;
                     }
 
-                    /* 3.3 Abort if shortage and client did not allow it */
+                    /* 1.1. Abort if shortage and client did not allow it */
                     if (remaining > 0 && !forceIgnore) {
                         throw new Error(
                             `Not enough ready tickets available for item type ${itemTypeId}`
@@ -85,12 +85,12 @@ export async function POST(req: Request) {
                     }
                 }
 
-                /* 3.4 Final invariant */
+                /* 1.4. Final invariant */
                 if (!forceIgnore && ticketsToDeliver.length !== order.items.length) {
                     throw new Error('Could not satisfy full order');
                 }
 
-                /* 3.5 Unassign all tickets of this order that are NOT going to be delivered */
+                /* 1.5. Unassign all tickets of this order that are NOT going to be delivered */
                 await ItemTicketModel.updateMany(
                     {
                         orderId: order._id,
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
                     { $set: { orderId: null } },
                 );
 
-                /* 3.6 Mark deliverable tickets as COMPLETED (idempotent / race-safe) */
+                /* 1.6. Mark deliverable tickets as COMPLETED (idempotent / race-safe) */
                 const updates = ticketsToDeliver.map(t =>
                     ItemTicketModel.updateOne(
                         { _id: t._id },
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
                 );
                 await Promise.all(updates);
 
-                /* 3.7 Complete the order */
+                /* 1.7. Complete the order */
                 order.status = ORDER_STATUSES.COMPLETED;
                 order.finishedAt = new Date();
                 await order.save();

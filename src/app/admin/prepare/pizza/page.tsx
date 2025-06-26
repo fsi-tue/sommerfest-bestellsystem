@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, Clock, Search, Trash2, X } from 'lucide-react';
+import { AlertCircle, Clock, Trash2, X } from 'lucide-react';
 import { Heading } from "@/app/components/layout/Heading";
 import { useTranslations } from 'next-intl';
 import { timeslotToDate, timeslotToLocalTime } from "@/lib/time";
@@ -11,6 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteTicket, updateTicket, useTickets } from "@/lib/fetch/ticket";
 import { ItemTicketDocumentWithItem, TICKET_STATUS, TicketStatus } from "@/model/ticket";
 import Button from '@/app/components/Button';
+import SearchInput from "@/app/components/SearchInput";
 
 const PizzaMakerStation = () => {
     const queryClient = useQueryClient();
@@ -54,11 +55,11 @@ const PizzaMakerStation = () => {
         mutationFn: async (ticketId: string) => deleteTicket(ticketId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tickets'] });
-            setSelectedTickets(new Set()); // Clear selection after action
+            setSelectedTickets(new Set());
         },
         onError: (error) => {
             setError(error.message);
-        },
+        }
     });
 
     // Filter tickets based on search text
@@ -179,23 +180,11 @@ const PizzaMakerStation = () => {
                 {/* Left Panel - Orders Management */}
                 <div className="bg-white p-6 rounded-2xl w-full lg:w-1/3 shadow-lg">
                     {/* Filter orders */}
-                    <div className="relative mb-6">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"/>
-                        <input
-                            type="text"
-                            placeholder="Search orders, items, or times..."
-                            value={filterText}
-                            onChange={(e) => setFilterText(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none"
+                    <div className="mb-6">
+                        <SearchInput
+                            search={setFilterText}
+                            searchValue={filterText}
                         />
-                        {filterText && (
-                            <button
-                                onClick={() => setFilterText('')}
-                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                <X className="w-5 h-5"/>
-                            </button>
-                        )}
                     </div>
 
                     {/* Action buttons */}
@@ -238,7 +227,7 @@ const PizzaMakerStation = () => {
                             }
                             return (timeslotToDate(a.timeslot)?.getTime() || 0) - (timeslotToDate(b.timeslot)?.getTime() || 0)
                         }).map(ticket => (
-                            <div
+                            <button
                                 key={`${ticket._id.toString()}-${ticket.status}`}
                                 onClick={() => toggleTicketSelection(ticket._id.toString())}
                                 className={`
@@ -267,7 +256,7 @@ const PizzaMakerStation = () => {
                                         {timeslotToLocalTime(ticket.timeslot)}
                                     </span>
                                 )}
-                            </div>
+                            </button>
                         ))}
                     </div>
 
@@ -285,7 +274,8 @@ const PizzaMakerStation = () => {
                             const pendingCount = upcomingItems.get(item._id.toString()) ?? 0;
 
                             return (
-                                <button
+                                <Button
+                                    rateLimitMs={1000}
                                     key={`${item.id}-${item.name}`}
                                     className={`
                                         aspect-square bg-gradient-to-br from-orange-400 to-red-500 
@@ -317,7 +307,7 @@ const PizzaMakerStation = () => {
                                             </div>
                                         )}
                                     </div>
-                                </button>
+                                </Button>
                             );
                         })}
                     </div>
