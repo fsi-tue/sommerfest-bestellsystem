@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo, useState } from 'react';
-import { CheckCircle, ClockIcon, Pizza, QrCodeIcon, TriangleAlert, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, ClockIcon, Pizza, QrCodeIcon, TriangleAlert, XCircle } from 'lucide-react';
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemTicketDocumentWithItem, TICKET_STATUS } from '@/model/ticket';
@@ -26,9 +26,9 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
 
     return (
         <div
-            className={`group flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-md ${
+            className={`group flex items-center justify-between p-4 rounded-xl  transition-all duration-200 hover:shadow-md ${
                 selectedTickets.has(ticket._id.toString())
-                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-300 shadow-sm'
+                    ? ' bg-blue-50 border-blue-300 shadow-sm'
                     : 'bg-white border-gray-100 hover:border-gray-200'
             }`}>
             <div className="flex items-center gap-3">
@@ -38,7 +38,7 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
                             type="checkbox"
                             checked={selectedTickets.has(ticket._id.toString())}
                             onChange={() => handleToggleTicket(ticket._id.toString())}
-                            className="w-5 h-5 rounded-md border-2 border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 transition-colors"
+                            className="w-5 h-5 rounded-md  border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 transition-colors"
                         />
                     </div>
                 )}
@@ -58,7 +58,7 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
             </div>
             {ticket.orderId && (
                 <span
-                    className="text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 px-3 py-1.5 rounded-full">
+                    className="text-xs font-medium  bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full">
                     Order #{ticket.orderId.toString().slice(-6)}
                 </span>
             )}
@@ -67,11 +67,11 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
 };
 
 const ItemTracker = ({
-                           tickets,
-                           orders,
-                           onMarkReady,
-                           onAssignToOrder
-                       }: {
+                         tickets,
+                         orders,
+                         onMarkReady,
+                         onAssignToOrder
+                     }: {
     tickets: ItemTicketDocumentWithItem[];
     orders: OrderDocument[];
     onMarkReady: (ticketId: string) => void;
@@ -137,7 +137,7 @@ const ItemTracker = ({
                     <div className="flex gap-3">
                         <Button
                             onClick={() => setAssignMode(!assignMode)}
-                            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                            className=" bg-blue-500 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                         >
                             {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder')}
                         </Button>
@@ -152,7 +152,7 @@ const ItemTracker = ({
             </div>
 
             {/* Active tickets */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-gradient-to-br bg-orange-50  border-orange-200 rounded-2xl p-6 shadow-sm">
                 <h4 className="font-bold mb-4 text-orange-700 flex items-center gap-2 text-lg">
                     {t('Admin.OrderManager.ItemTracker.beingPrepared')}
                     <span className="bg-orange-200 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -166,7 +166,7 @@ const ItemTracker = ({
                                         handleToggleTicket={handleToggleTicket}/>
                             <Button
                                 onClick={() => onMarkReady(ticket._id.toString())}
-                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
+                                className=" bg-green-500 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
                             >
                                 {t('Admin.OrderManager.Actions.markReady')}
                             </Button>
@@ -181,7 +181,7 @@ const ItemTracker = ({
             </div>
 
             {/* Ready tickets (unassigned) */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-gradient-to-br bg-green-50  border-green-200 rounded-2xl p-6 shadow-sm">
                 <h4 className="font-bold mb-4 text-green-700 flex items-center gap-2 text-lg">
                     {t('Admin.OrderManager.ItemTracker.readyForAssignment')}
                     <span className="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -207,19 +207,21 @@ const ItemTracker = ({
 
             {/* Order assignment panel */}
             {assignMode && selectedTickets.size > 0 && (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-2xl p-6 shadow-lg animate-in slide-in-from-top duration-300">
+                <div
+                    className="bg-gradient-to-br bg-blue-50  border-blue-300 rounded-2xl p-6 shadow-lg animate-in slide-in-from-top duration-300">
                     <h4 className="font-bold mb-4 text-blue-800 text-lg">{t('Admin.OrderManager.ItemTracker.selectOrderToAssign')}</h4>
                     <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                         {compatibleOrders.map(order => (
                             <div
                                 key={order._id.toString()}
-                                className="flex justify-between items-center p-4 bg-white rounded-xl border-2 border-gray-100 hover:border-blue-300 cursor-pointer transition-all duration-200 hover:shadow-md group"
+                                className="flex justify-between items-center p-4 bg-white rounded-xl  border-gray-100 hover:border-blue-300 cursor-pointer transition-all duration-200 hover:shadow-md group"
                                 onClick={() => handleAssign(order._id.toString())}
                             >
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="font-semibold text-gray-900">{order.name}</span>
-                                        <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                                        <span
+                                            className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
                                             #{order._id.toString().slice(-6)}
                                         </span>
                                     </div>
@@ -227,7 +229,8 @@ const ItemTracker = ({
                                         {order.items.map(i => i.name).join(', ')}
                                     </div>
                                 </div>
-                                <span className="text-sm bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-3 py-2 rounded-lg font-medium">
+                                <span
+                                    className="text-sm  bg-gray-100 text-gray-700 px-3 py-2 rounded-lg font-medium">
                                     {timeslotToLocalTime(order.timeslot)}
                                 </span>
                             </div>
@@ -245,10 +248,11 @@ const ItemTracker = ({
 };
 
 // Order card with delivery functionality
-const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
+const OrderCard = ({ order, tickets, onDeliver, onActive, onTogglePaid }: {
     order: OrderDocument;
     tickets: ItemTicketDocumentWithItem[];
     onDeliver: (ignoreTickets: boolean) => void;
+    onActive: () => void;
     onTogglePaid: () => void;
 }) => {
     const t = useTranslations()
@@ -256,15 +260,17 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
     const [ignoreTickets, setIgnoreTickets] = useState(false);
 
     // Check if order can be delivered
-    const canDeliver = useMemo(() => {
+    const requiredItems = useMemo(() => {
         // Count required items
         const requiredItems = new Map<string, number>();
         order.items.forEach(item => {
             const typeId = item._id.toString();
             requiredItems.set(typeId, (requiredItems.get(typeId) ?? 0) + 1);
         });
+        return requiredItems;
+    }, [order]);
 
-        // Count available tickets (assigned to this order or ready unassigned)
+    const availableItems = useMemo(() => {
         const availableItems = new Map<string, number>();
         tickets.forEach(ticket => {
             const typeId = ticket.itemTypeRef._id.toString();
@@ -272,7 +278,10 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
                 availableItems.set(typeId, (availableItems.get(typeId) ?? 0) + 1);
             }
         });
+        return availableItems;
+    }, [order, tickets]);
 
+    const canDeliver = useMemo(() => {
         // Check if all required items are available
         for (const [typeId, required] of requiredItems.entries()) {
             if ((availableItems.get(typeId) ?? 0) < required) {
@@ -280,16 +289,16 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
             }
         }
         return true;
-    }, [order, tickets]);
+    }, [requiredItems, availableItems]);
 
     const isActive = order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED;
 
     return (
-        <div className={`bg-white rounded-2xl border-2 p-6 shadow-sm transition-all duration-200 ${
+        <div className={`bg-white rounded-2xl  p-6 shadow-sm transition-all duration-200 ${
             !order.isPaid
-                ? 'border-red-300 bg-gradient-to-br from-red-50 to-pink-50'
+                ? 'border-red-300 bg-gradient-to-br bg-red-50'
                 : canDeliver
-                    ? 'border-green-300 bg-gradient-to-br from-green-50 to-emerald-50'
+                    ? 'border-green-300 bg-gradient-to-br bg-green-50'
                     : 'border-gray-200'
         }`}>
             <div className="flex justify-between items-start mb-4">
@@ -299,77 +308,109 @@ const DeliveryOrderCard = ({ order, tickets, onDeliver, onTogglePaid }: {
                         #{order._id.toString().slice(-6)}
                     </p>
                 </div>
-                <div className="flex flex-col gap-2 items-end">
+                <div className="flex flex-row gap-2 items-end">
                     {!order.isPaid && (
-                        <div className="bg-gradient-to-r from-red-100 to-red-200 text-red-800 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
+                        <div
+                            className=" bg-red-100 text-red-800 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
                             <TriangleAlert className="w-4 h-4"/>
                             {t('Admin.OrderManager.Orders.notPaid')}
                         </div>
                     )}
-                    <div className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
+                    <div
+                        className=" bg-gray-100 text-gray-700 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
                         <ClockIcon className="w-4 h-4"/>
                         {timeslotToLocalTime(order.timeslot)}
+                    </div>
+                    <div
+                        className=" bg-gray-100 text-gray-700 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
+                        {order.status}
                     </div>
                 </div>
             </div>
 
             <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <div className="space-y-2">
-                    {order.items.map((item, idx) => (
-                        <div key={`${item._id.toString()}-${idx}`} className="flex justify-between items-center text-sm">
-                            <span className="font-medium text-gray-700">{item.name}</span>
-                        </div>
-                    ))}
+                    {order.items.map((item, idx) => {
+                        const itemId = item._id.toString();
+                        const requiredCount = requiredItems.get(itemId) ?? 0;
+                        const availableCount = availableItems.get(itemId) ?? 0;
+                        const isFullyReady = availableCount >= requiredCount;
+
+                        return (
+                            <div key={`${itemId}-${idx}`}
+                                 className="flex justify-between items-center text-sm">
+                                <span className="font-medium text-gray-700">{item.name}</span>
+                                <div className="flex items-center gap-2">
+                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                    isFullyReady
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                    {availableCount}/{requiredCount}
+                                </span>
+                                    {isFullyReady ? (
+                                        <CheckCircle className="w-4 h-4 text-green-600"/>
+                                    ) : (
+                                        <Clock className="w-4 h-4 text-yellow-600"/>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
-            {isActive && (
-                <div className="flex gap-3 items-center">
-                    <Button
-                        onClick={() => onDeliver(ignoreTickets)}
-                        className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
-                            canDeliver
-                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-sm hover:shadow-md'
-                                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        }`}
-                        disabled={!canDeliver && !ignoreTickets}
-                    >
-                        <CheckCircle className="w-5 h-5"/>
-                        {t('Admin.OrderManager.Actions.deliverOrder')}
-                    </Button>
+            <div className="flex gap-3 items-center">
+                {isActive && (
+                    <>
+                        <Button
+                            onClick={() => onDeliver(ignoreTickets)}
+                            className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 ${
+                                canDeliver
+                                    ? ' bg-green-500 text-white shadow-sm hover:shadow-md'
+                                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            }`}
+                            disabled={!canDeliver && !ignoreTickets}
+                        >
+                            <CheckCircle className="w-5 h-5"/>
+                            {t('Admin.OrderManager.Actions.deliverOrder')}
+                        </Button>
 
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            checked={ignoreTickets}
-                            onChange={() => setIgnoreTickets(!ignoreTickets)}
-                            className="w-4 h-4 rounded border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-xs text-gray-600">{t('Admin.OrderManager.Actions.force')}</span>
-                    </div>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={ignoreTickets}
+                                onChange={() => setIgnoreTickets(!ignoreTickets)}
+                                className="w-4 h-4 rounded  border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="text-xs text-gray-600">{t('Admin.OrderManager.Actions.force')}</span>
+                        </div>
+                    </>
+                )}
 
-                    <Button
-                        onClick={onTogglePaid}
-                        className={`px-4 py-3 rounded-xl font-bold transition-all duration-200 ${
-                            order.isPaid
-                                ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 hover:from-green-200 hover:to-green-300'
-                                : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 hover:from-red-200 hover:to-red-300'
-                        }`}
-                    >
-                        {order.totalPrice}€
-                    </Button>
-                </div>
-            )}
+                {!isActive && (
+                    <>
+                        <Button
+                            onClick={() => onDeliver(ignoreTickets)}
+                            className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all duration-200 bg-gray-200 text-gray-500}`}
+                        >
+                            <CheckCircle className="w-5 h-5"/>
+                            {t('Admin.OrderManager.Actions.deliverOrder')}
+                        </Button>
+                    </>
+                )}
 
-            {!isActive && (
-                <div className={`text-center py-3 rounded-xl font-medium ${
-                    order.status === ORDER_STATUSES.COMPLETED
-                        ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800'
-                        : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
-                }`}>
-                    {order.status}
-                </div>
-            )}
+                <Button
+                    onClick={onTogglePaid}
+                    className={`px-4 py-3 rounded-xl font-bold transition-all duration-200 ${
+                        order.isPaid
+                            ? 'bg-green-200 text-green-800 hover:bg-green-300'
+                            : 'bg-red-200 text-red-800 hover:bg-red-300'
+                    }`}
+                >
+                    {order.totalPrice}€
+                </Button>
+            </div>
         </div>
     );
 };
@@ -385,7 +426,8 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
     }
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-in zoom-in-95 duration-200">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-gray-900">Scan Order QR</h3>
@@ -396,7 +438,7 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
                         <XCircle className="w-6 h-6 text-gray-500"/>
                     </Button>
                 </div>
-                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-100 border-2 border-gray-200">
+                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-gray-100  border-gray-200">
                     <Scanner
                         onScan={(result) => {
                             const code = result[0]?.rawValue;
@@ -418,6 +460,9 @@ export default function OrderManagerDashboard() {
     const queryClient = useQueryClient();
     const [searchFilter, setSearchFilter] = useState('');
     const [showScanner, setShowScanner] = useState(false);
+
+    type Tabs = 'active' | 'completed';
+    const [tab, setTab] = useState<Tabs>('active')
 
     const { data: orders, error: ordersError } = useOrders(5000);
     const { data: tickets, error: ticketsError } = useTickets(5000);
@@ -482,7 +527,7 @@ export default function OrderManagerDashboard() {
             const response = await fetch(`/api/order/`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: order._id.toString(), order: { ...order, isPaid: isPaid } })
+                body: JSON.stringify({ id: order._id.toString(), order: { isPaid: isPaid } })
             });
             return response.json();
         },
@@ -495,11 +540,19 @@ export default function OrderManagerDashboard() {
         if (!orders) {
             return [];
         }
+        let filtered = orders
 
-        let filtered = orders.filter(o =>
-            o.status !== ORDER_STATUSES.COMPLETED &&
-            o.status !== ORDER_STATUSES.CANCELLED
-        );
+        if (tab === 'active') {
+            filtered = filtered.filter(o =>
+                o.status !== ORDER_STATUSES.COMPLETED &&
+                o.status !== ORDER_STATUSES.CANCELLED
+            );
+        } else if (tab === 'completed') {
+            filtered = filtered.filter(o =>
+                o.status === ORDER_STATUSES.COMPLETED ||
+                o.status === ORDER_STATUSES.CANCELLED
+            );
+        }
 
         if (searchFilter) {
             const search = searchFilter.toLowerCase();
@@ -510,7 +563,7 @@ export default function OrderManagerDashboard() {
         }
 
         return filtered.sort((a, b) => a.timeslot.localeCompare(b.timeslot));
-    }, [orders, searchFilter]);
+    }, [tab, orders, searchFilter]);
 
     if (ordersError || ticketsError) {
         return <ErrorMessage error={(ordersError?.message ?? ticketsError?.message) ?? 'Error'}/>;
@@ -526,14 +579,17 @@ export default function OrderManagerDashboard() {
                 .custom-scrollbar::-webkit-scrollbar {
                     width: 6px;
                 }
+
                 .custom-scrollbar::-webkit-scrollbar-track {
                     background: #f1f5f9;
                     border-radius: 3px;
                 }
+
                 .custom-scrollbar::-webkit-scrollbar-thumb {
                     background: #cbd5e1;
                     border-radius: 3px;
                 }
+
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #94a3b8;
                 }
@@ -551,7 +607,7 @@ export default function OrderManagerDashboard() {
                     />
                     <Button
                         onClick={() => setShowScanner(true)}
-                        className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+                        className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
                     >
                         <QrCodeIcon className="w-6 h-6"/>
                     </Button>
@@ -560,7 +616,7 @@ export default function OrderManagerDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="lg:col-span-1">
-                    <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-gray-100 sticky top-4">
+                    <div className="bg-white rounded-2xl p-6 shadow-sm  border-gray-100 sticky top-4">
                         <ItemTracker
                             tickets={tickets}
                             orders={orders}
@@ -576,15 +632,24 @@ export default function OrderManagerDashboard() {
                 {/* Orders */}
                 <div className="lg:col-span-1">
                     <div className="space-y-6">
-                        <div className="flex items-center gap-3">
-                            <h3 className="font-bold text-xl text-gray-900">{t('Admin.OrderManager.Orders.activeOrders')}</h3>
-                            <span className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
-                                {filteredOrders.length}
-                            </span>
+                        <div className="flex items-center gap-3 bg-white rounded-2xl p-6 shadow-sm  border-gray-100">
+                            <Button
+                                className={`border-2 p-2 rounded-xl ${tab === 'active' ? 'border-primary-50 bg-primary-200' : ''}`}
+                                onClick={() => setTab('active')}>
+                                {t('Admin.OrderManager.Orders.activeOrders')}
+                            </Button>
+                            <Button
+                                className={`border-2 p-2 rounded-xl ${tab === 'completed' ? 'border-primary-50 bg-primary-200' : ''}`}
+                                onClick={() => setTab('completed')}>
+                                {t('Admin.OrderManager.Orders.completedOrders')}
+                            </Button>
+                        </div>
+                        <div className=" bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium w-fit">
+                            {filteredOrders.length}
                         </div>
                         <div className="space-y-4">
                             {filteredOrders.map(order => (
-                                <DeliveryOrderCard
+                                <OrderCard
                                     key={order._id.toString()}
                                     order={order}
                                     tickets={tickets}
@@ -595,12 +660,13 @@ export default function OrderManagerDashboard() {
                                     onTogglePaid={() => togglePaidMutation.mutate({
                                         order: order,
                                         isPaid: !order.isPaid
-                                    })}
-                                />
+                                    })} onActive={function (): void {
+                                    throw new Error('Function not implemented.');
+                                }}                                />
                             ))}
                         </div>
                         {filteredOrders.length === 0 && (
-                            <div className="text-center py-12 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                            <div className="text-center py-12 bg-gray-50 rounded-2xl  border-dashed border-gray-200">
                                 <p className="text-gray-500 text-lg">{t('Admin.OrderManager.Orders.noActiveOrders')}</p>
                                 <p className="text-gray-400 text-sm mt-1">{t('Admin.OrderManager.Orders.ordersWillAppearHere')}</p>
                             </div>

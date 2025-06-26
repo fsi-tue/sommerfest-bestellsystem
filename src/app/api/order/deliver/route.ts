@@ -65,6 +65,7 @@ export async function POST(req: Request) {
             let remainingNeeded = requiredCount - assignedTickets.length;
 
             // 3.2 If we need more, get ready unassigned tickets
+            // But we want to make sure that no tickets are in the pipeline!
             if (remainingNeeded <= 0) {
                 continue;
             }
@@ -98,7 +99,15 @@ export async function POST(req: Request) {
             }
         }
 
-        // 4. Update all tickets
+        // 4. Unassign all the tickets
+        await ItemTicketModel.updateMany(
+            { orderId: order._id },
+            {
+                orderId: null
+            }
+        );
+
+        // 4.1 Reassign and update all tickets
         const ticketUpdatePromises = ticketsToDeliver.map(ticket =>
             ItemTicketModel.findByIdAndUpdate(
                 ticket._id,

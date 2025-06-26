@@ -19,6 +19,16 @@ export const updateTicket = async (ticketId: string, status: TicketStatus) => {
     return await response.json();
 }
 
+export const deleteTicket = async (ticketId: string) => {
+    const response = await fetch('/api/order/ticket', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: ticketId })
+    });
+    return await response.json();
+}
+
 export function useTickets(refetchInterval: number | false = false) {
     return useQuery({
         queryKey: ['tickets'],

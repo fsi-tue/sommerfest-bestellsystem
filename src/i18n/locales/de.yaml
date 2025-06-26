@@ -203,6 +203,7 @@ translation:
       # Order Status and Information
       Orders:
         activeOrders: "Aktive Bestellungen"
+        completedOrders: "Fertige Bestellungen"
         orderPrefix: "Bestellung #"
         ticketPrefix: "#"
         notPaid: "Nicht bezahlt"

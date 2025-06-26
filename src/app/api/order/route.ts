@@ -183,7 +183,7 @@ export async function POST(req: Request) {
                 const newTicket = await ItemTicketModel.create({
                     itemTypeRef: savedOrderItem._id,
                     status: TICKET_STATUS.DEMANDED,
-                    orderId: null,
+                    orderId: newOrderDocument._id,
                     timeslot: newOrderDocument.timeslot,
                 });
 
@@ -206,7 +206,7 @@ export async function PUT(req: Request) {
     return withDB(async () => {
         await requireAuth();
 
-        const { id, order } = await req.json();
+        const { id, order } = (await req.json())
 
         if (!id || !Types.ObjectId.isValid(id)) {
             return NextResponse.json(
@@ -215,44 +215,44 @@ export async function PUT(req: Request) {
             );
         }
 
-        const existing = await OrderModel.findById(id);
-        if (!existing) {
+        const updatedOrder = await OrderModel.findByIdAndUpdate(
+            id,
+            { $set: order },
+            { new: true, runValidators: true }
+        );
+        if (!updatedOrder) {
             return NextResponse.json(
                 { message: 'Order not found' },
                 { status: 404 },
             );
         }
 
-        Object.assign(existing, {
-            name: order.name,
-            comment: order.comment,
-            items: order.items,
-            timeslot: order.timeslot,
-            totalPrice: order.totalPrice,
-            status: order.status,
-            isPaid: order.isPaid,
-            finishedAt: order.finishedAt,
-        });
+        await updatedOrder.save();
 
-        await existing.save();
-
-        if (existing.status === ORDER_STATUSES.COMPLETED) {
+        if (updatedOrder.status === ORDER_STATUSES.COMPLETED) {
             await ItemTicketModel.updateMany(
-                { orderId: existing._id },
+                { orderId: updatedOrder._id },
                 {
                     status: TICKET_STATUS.COMPLETED,
                 }
             );
-        } else if (existing.status === ORDER_STATUSES.CANCELLED) {
+        } else if (updatedOrder.status === ORDER_STATUSES.CANCELLED) {
             await ItemTicketModel.updateMany(
-                { orderId: existing._id },
+                { orderId: updatedOrder._id },
                 {
                     orderId: null
                 }
             );
+        } else if (updatedOrder.status === ORDER_STATUSES.ACTIVE) {
+            await ItemTicketModel.updateMany(
+                { orderId: updatedOrder._id },
+                {
+                    status: TICKET_STATUS.READY,
+                }
+            );
         }
 
-        return NextResponse.json(existing);
+        return NextResponse.json(updatedOrder);
     }).catch((err) => {
         console.error('PUT /order error ➜', err);
         return NextResponse.json(

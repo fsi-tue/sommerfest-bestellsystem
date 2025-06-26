@@ -1,7 +1,7 @@
 // api/order/batch
 
 import dbConnect from "@/lib/dbConnect";
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { OrderModel, OrderStatus } from "@/model/order";
 import { NextRequest } from "next/server";
 
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     const { orderIds } = await request.json() as { orderIds: string[] }
 
     // Check if the ID is valid and ObjectId
-    if (!orderIds || orderIds.some(orderId => !mongoose.isValidObjectId(orderId))) {
+    if (!orderIds || orderIds.some(orderId => !Types.ObjectId.isValid(orderId))) {
         return new Response(`
             The ID are not valid.
         `, { status: 400 });

@@ -40,9 +40,8 @@ export async function PUT(req: Request) {
         const { id, status, orderId } = await req.json();
 
         if (!id || !Types.ObjectId.isValid(id)) {
-            console.warn('Invalid order ID', id)
             return NextResponse.json(
-                { message: 'Invalid order ID' },
+                { message: 'Invalid ticket ID' },
                 { status: 400 },
             );
         }
@@ -101,7 +100,8 @@ export async function PUT(req: Request) {
                 status: { $ne: TICKET_STATUS.READY }
             });
 
-            if (notReadyCount === 0) {
+            // 1 because the status is not updated, so we check if n-1 tickets are ready
+            if (notReadyCount <= 1 && existing.orderId) {
                 // All tickets are ready, update the order
                 const order = await OrderModel.findByIdAndUpdate(
                     existing.orderId,
@@ -129,4 +129,41 @@ export async function PUT(req: Request) {
 
         return NextResponse.json(existing);
     });
+}
+
+export async function DELETE(req: Request) {
+    return withDB(async () => {
+        await requireAuth();
+
+        const { id } = await req.json();
+        if (!id || !Types.ObjectId.isValid(id)) {
+            return NextResponse.json(
+                { message: 'Invalid ticket ID' },
+                { status: 400 },
+            );
+        }
+
+        const existing = await ItemTicketModel.findById(id);
+        if (!existing) {
+            return NextResponse.json(
+                { message: 'Ticket not found' },
+                { status: 404 },
+            );
+        }
+
+        // Check if item ticket is already assigned to an order
+        if (existing.orderId !== undefined && existing.orderId !== null) {
+            return NextResponse.json(
+                { message: `Cannot delete ticket because it's assigned to order ${existing.orderId}` },
+                { status: 400 },
+            );
+        }
+
+        await existing.deleteOne()
+
+        return NextResponse.json(
+            { message: 'Ticket deleted successfully' },
+            { status: 200 }
+        );
+    })
 }
