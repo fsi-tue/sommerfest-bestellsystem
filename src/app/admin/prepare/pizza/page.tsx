@@ -66,12 +66,14 @@ const PizzaMakerStation = () => {
         if (!tickets) {
             return [];
         }
+        const searchText = filterText.toLowerCase();
         return tickets.filter(ticket => {
-            const searchText = filterText.toLowerCase();
             return (
-                ticket.itemTypeRef.name.toLowerCase().includes(searchText) ||
-                ticket.orderId?.toString().toLowerCase().includes(searchText) ||
-                ticket.timeslot && timeslotToLocalTime(ticket.timeslot)?.toLowerCase().includes(searchText)
+                ticket.status !== TICKET_STATUS.CANCELLED_WASTE && ticket.status !== TICKET_STATUS.COMPLETED && (
+                    ticket.itemTypeRef.name.toLowerCase().includes(searchText) ||
+                    ticket.orderId?.toString().toLowerCase().includes(searchText) ||
+                    ticket.timeslot && timeslotToLocalTime(ticket.timeslot)?.toLowerCase().includes(searchText)
+                )
             );
         });
     }, [tickets, filterText]);

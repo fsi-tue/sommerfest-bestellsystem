@@ -3,7 +3,7 @@
 import { requireAuth } from "@/lib/auth/serverAuth";
 import { NextResponse } from "next/server";
 import { ItemTicketModel, TICKET_STATUS } from "@/model/ticket";
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { Types } from "mongoose";
 import { ItemModel } from "@/model/item";
 import { ORDER_STATUSES, OrderModel } from "@/model/order";
@@ -21,7 +21,7 @@ export async function GET() {
         await requireAuth();
 
         const itemTickets = await ItemTicketModel.find({})
-            .populate('itemTypeRef');
+            .populate('itemTypeRef').sort({ timeslot: 1 })
 
         return NextResponse.json(itemTickets);
     }).catch((err) => {

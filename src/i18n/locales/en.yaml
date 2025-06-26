@@ -184,7 +184,7 @@ translation:
       ItemTracker:
         title: "Item Tracker"
         beingPrepared: "🔥 Being prepared"
-        readyForAssignment: "✅ Ready for assignment"
+        readyForAssignment: "✅ Ready"
         selectOrderToAssign: "Select order to assign"
         noItemsBeingPrepared: "No items being prepared"
         noReadyItemsAvailable: "No ready items available"

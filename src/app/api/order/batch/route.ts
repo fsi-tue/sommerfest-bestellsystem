@@ -1,6 +1,6 @@
 // api/order/batch
 
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { Types } from "mongoose";
 import { OrderModel, OrderStatus } from "@/model/order";
 import { NextRequest } from "next/server";

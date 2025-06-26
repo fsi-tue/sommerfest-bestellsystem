@@ -1,6 +1,6 @@
 import { Session } from "@/model/session";
 
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { cookies } from "next/headers";
 
 import { cache } from "react";

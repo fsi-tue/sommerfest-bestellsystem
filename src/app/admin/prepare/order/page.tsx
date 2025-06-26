@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo, useState } from 'react';
-import { CheckCircle, Clock, ClockIcon, Pizza, QrCodeIcon, TriangleAlert, XCircle } from 'lucide-react';
+import { CheckCircle, CheckIcon, Clock, ClockIcon, Pizza, QrCodeIcon, TriangleAlert, XCircle } from 'lucide-react';
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemTicketDocumentWithItem, TICKET_STATUS } from '@/model/ticket';
@@ -22,11 +22,9 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
     handleToggleTicket: (ticketId: string) => void;
     selectable?: boolean;
 }) => {
-    const t = useTranslations();
-
     return (
         <div
-            className={`group flex items-center justify-between p-4 rounded-xl  transition-all duration-200 hover:shadow-md ${
+            className={`group flex items-center justify-between p-2 rounded-xl transition-all duration-200 hover:shadow-md ${
                 selectedTickets.has(ticket._id.toString())
                     ? ' bg-blue-50 border-blue-300 shadow-sm'
                     : 'bg-white border-gray-100 hover:border-gray-200'
@@ -44,24 +42,25 @@ const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = 
                 )}
                 <div className="flex flex-col">
                     <span className="font-semibold text-gray-900">{ticket.itemTypeRef.name}</span>
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
-                            #{ticket._id.toString().slice(-6)}
-                        </span>
-                        {ticket.timeslot && (
-                            <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-md">
-                                {timeslotToLocalTime(ticket.timeslot)}
-                            </span>
-                        )}
-                    </div>
                 </div>
             </div>
-            {ticket.orderId && (
-                <span
-                    className="text-xs font-medium  bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full">
+            <div className="flex items-center gap-2 mt-1">
+                {ticket.orderId && (
+                    <span
+                        className="text-xs font-medium  bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full">
                     Order #{ticket.orderId.toString().slice(-6)}
                 </span>
-            )}
+                )}
+                {/* <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
+                    #{ticket._id.toString().slice(-6)}
+                </span> */}
+                {ticket.timeslot && (
+                    <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-md">
+                                {timeslotToLocalTime(ticket.timeslot)}
+                            </span>
+                )}
+
+            </div>
         </div>
     );
 };
@@ -161,14 +160,14 @@ const ItemTracker = ({
                 </h4>
                 <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                     {ticketGroups.active.map(ticket => (
-                        <div key={ticket._id.toString()} className="flex items-center gap-3">
+                        <div key={ticket._id.toString()} className="flex items-center justify-between">
                             <TicketItem ticket={ticket} selectedTickets={selectedTickets}
                                         handleToggleTicket={handleToggleTicket}/>
                             <Button
                                 onClick={() => onMarkReady(ticket._id.toString())}
                                 className=" bg-green-500 hover:from-green-600 hover:to-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap"
                             >
-                                {t('Admin.OrderManager.Actions.markReady')}
+                                <CheckIcon />
                             </Button>
                         </div>
                     ))}
@@ -662,7 +661,7 @@ export default function OrderManagerDashboard() {
                                         isPaid: !order.isPaid
                                     })} onActive={function (): void {
                                     throw new Error('Function not implemented.');
-                                }}                                />
+                                }}/>
                             ))}
                         </div>
                         {filteredOrders.length === 0 && (

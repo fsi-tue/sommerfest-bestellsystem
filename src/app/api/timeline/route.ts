@@ -1,4 +1,4 @@
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { ItemDocument, ItemModel } from "@/model/item";
 import { UTCDate } from "@date-fns/utc";
 import { OrderDocument, OrderModel } from "@/model/order";

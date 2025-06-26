@@ -1,7 +1,7 @@
 // Fill the database
 import { ItemModel } from "@/model/item";
 import { requireAuth } from "@/lib/auth/serverAuth";
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { OrderModel } from "@/model/order";
 import { SystemModel } from "@/model/system";
 import { EditableConfig } from "@/model/config";

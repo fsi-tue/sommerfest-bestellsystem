@@ -1,4 +1,4 @@
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { getSystem, requireAuth } from "@/lib/auth/serverAuth";
 import { UTCDate } from "@date-fns/utc";
 import { SystemDocument, SystemModel } from "@/model/system";

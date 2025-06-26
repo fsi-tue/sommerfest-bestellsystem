@@ -1,4 +1,4 @@
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { Session } from "@/model/session";
 
 import crypto from 'crypto';

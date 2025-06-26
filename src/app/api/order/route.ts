@@ -3,7 +3,7 @@
 import { NextResponse } from 'next/server';
 import { Types } from 'mongoose';
 
-import dbConnect from '@/lib/dbConnect';
+import dbConnect from '@/lib/db';
 import { requireActiveSystem, requireAuth } from '@/lib/auth/serverAuth';
 import { ORDER_STATUSES, OrderModel, SimpleOrder } from '@/model/order';
 import { ItemModel } from '@/model/item';

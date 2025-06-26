@@ -1,10 +1,9 @@
-// api/order/deliver/route.ts
-
-import { ORDER_STATUSES, OrderModel } from "@/model/order";
-import { NextResponse } from "next/server";
-import { Types } from "mongoose";
-import { ItemTicketModel, TICKET_STATUS } from "@/model/ticket";
-import dbConnect from "@/lib/dbConnect";
+// app/api/deliver/route.ts
+import { NextResponse } from 'next/server';
+import { Types } from 'mongoose';
+import { ORDER_STATUSES, OrderModel } from '@/model/order'; // [[13]]
+import { ItemTicketModel, TICKET_STATUS } from '@/model/ticket';
+import dbConnect from "@/lib/db";
 
 const dbReady = dbConnect();
 
@@ -13,125 +12,126 @@ const withDB = async <T>(fn: () => Promise<T>) => {
     return fn();
 };
 
+
 export async function POST(req: Request) {
     return withDB(async () => {
-        let { id, ignoreTickets } = await req.json();
+            const { id, ignoreTickets } = await req.json();
+            const forceIgnore = !!ignoreTickets;
 
-        ignoreTickets ??= false;
-        console.log(ignoreTickets);
-
-        if (!id || !Types.ObjectId.isValid(id)) {
-            return NextResponse.json(
-                { message: 'Invalid order ID' },
-                { status: 400 }
-            );
-        }
-
-        // 1. Find the order by id
-        const order = await OrderModel.findById(id);
-        if (!order) {
-            return NextResponse.json(
-                { message: 'Order not found' },
-                { status: 404 }
-            );
-        }
-
-        if (order.status === ORDER_STATUSES.COMPLETED || order.status === ORDER_STATUSES.CANCELLED) {
-            return NextResponse.json(
-                { message: 'Order is already completed or cancelled' },
-                { status: 400 }
-            );
-        }
-
-        // 2. Get all items of order
-        const requiredItems = new Map<string, number>();
-        order.items.forEach(item => {
-            const typeId = item._id.toString();
-            requiredItems.set(typeId, (requiredItems.get(typeId) ?? 0) + 1);
-        });
-
-        // 3. Get tickets for delivery
-        const ticketsToDeliver = [];
-
-        for (const [itemTypeId, requiredCount] of requiredItems.entries()) {
-            // 3.1 First get already assigned tickets for this order
-            const assignedTickets = await ItemTicketModel.find({
-                itemTypeRef: itemTypeId,
-                orderId: order._id,
-                status: TICKET_STATUS.READY
-            }).sort({ timeslot: 1, createdAt: 1 });
-
-            ticketsToDeliver.push(...assignedTickets);
-            let remainingNeeded = requiredCount - assignedTickets.length;
-
-            // 3.2 If we need more, get ready unassigned tickets
-            // But we want to make sure that no tickets are in the pipeline!
-            if (remainingNeeded <= 0) {
-                continue;
+            if (!id || !Types.ObjectId.isValid(id)) {
+                return NextResponse.json({ message: 'Invalid order ID' }, { status: 400 });
             }
-            const readyUnassignedTickets = await ItemTicketModel.find({
-                itemTypeRef: itemTypeId,
-                status: TICKET_STATUS.READY,
-                orderId: null
-            })
-                .sort({ timeslot: 1, createdAt: 1 })
-                .limit(remainingNeeded);
-            ticketsToDeliver.push(...readyUnassignedTickets);
-            remainingNeeded -= readyUnassignedTickets.length;
 
-            if (remainingNeeded <= 0) {
-                continue;
+            const order = await OrderModel.findById(id);
+            if (!order) {
+                return NextResponse.json({ message: 'Order not found' }, { status: 404 });
             }
-            const activeTickets = await ItemTicketModel.find({
-                itemTypeRef: itemTypeId,
-                status: TICKET_STATUS.ACTIVE,
-                orderId: null
-            })
-                .sort({ timeslot: 1, createdAt: 1 })
-                .limit(remainingNeeded);
-            ticketsToDeliver.push(...activeTickets);
-            remainingNeeded -= activeTickets.length;
-            if (remainingNeeded > 0 && !ignoreTickets) {
+
+            if (
+                order.status === ORDER_STATUSES.COMPLETED ||
+                order.status === ORDER_STATUSES.CANCELLED
+            ) {
                 return NextResponse.json(
-                    { message: `Not enough tickets available for item type ${itemTypeId}` },
+                    { message: 'Order is already completed or cancelled' },
                     { status: 400 }
                 );
             }
-        }
 
-        // 4. Unassign all the tickets
-        await ItemTicketModel.updateMany(
-            { orderId: order._id },
-            {
-                orderId: null
+            const required = new Map<string, number>();
+            order.items.forEach(item => {
+                const itemTypeId = item._id.toString();
+                required.set(itemTypeId, (required.get(itemTypeId) ?? 0) + 1);
+            });
+
+            try {
+                const ticketsToDeliver: typeof ItemTicketModel.schema['methods'] = [];
+
+                for (const [itemTypeId, requiredCount] of required.entries()) {
+                    /* 3.1 Already assigned tickets (READY or ACTIVE) */
+                    const alreadyAssigned = await ItemTicketModel.find({
+                        itemTypeRef: itemTypeId,
+                        orderId: order._id,
+                        status: { $in: [TICKET_STATUS.READY, TICKET_STATUS.ACTIVE] }
+                    }).sort({ timeslot: 1, createdAt: 1 }).limit(requiredCount)
+
+                    const readyAssigned = alreadyAssigned.filter(
+                        t => t.status === TICKET_STATUS.READY
+                    );
+                    const activeAssigned = alreadyAssigned.length - readyAssigned.length;
+
+                    ticketsToDeliver.push(...readyAssigned);
+
+                    let remaining = requiredCount - readyAssigned.length - activeAssigned;
+
+                    /* 3.2 Pull READY, unassigned tickets if still needed */
+                    if (remaining > 0) {
+                        const readyUnassigned = await ItemTicketModel.find({
+                            itemTypeRef: itemTypeId,
+                            status: TICKET_STATUS.READY,
+                            orderId: null
+                        })
+                            .sort({ timeslot: 1, createdAt: 1 })
+                            .limit(remaining);
+
+                        ticketsToDeliver.push(...readyUnassigned);
+                        remaining -= readyUnassigned.length;
+                    }
+
+                    /* 3.3 Abort if shortage and client did not allow it */
+                    if (remaining > 0 && !forceIgnore) {
+                        throw new Error(
+                            `Not enough ready tickets available for item type ${itemTypeId}`
+                        );
+                    }
+                }
+
+                /* 3.4 Final invariant */
+                if (!forceIgnore && ticketsToDeliver.length !== order.items.length) {
+                    throw new Error('Could not satisfy full order');
+                }
+
+                /* 3.5 Unassign all tickets of this order that are NOT going to be delivered */
+                await ItemTicketModel.updateMany(
+                    {
+                        orderId: order._id,
+                        _id: { $nin: ticketsToDeliver.map(t => t._id) }
+                    },
+                    { $set: { orderId: null } },
+                );
+
+                /* 3.6 Mark deliverable tickets as COMPLETED (idempotent / race-safe) */
+                const updates = ticketsToDeliver.map(t =>
+                    ItemTicketModel.updateOne(
+                        { _id: t._id },
+                        { $set: { orderId: order._id, status: TICKET_STATUS.COMPLETED } },
+                    )
+                );
+                await Promise.all(updates);
+
+                /* 3.7 Complete the order */
+                order.status = ORDER_STATUSES.COMPLETED;
+                order.finishedAt = new Date();
+                await order.save();
+
+                const refreshed = await OrderModel.findById(id);
+                return NextResponse.json(refreshed);
+            } catch (err: any) {
+
+                // Domain‐level shortage error
+                if (err.message?.startsWith('Not enough')) {
+                    return NextResponse.json({ message: err.message }, { status: 400 });
+                }
+                if (err.message?.startsWith('Could not satisfy')) {
+                    return NextResponse.json({ message: err.message }, { status: 409 });
+                }
+
+                // Anything else → 500
+                console.error('POST /deliver error ➜', err);
+                return NextResponse.json(
+                    { message: 'There was an internal error' },
+                    { status: 500 }
+                );
             }
-        );
-
-        // 4.1 Reassign and update all tickets
-        const ticketUpdatePromises = ticketsToDeliver.map(ticket =>
-            ItemTicketModel.findByIdAndUpdate(
-                ticket._id,
-                {
-                    status: TICKET_STATUS.COMPLETED,
-                    orderId: order._id
-                },
-                { new: true }
-            )
-        );
-
-        await Promise.all(ticketUpdatePromises);
-
-        // 5. Mark order as completed
-        order.status = ORDER_STATUSES.COMPLETED;
-        order.finishedAt = new Date();
-        await order.save();
-
-        return NextResponse.json(order);
-    }).catch((err) => {
-        console.error('POST /deliver error ➜', err);
-        return NextResponse.json(
-            { message: err.message ?? 'There was an error on our side' },
-            { status: 500 },
-        );
-    });
+        }
+    );
 }

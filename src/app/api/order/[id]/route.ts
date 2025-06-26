@@ -1,6 +1,6 @@
 // api/order/[id]
 
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { OrderModel } from "@/model/order";
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "bson";

@@ -1,7 +1,7 @@
 // api/pizza
 
 import { ItemModel } from "@/model/item";
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { requireAuth } from "@/lib/auth/serverAuth";
 import { NextResponse } from "next/server";
 

@@ -1,6 +1,6 @@
 // api/order/[id]/cancel
 
-import dbConnect from "@/lib/dbConnect";
+import dbConnect from "@/lib/db";
 import { ORDER_STATUSES, OrderModel } from "@/model/order";
 import { NextRequest } from "next/server";
 import { ObjectId } from "bson";

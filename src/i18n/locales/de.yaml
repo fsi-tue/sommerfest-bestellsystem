@@ -184,7 +184,7 @@ translation:
       ItemTracker:
         title: "Artikel-Tracker"
         beingPrepared: "🔥 In Zubereitung"
-        readyForAssignment: "✅ Bereit zur Zuweisung"
+        readyForAssignment: "✅ Bereit"
         selectOrderToAssign: "Bestellung zur Zuweisung auswählen"
         noItemsBeingPrepared: "Keine Artikel in Zubereitung"
         noReadyItemsAvailable: "Keine fertigen Artikel verfügbar"
