@@ -44,7 +44,7 @@ translation:
 
     suspense:
       loading: Bestellung wird geladen...
-    show_at_pickup: Zeige diese Seite bei der Abholung vor
+    show_at_pickup: Zeige diese Seite bei der Abholung vor.
     thank_you:
       qr:
         title: Danke für deine Bestellung! 🍕

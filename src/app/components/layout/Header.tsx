@@ -25,7 +25,7 @@ const Header = () => {
     const headerEmoji = "🍕";
 
     return (
-        <header className="sticky top-0 bg-white shadow z-10 rounded-2xl p-2 md:p-4 mb-5 w-full">
+        <header className="sticky top-0 bg-white shadow z-20 rounded-2xl p-2 md:p-4 mb-5 w-full">
             <div className="container mx-auto flex justify-between items-center px-2 md:px-4 py-4">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
                     <a href={`/`}>

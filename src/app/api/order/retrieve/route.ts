@@ -45,7 +45,7 @@ export async function POST(req: Request) {
             );
 
             /* 1.7. Complete the order */
-            order.status = ORDER_STATUSES.ACTIVE;
+            order.status = ORDER_STATUSES.READY_FOR_PICKUP;
             order.finishedAt = undefined;
             await order.save();
 
