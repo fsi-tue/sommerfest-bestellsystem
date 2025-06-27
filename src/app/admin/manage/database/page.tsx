@@ -27,15 +27,17 @@ export default function ManagePage() {
             return;
         }
 
-        fetch('/api/system/reset', {
-            method: 'POST',
-            credentials: 'include',
-        })
-            .then(() => setMessage('Database prepared'))
-            .catch((error) => {
-                console.error('Error preparing database', error);
-                setMessage(error => error)
+        if (window.confirm(`Are you sure you want to RESET the database? THIS ACTION IS NOT REVERSIBLE!!`)) {
+            fetch('/api/system/reset', {
+                method: 'POST',
+                credentials: 'include',
             })
+                .then(() => setMessage('Database prepared'))
+                .catch((error) => {
+                    console.error('Error preparing database', error);
+                    setMessage(error => error)
+                })
+        }
     }
 
     const { data, error, isFetching } = useSystem();
@@ -98,7 +100,7 @@ export default function ManagePage() {
             <Heading
                 title={t('Admin.Manage.Database.title')}
                 description={message}
-                icon={<Database className="size-10 text-blue-600"/>}
+                icon={<Database className="size-10 text-primary-600"/>}
             />
 
             <div className="max-w-4xl mx-auto p-6">
@@ -129,14 +131,6 @@ export default function ManagePage() {
 
                         {/* Action Buttons */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Button
-                                onClick={resetSystem}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 bg-slate-200 text-slate-700 hover:bg-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-200"
-                                disabled={!enableChanges}
-                            >
-                                {t('Admin.Manage.Database.Actions.reset_database')}
-                            </Button>
-
                             {data && (
                                 <Button
                                     className={`inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
@@ -170,7 +164,7 @@ export default function ManagePage() {
                                             name="systemMessage"
                                             value={systemMessage}
                                             placeholder={t('Admin.Manage.Database.Actions.enterSystemMessage')}
-                                            className="w-full px-4 py-3 pl-11 text-sm bg-white border-2 border-slate-300 rounded-2xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 placeholder-slate-400"
+                                            className="w-full px-4 py-3 pl-11 text-sm bg-white border-2 border-slate-300 rounded-2xl shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-slate-400 placeholder-slate-400"
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSystemMessage(e.target.value)}
                                         />
                                         <div
@@ -211,7 +205,7 @@ export default function ManagePage() {
                             </h3>
                             <Button
                                 onClick={saveConfig}
-                                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-medium transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-medium transition-all duration-200 bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                             >
                                 {t('Admin.Manage.Database.Actions.saveConfig')}
                             </Button>
@@ -223,7 +217,7 @@ export default function ManagePage() {
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                             setConfigData(e.target.value);
                         }}
-                        className="w-full h-80 p-4 text-sm font-mono bg-slate-900 text-slate-100 rounded-2xl border-2 border-slate-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                        className="w-full h-80 p-4 text-sm font-mono bg-slate-900 text-slate-100 rounded-2xl border-2 border-slate-300 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder-slate-400"
                         placeholder="Enter your JSON configuration here..."
                         spellCheck={false}
                     />
@@ -236,6 +230,15 @@ export default function ManagePage() {
                         <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-xl border-2 border-slate-200">
                             {t('Admin.Manage.Database.ConfigurationEditor.disclaimer')}
                         </div>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <Button
+                            onClick={resetSystem}
+                            className="inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition-all duration-200 bg-slate-200 text-slate-700 hover:bg-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-200"
+                            disabled={!enableChanges}
+                        >
+                            {t('Admin.Manage.Database.Actions.reset_database')}
+                        </Button>
                     </div>
                 </div>
             </div>

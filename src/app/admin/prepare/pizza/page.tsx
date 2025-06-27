@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Clock, Trash2 } from 'lucide-react';
 import { Heading } from "@/app/components/layout/Heading";
 import { useTranslations } from 'next-intl';
-import { timeslotToDate, timeslotToLocalTime } from "@/lib/time";
+import { formatDateTime, timeslotToDate, timeslotToLocalTime } from "@/lib/time";
 import { useItems } from "@/lib/fetch/item";
 import { Loading } from "@/app/components/Loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -232,13 +232,14 @@ const PizzaMakerStation = () => {
                             let border = ''
 
                             if (ticket.status === TICKET_STATUS.DEMANDED) {
-                                color = 'gray'
+                                color = 'bg-gray-200'
+                                border = 'border-orange-300'
                             } else {
-                                border = 'green'
+                                border = 'border-green-500'
                             }
 
                             if (selectedTickets.has(ticket._id.toString())) {
-                                border = 'primary'
+                                border = 'border-primary-500'
                             }
 
                             return (
@@ -249,15 +250,19 @@ const PizzaMakerStation = () => {
                                     border={border}
                                     className="px-4 py-3 rounded-xl text-base flex items-center justify-between"
                                 >
-                                    <div className="flex flex-col">
+                                    <div className="flex flex-col items-start">
                                         <span className="font-semibold">{ticket.itemTypeRef.name}</span>
                                         {ticket?.orderId && (
                                             <span
                                                 className="text-sm text-gray-500">Order: {ticket.orderId.toString().slice(-6)}</span>
                                         )}
+                                        {ticket.updatedAt && (
+                                            <span
+                                                className="text-sm text-gray-500">Last updated: {formatDateTime(ticket.updatedAt, true)}</span>
+                                        )}
                                     </div>
                                     {ticket.timeslot && (
-                                        <span className="bg-gray-100 py-1 px-3 rounded-full text-sm font-medium">
+                                        <span className="bg-gray-100 py-1 px-3 rounded-md text-sm font-medium">
                                             {timeslotToLocalTime(ticket.timeslot)}
                                         </span>
                                     )}

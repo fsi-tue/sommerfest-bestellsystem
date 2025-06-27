@@ -1,4 +1,4 @@
-import { setHours, setMilliseconds, setMinutes, setSeconds } from "date-fns";
+import { format, setHours, setMilliseconds, setMinutes, setSeconds } from "date-fns";
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { UTCDate } from "@date-fns/utc";
 
@@ -16,21 +16,20 @@ export interface TimeSlot {
  * Get the current time slot
  * @param {Date} date
  */
-export const formatDateTime = (date: Date) => {
+export const formatDateTime = (date: Date, isUTC = false) => {
     if (!date) {
-        return ''
+        return '';
     }
 
-    const options: any = {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: false // "AM/PM"
-    };
+    const formatString = 'dd.MM.yy HH:mm';
 
-    return date.toLocaleString('de-DE', options);
+    if (isUTC) {
+        // Convert UTC date to local timezone
+        return formatInTimeZone(date, Intl.DateTimeFormat().resolvedOptions().timeZone, formatString);
+    } else {
+        // Already in local time
+        return format(date, formatString);
+    }
 };
 
 /**

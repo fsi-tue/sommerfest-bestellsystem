@@ -120,9 +120,9 @@ export default function ClientOrderPage({ orderId }: { orderId: string }) {
                 </h1>
 
                 {order.status !== 'cancelled' && (
-                    <div className="bg-blue-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
+                    <div className="bg-primary-50 rounded-2xl p-6 mb-6 max-w-sm mx-auto">
                         <p className="text-sm text-gray-600 mb-1">{t('OrderStatus.status.ready_by')}</p>
-                        <p className="text-3xl font-light text-blue-600">
+                        <p className="text-3xl font-light text-primary-600">
                             {timeslotToLocalTime(formatDate(timeslotToUTCDate(order.timeslot), 'HH:mm'))}
                         </p>
                         <p className="text-sm text-gray-600">

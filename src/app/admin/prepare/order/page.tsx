@@ -15,7 +15,7 @@ import {
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { ORDER_STATUSES, OrderDocument } from '@/model/order';
 import { ItemTicketDocumentWithItem, TICKET_STATUS } from '@/model/ticket';
-import { timeslotToLocalTime } from '@/lib/time';
+import { formatDateTime, timeslotToLocalTime } from '@/lib/time';
 import SearchInput from '@/app/components/SearchInput';
 import Button from '@/app/components/Button';
 import { Heading } from "@/app/components/layout/Heading";
@@ -25,49 +25,64 @@ import { useOrders } from "@/lib/fetch/order";
 import { useTickets } from "@/lib/fetch/ticket";
 import { useTranslations } from "next-intl";
 
-const TicketItem = ({ ticket, selectedTickets, handleToggleTicket, selectable = false }: {
+const TicketItem = ({
+                        ticket,
+                        selectedTickets,
+                        handleToggleTicket,
+                        selectable = false,
+                        children
+                    }: {
     selectedTickets: Set<string>,
     ticket: ItemTicketDocumentWithItem;
     handleToggleTicket: (ticketId: string) => void;
     selectable?: boolean;
+    children?: React.ReactNode;
 }) => {
+    const isSelected = selectedTickets.has(ticket._id.toString());
+
+    // Dynamic styling based on selection state
+    const getButtonStyles = () => {
+        if (selectable && isSelected) {
+            return "bg-primary-50 border-primary-300 text-primary-900";
+        }
+        return "bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50";
+    };
+
     return (
         <div
-            className={`group flex items-center justify-between p-2 rounded-xl transition-all duration-200 ${
-                selectedTickets.has(ticket._id.toString())
-                    ? ' bg-blue-50 border-blue-300 shadow-sm'
-                    : 'bg-white border-gray-100 hover:border-gray-200'
-            }`}>
+            className={`w-full px-4 py-3 rounded-xl text-base border-2 transition-all duration-200 flex items-center justify-between ${getButtonStyles()}`}>
             <div className="flex items-center gap-3">
                 {selectable && (
                     <div className="relative">
                         <input
                             type="checkbox"
-                            checked={selectedTickets.has(ticket._id.toString())}
+                            checked={isSelected}
                             onChange={() => handleToggleTicket(ticket._id.toString())}
-                            className="w-5 h-5 rounded-md  border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 transition-colors"
+                            className="w-5 h-5 rounded-md border-gray-300 text-primary-600 focus:ring-primary-500 focus:ring-2 transition-colors"
                         />
                     </div>
                 )}
                 <div className="flex flex-col">
-                    <span className="font-semibold text-gray-900">{ticket.itemTypeRef.name}</span>
+                    <div className="flex flex-row items-center justify-between gap-2 mb-2">
+                        <span className="font-semibold">{ticket.itemTypeRef.name}</span>
+                        {ticket.timeslot && (
+                            <span className="text-sm bg-gray-100 text-gray-800 py-1 px-2 rounded-md">
+                                    {timeslotToLocalTime(ticket.timeslot)}
+                                </span>
+                        )}
+                    </div>
+                    <div className="flex gap-2 items-center">
+                        {ticket?.orderId && (
+                            <span
+                                className="text-sm bg-primary-100 text-primary-800 py-1 px-2 rounded-md">Order: {ticket.orderId.toString().slice(-6)}</span>
+                        )}
+                        {ticket.updatedAt && (
+                            <span
+                                className="text-sm bg-gray-100 text-gray-800 py-1 px-2 rounded-md">Updated: {formatDateTime(ticket.updatedAt, true)}</span>
+                        )}
+                        {children}
+                    </div>
                 </div>
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-                {ticket.orderId && (
-                    <span
-                        className="text-xs font-medium  bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full">
-                    Order #{ticket.orderId.toString().slice(-6)}
-                </span>
-                )}
-                {/* <span className="text-xs font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
-                    #{ticket._id.toString().slice(-6)}
-                </span> */}
-                {ticket.timeslot && (
-                    <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-md">
-                                {timeslotToLocalTime(ticket.timeslot)}
-                            </span>
-                )}
 
             </div>
         </div>
@@ -145,16 +160,16 @@ const ItemTracker = ({
                     <div className="flex gap-3">
                         <Button
                             onClick={() => setAssignMode(!assignMode)}
-                            color="primary"
-                            textColor="white"
+                            color="bg-primary-500"
+                            textColor="text-white"
                             className="font-medium"
                         >
                             {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder', { count: selectedTickets.size })}
                         </Button>
                         <Button
                             onClick={() => setSelectedTickets(new Set())}
-                            color="gray"
-                            textColor="white"
+                            color="bg-gray-500"
+                            textColor="text-white"
                             className="font-medium"
                         >
                             {t('Admin.OrderManager.Actions.clear')}
@@ -164,7 +179,7 @@ const ItemTracker = ({
             </div>
 
             {/* Active tickets */}
-            <div className=" bg-orange-50  border-orange-200 rounded-2xl p-6 shadow-sm">
+            <div className=" bg-orange-50  border-orange-200 rounded-2xl p-4 shadow-sm">
                 <h4 className="font-bold mb-4 text-orange-700 flex items-center gap-2 text-lg">
                     {t('Admin.OrderManager.ItemTracker.beingPrepared')}
                     <span className="bg-orange-200 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -175,15 +190,16 @@ const ItemTracker = ({
                     {ticketGroups.active.map(ticket => (
                         <div key={ticket._id.toString()} className="flex items-center justify-between">
                             <TicketItem ticket={ticket} selectedTickets={selectedTickets}
-                                        handleToggleTicket={handleToggleTicket}/>
-                            <Button
-                                onClick={() => onMarkReady(ticket._id.toString())}
-                                color="green"
-                                textColor="white"
-                                className="font-medium"
-                            >
-                                <CheckIcon/>
-                            </Button>
+                                        handleToggleTicket={handleToggleTicket}>
+                                <Button
+                                    onClick={() => onMarkReady(ticket._id.toString())}
+                                    color="bg-green-500"
+                                    textColor="text-white"
+                                    className="font-medium"
+                                >
+                                    <CheckIcon/>
+                                </Button>
+                            </TicketItem>
                         </div>
                     ))}
                     {ticketGroups.active.length === 0 && (
@@ -195,7 +211,7 @@ const ItemTracker = ({
             </div>
 
             {/* Ready tickets (unassigned) */}
-            <div className=" bg-green-50  border-green-200 rounded-2xl p-6 shadow-sm">
+            <div className=" bg-green-50  border-green-200 rounded-2xl p-4 shadow-sm">
                 <h4 className="font-bold mb-4 text-green-700 flex items-center gap-2 text-lg">
                     {t('Admin.OrderManager.ItemTracker.readyForAssignment')}
                     <span className="bg-green-200 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -222,13 +238,13 @@ const ItemTracker = ({
             {/* Order assignment panel */}
             {assignMode && selectedTickets.size > 0 && (
                 <div
-                    className="bg-blue-50  border-blue-300 rounded-2xl p-6 shadow-lg animate-in slide-in-from-top duration-300">
-                    <h4 className="font-bold mb-4 text-blue-800 text-lg">{t('Admin.OrderManager.ItemTracker.selectOrderToAssign')}</h4>
+                    className="bg-primary-50  border-primary-300 rounded-2xl p-4 shadow-lg animate-in slide-in-from-top duration-300">
+                    <h4 className="font-bold mb-4 text-primary-800 text-lg">{t('Admin.OrderManager.ItemTracker.selectOrderToAssign')}</h4>
                     <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                         {compatibleOrders.map(order => (
                             <Button
                                 key={order._id.toString()}
-                                color="white"
+                                color="bg-white"
                                 className="flex items-center w-full rounded-xl border-gray-100 group"
                                 onClick={() => handleAssign(order._id.toString())}
                             >
@@ -309,36 +325,33 @@ const OrderCard = ({ order, tickets, onDeliver, onRetrieve, onTogglePaid }: {
     const isActive = order.status !== ORDER_STATUSES.COMPLETED && order.status !== ORDER_STATUSES.CANCELLED;
 
     return (
-        <div className={`bg-white rounded-2xl  p-6 shadow-sm transition-all duration-200 ${
-            !order.isPaid
-                ? 'border-red-300  bg-red-50'
-                : canDeliver
-                    ? 'border-green-300  bg-green-50'
-                    : 'border-gray-200'
-        }`}>
+        <div
+            className={`bg-white rounded-2xl  p-4 shadow-sm transition-all duration-200 ${order.isPaid && canDeliver ? 'border-green-300  bg-green-50' : ''} ${!order.isPaid && canDeliver ? 'border-red-300  bg-red-50' : 'border-gray-200'}`}>
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="font-bold text-xl text-gray-900 mb-1">{order.name}</h3>
+                    <h3 className="font-bold text-lg text-gray-900 mb-1">{order.name}</h3>
                     <p className="text-sm font-mono bg-gray-100 text-gray-600 px-2 py-1 rounded-md w-fit">
                         #{order._id.toString().slice(-6)}
                     </p>
                 </div>
-                <div className="flex flex-row gap-2 items-end">
+                <div className="flex flex-row justify-start gap-2">
                     {!order.isPaid && (
                         <div
-                            className=" bg-red-100 text-red-800 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
+                            className=" bg-red-100 text-red-800 text-sm px-2 py-1 rounded-md flex items-center gap-2 font-medium">
                             <TriangleAlert className="w-4 h-4"/>
                             {t('Admin.OrderManager.Orders.notPaid')}
                         </div>
                     )}
-                    <div
-                        className=" bg-gray-100 text-gray-700 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
-                        <ClockIcon className="w-4 h-4"/>
-                        {timeslotToLocalTime(order.timeslot)}
-                    </div>
-                    <div
-                        className=" bg-gray-100 text-gray-700 text-sm px-3 py-2 rounded-xl flex items-center gap-2 font-medium">
-                        {order.status}
+                    <div className="flex flex-col md:flex-row gap-2 items-end">
+                        <div
+                            className=" bg-gray-100 text-gray-700 text-sm px-2 py-1 rounded-md flex items-center gap-2 font-medium">
+                            <ClockIcon className="w-4 h-4"/>
+                            {timeslotToLocalTime(order.timeslot)}
+                        </div>
+                        <div
+                            className=" bg-gray-100 text-gray-700 text-sm px-2 py-1 rounded-md flex items-center gap-2 font-medium">
+                            {order.status}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -380,8 +393,8 @@ const OrderCard = ({ order, tickets, onDeliver, onRetrieve, onTogglePaid }: {
                     <>
                         <Button
                             onClick={() => onDeliver(ignoreTickets)}
-                            color={canDeliver ? 'green' : 'gray'}
-                            textColor="white"
+                            color={canDeliver ? 'bg-green-500' : 'bg-gray-500'}
+                            textColor="text-white"
                             className="flex-1 py-3 flex items-center justify-center gap-2 font-medium"
                             disabled={!canDeliver && !ignoreTickets}
                         >
@@ -394,7 +407,7 @@ const OrderCard = ({ order, tickets, onDeliver, onRetrieve, onTogglePaid }: {
                                 type="checkbox"
                                 checked={ignoreTickets}
                                 onChange={() => setIgnoreTickets(!ignoreTickets)}
-                                className="w-4 h-4 rounded  border-gray-300 text-blue-600 focus:ring-blue-500"
+                                className="w-4 h-4 rounded  border-gray-300 text-primary-600 focus:ring-primary-500"
                             />
                             <span className="text-xs text-gray-600">{t('Admin.OrderManager.Actions.force')}</span>
                         </div>
@@ -404,8 +417,8 @@ const OrderCard = ({ order, tickets, onDeliver, onRetrieve, onTogglePaid }: {
                 {!isActive && (
                     <Button
                         onClick={() => onRetrieve()}
-                        color="red"
-                        textColor="white"
+                        color="bg-red-500"
+                        textColor="text-white"
                         className="flex-1 py-3 flex items-center justify-center gap-2 font-medium"
                     >
                         <Undo2 className="w-5 h-5"/>
@@ -418,7 +431,7 @@ const OrderCard = ({ order, tickets, onDeliver, onRetrieve, onTogglePaid }: {
                     className={`px-4 py-3 rounded-xl font-bold transition-all duration-200 ${
                         order.isPaid
                             ? 'bg-green-200 text-green-800 hover:bg-green-300'
-                            : 'bg-red-200 text-red-800 hover:bg-red-300'
+                            : 'bg-red-100 text-red-800 hover:bg-red-300'
                     }`}
                 >
                     {order.totalPrice}€
@@ -441,7 +454,7 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
     return (
         <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl animate-in zoom-in-95 duration-200">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-gray-900">Scan Order QR</h3>
                     <Button
@@ -632,8 +645,8 @@ export default function OrderManagerDashboard() {
         <>
             <Heading
                 title={t('Admin.OrderManager.title')}
-                description={t('Admin.OrderManager.description')}
                 icon={<Pizza className="w-8 h-8 text-orange-500"/>}
+                sticky={true}
             >
                 <div className="flex gap-3 items-center">
                     <SearchInput
@@ -651,7 +664,7 @@ export default function OrderManagerDashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="lg:col-span-1">
-                    <div className="bg-white rounded-2xl p-6 shadow-sm  border-gray-100 sticky top-4">
+                    <div className="bg-white rounded-2xl p-4 shadow-sm  border-gray-100 sticky top-4">
                         <ItemTracker
                             tickets={tickets}
                             orders={orders}
@@ -667,23 +680,23 @@ export default function OrderManagerDashboard() {
                 {/* Orders */}
                 <div className="lg:col-span-1">
                     <div className="space-y-6">
-                        <div className="flex items-center gap-3 bg-white rounded-2xl p-6 shadow-sm  border-gray-100">
+                        <div className="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm  border-gray-100">
                             <Button
-                                color={tab === 'active' ? 'primary' : 'white'}
-                                textColor={tab === 'active' ? 'white' : 'black'}
+                                color={tab === 'active' ? 'bg-primary-500' : 'bg-white'}
+                                textColor={tab === 'active' ? 'text-white' : 'text-black'}
                                 border="primary"
                                 onClick={() => setTab('active')}>
                                 {t('Admin.OrderManager.Orders.activeOrders')}
                             </Button>
                             <Button
-                                color={tab === 'completed' ? 'primary' : 'white'}
-                                textColor={tab === 'completed' ? 'white' : 'black'}
+                                color={tab === 'completed' ? 'bg-primary-500' : 'bg-white'}
+                                textColor={tab === 'completed' ? 'text-white' : 'text-black'}
                                 border="primary"
                                 onClick={() => setTab('completed')}>
                                 {t('Admin.OrderManager.Orders.completedOrders')}
                             </Button>
                         </div>
-                        <div className=" bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium w-fit">
+                        <div className=" bg-primary-100 text-primary-800 text-sm px-3 py-1 rounded-full font-medium w-fit">
                             {filteredOrders.length}
                         </div>
                         <div className="space-y-4">

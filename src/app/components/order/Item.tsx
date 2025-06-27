@@ -98,7 +98,7 @@ interface AddButtonProps {
 }
 
 const AddButton = ({ isInCart, itemCount, itemName, itemPrice, onAddItem }: AddButtonProps) => {
-    const baseClasses = "relative font-semibold px-5 py-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 min-w-[110px] text-sm transform active:scale-95 overflow-hidden"
+    const baseClasses = "relative font-semibold px-5 py-3 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 min-w-[110px] text-sm transform active:scale-95 overflow-hidden"
 
     const variantClasses = !isInCart
         ? "bg-white text-primary-700 hover:text-primary-800 hover:bg-primary-50 before:absolute before:inset-0 before:p-[2px] before:bg-gradient-to-r before:from-primary-400 before:via-orange-500 before:to-yellow-500 hover:before:from-primary-500 hover:before:via-orange-600 hover:before:to-red-600 before:rounded-xl before:transition-all before:duration-300 after:absolute after:inset-[2px] after:bg-white hover:after:bg-primary-50 after:rounded-[10px] after:transition-all after:duration-300"
