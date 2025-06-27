@@ -204,6 +204,7 @@ translation:
         assignToOrder: "Bestellung zuweisen ({count})"
         cancel: "Abbrechen"
         clear: "Leeren"
+        delete: "Löschen ({count})"
         markReady: "Als fertig markieren"
         deliverOrder: "Bestellung ausliefern"
         retrieveOrder: "Bestellung zurückziehen"

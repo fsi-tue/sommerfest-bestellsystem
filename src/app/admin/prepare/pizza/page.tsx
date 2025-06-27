@@ -169,6 +169,7 @@ const PizzaMakerStation = () => {
         }
     };
 
+    // @ts-ignore
     return (
         <>
             <Heading
@@ -218,13 +219,15 @@ const PizzaMakerStation = () => {
 
                     {/* Tickets List */}
                     <div className="flex flex-col gap-3 max-h-[20rem] lg:max-h-[30rem] overflow-y-auto">
-                        {filteredTickets.toSorted((a, b) => {
+                        {filteredTickets.toSorted((a: ItemTicketDocumentWithItem, b: ItemTicketDocumentWithItem) => {
                             if (a.status === TICKET_STATUS.DEMANDED && b.status === TICKET_STATUS.DEMANDED) {
                                 return (timeslotToDate(a.timeslot)?.getTime() || 0) - (timeslotToDate(b.timeslot)?.getTime() || 0)
                             } else if (a.status === TICKET_STATUS.DEMANDED) {
                                 return -1
                             } else if (b.status === TICKET_STATUS.DEMANDED) {
                                 return 1
+                            } else if (a.updatedAt && b.updatedAt) {
+                                return (new Date(b.updatedAt)?.getTime() ?? 0) - (new Date(a.updatedAt)?.getTime() ?? 0)
                             }
                             return (timeslotToDate(a.timeslot)?.getTime() || 0) - (timeslotToDate(b.timeslot)?.getTime() || 0)
                         }).map(ticket => {

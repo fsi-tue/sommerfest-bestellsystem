@@ -22,8 +22,10 @@ import { Heading } from "@/app/components/layout/Heading";
 import { Loading } from "@/app/components/Loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrders } from "@/lib/fetch/order";
-import { useTickets } from "@/lib/fetch/ticket";
+import { deleteTicket, useTickets } from "@/lib/fetch/ticket";
 import { useTranslations } from "next-intl";
+import ErrorMessage from "@/app/components/ErrorMessage";
+import { assign } from "next/dist/shared/lib/router/utils/querystring";
 
 const TicketItem = ({
                         ticket,
@@ -40,7 +42,6 @@ const TicketItem = ({
 }) => {
     const isSelected = selectedTickets.has(ticket._id.toString());
 
-    // Dynamic styling based on selection state
     const getButtonStyles = () => {
         if (selectable && isSelected) {
             return "bg-primary-50 border-primary-300 text-primary-900";
@@ -51,9 +52,11 @@ const TicketItem = ({
     return (
         <div
             className={`w-full px-4 py-3 rounded-xl text-base border-2 transition-all duration-200 flex items-center justify-between ${getButtonStyles()}`}>
-            <div className="flex items-center gap-3">
+
+            {/* Left side: Checkbox + Content */}
+            <div className="flex items-center gap-3 flex-1">
                 {selectable && (
-                    <div className="relative">
+                    <div className="flex-shrink-0">
                         <input
                             type="checkbox"
                             checked={isSelected}
@@ -62,43 +65,56 @@ const TicketItem = ({
                         />
                     </div>
                 )}
-                <div className="flex flex-col">
+
+                <div className="flex flex-col flex-1">
                     <div className="flex flex-row items-center justify-between gap-2 mb-2">
                         <span className="font-semibold">{ticket.itemTypeRef.name}</span>
                         {ticket.timeslot && (
                             <span className="text-sm bg-gray-100 text-gray-800 py-1 px-2 rounded-md">
-                                    {timeslotToLocalTime(ticket.timeslot)}
-                                </span>
+                                {timeslotToLocalTime(ticket.timeslot)}
+                            </span>
                         )}
                     </div>
-                    <div className="flex gap-2 items-center">
-                        {ticket?.orderId && (
-                            <span
-                                className="text-sm bg-primary-100 text-primary-800 py-1 px-2 rounded-md">Order: {ticket.orderId.toString().slice(-6)}</span>
+                    <div className="flex gap-2 items-center justify-between">
+                        <div className="flex gap-2 items-center flex-wrap">
+                            {ticket?.orderId && (
+                                <span className="text-sm bg-primary-100 text-primary-800 py-1 px-2 rounded-md">
+                                Order: {ticket.orderId.toString().slice(-6)}
+                            </span>
+                            )}
+                            {ticket.updatedAt && (
+                                <span className="text-sm bg-gray-100 text-gray-800 py-1 px-2 rounded-md">
+                                Updated: {formatDateTime(ticket.updatedAt, true)}
+                            </span>
+                            )}
+                        </div>
+
+                        {/* Right side: Button (children) */}
+                        {children && (
+                            <div>
+                                {children}
+                            </div>
                         )}
-                        {ticket.updatedAt && (
-                            <span
-                                className="text-sm bg-gray-100 text-gray-800 py-1 px-2 rounded-md">Updated: {formatDateTime(ticket.updatedAt, true)}</span>
-                        )}
-                        {children}
                     </div>
                 </div>
-
             </div>
         </div>
     );
 };
 
+
 const ItemTracker = ({
                          tickets,
                          orders,
                          onMarkReady,
-                         onAssignToOrder
+                         onAssignToOrder,
+                         onDelete
                      }: {
     tickets: ItemTicketDocumentWithItem[];
     orders: OrderDocument[];
     onMarkReady: (ticketId: string) => void;
     onAssignToOrder: (ticketIds: string[], orderId: string) => void;
+    onDelete: (ticketIds: string[]) => void;
 }) => {
     const [selectedTickets, setSelectedTickets] = useState<Set<string>>(new Set());
     const [assignMode, setAssignMode] = useState(false);
@@ -152,31 +168,49 @@ const ItemTracker = ({
         setAssignMode(false);
     };
 
+    const handleDelete = () => {
+        onDelete(Array.from(selectedTickets))
+        setSelectedTickets(new Set());
+        setAssignMode(false);
+    }
+
+    const handleClear = () => {
+        setSelectedTickets(new Set());
+        setAssignMode(false);
+    }
+
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h3 className="font-bold text-xl text-gray-900">{t('Admin.OrderManager.ItemTracker.title')}</h3>
-                {selectedTickets.size > 0 && (
-                    <div className="flex gap-3">
-                        <Button
-                            onClick={() => setAssignMode(!assignMode)}
-                            color="bg-primary-500"
-                            textColor="text-white"
-                            className="font-medium"
-                        >
-                            {assignMode ? t('Admin.OrderManager.Actions.cancel') : t('Admin.OrderManager.Actions.assignToOrder', { count: selectedTickets.size })}
-                        </Button>
-                        <Button
-                            onClick={() => setSelectedTickets(new Set())}
-                            color="bg-gray-500"
-                            textColor="text-white"
-                            className="font-medium"
-                        >
-                            {t('Admin.OrderManager.Actions.clear')}
-                        </Button>
-                    </div>
-                )}
-            </div>
+            {/* Action buttons */}
+            {selectedTickets.size > 0 && (
+                <div className="flex flex-col gap-3 mb-6">
+                    {!assignMode && <Button
+                        onClick={() => setAssignMode(!assignMode)}
+                        color="bg-primary-500"
+                        textColor="text-white"
+                        className="font-medium"
+                    >
+                        {t('Admin.OrderManager.Actions.assignToOrder', { count: selectedTickets.size })}
+                    </Button>
+                    }
+                    {!assignMode && <Button
+											onClick={() => handleDelete()}
+											color="bg-red-500"
+											textColor="text-white"
+											className="font-medium"
+										>
+                        {t('Admin.OrderManager.Actions.delete', { count: selectedTickets.size })}
+										</Button>}
+                    <Button
+                        onClick={() => handleClear()}
+                        color="bg-gray-500"
+                        textColor="text-white"
+                        className="font-medium"
+                    >
+                        {t('Admin.OrderManager.Actions.cancel')}
+                    </Button>
+                </div>
+            )}
 
             {/* Active tickets */}
             <div className=" bg-orange-50  border-orange-200 rounded-2xl p-4 shadow-sm">
@@ -186,24 +220,22 @@ const ItemTracker = ({
                         {ticketGroups.active.length}
                     </span>
                 </h4>
-                <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
+                <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar w-full">
                     {ticketGroups.active.map(ticket => (
-                        <div key={ticket._id.toString()} className="flex items-center justify-between">
-                            <TicketItem ticket={ticket} selectedTickets={selectedTickets}
-                                        handleToggleTicket={handleToggleTicket}>
-                                <Button
-                                    onClick={() => onMarkReady(ticket._id.toString())}
-                                    color="bg-green-500"
-                                    textColor="text-white"
-                                    className="font-medium"
-                                >
-                                    <CheckIcon/>
-                                </Button>
-                            </TicketItem>
-                        </div>
+                        <TicketItem ticket={ticket} selectedTickets={selectedTickets}
+                                    handleToggleTicket={handleToggleTicket} key={ticket._id.toString()}>
+                            <Button
+                                onClick={() => onMarkReady(ticket._id.toString())}
+                                color="bg-green-500"
+                                textColor="text-white"
+                                className="font-medium"
+                            >
+                                <CheckIcon/>
+                            </Button>
+                        </TicketItem>
                     ))}
                     {ticketGroups.active.length === 0 && (
-                        <div className="text-center py-8">
+                        <div className="text-center py-2">
                             <p className="text-gray-500 text-sm">No items being prepared</p>
                         </div>
                     )}
@@ -228,7 +260,7 @@ const ItemTracker = ({
                             handleToggleTicket={handleToggleTicket}/>
                     ))}
                     {ticketGroups.ready.length === 0 && (
-                        <div className="text-center py-8">
+                        <div className="text-center py-2">
                             <p className="text-gray-500 text-sm">{t('Admin.OrderManager.ItemTracker.noReadyItemsAvailable')}</p>
                         </div>
                     )}
@@ -603,6 +635,23 @@ export default function OrderManagerDashboard() {
         },
     });
 
+    const deleteTicketMutation = useMutation({
+        mutationFn: async (ticketId: string) => deleteTicket(ticketId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tickets'] });
+        },
+        onError: (error) => {
+            setError(error.message);
+        }
+    });
+
+    const deleteSelectedTickets = (ticketIds: string[]) => {
+        if (window.confirm(`Are you sure you want to delete ${ticketIds.length} ticket(s)?`)) {
+            ticketIds.forEach(ticketId => {
+                deleteTicketMutation.mutate(ticketId);
+            });
+        }
+    };
     const filteredOrders = useMemo(() => {
         if (!orders) {
             return [];
@@ -673,6 +722,7 @@ export default function OrderManagerDashboard() {
                                 ticketIds,
                                 orderId
                             })}
+                            onDelete={(ticketIds) => deleteSelectedTickets(ticketIds)}
                         />
                     </div>
                 </div>
@@ -696,7 +746,8 @@ export default function OrderManagerDashboard() {
                                 {t('Admin.OrderManager.Orders.completedOrders')}
                             </Button>
                         </div>
-                        <div className=" bg-primary-100 text-primary-800 text-sm px-3 py-1 rounded-full font-medium w-fit">
+                        <div
+                            className=" bg-primary-100 text-primary-800 text-sm px-3 py-1 rounded-full font-medium w-fit">
                             {filteredOrders.length}
                         </div>
                         <div className="space-y-4">
@@ -732,6 +783,11 @@ export default function OrderManagerDashboard() {
                 onClose={() => setShowScanner(false)}
                 onScan={setSearchFilter}
             />
+
+            {/* Error Toast */}
+            {error && (
+                <ErrorMessage error={error}/>
+            )}
         </>
     );
 }

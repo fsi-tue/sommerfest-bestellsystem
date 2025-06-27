@@ -206,6 +206,7 @@ translation:
         assignToOrder: "Assign to order"
         cancel: "Cancel"
         clear: "Clear"
+        delete: "Delete ({count})"
         markReady: "Mark ready"
         deliverOrder: "Deliver order"
         force: "Force"
