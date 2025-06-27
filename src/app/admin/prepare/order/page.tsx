@@ -485,7 +485,7 @@ const QRScannerModal = ({ isOpen, onClose, onScan }: {
 
     return (
         <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[150] flex items-center justify-center p-4 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl max-w-sm w-full p-4 shadow-2xl animate-in zoom-in-95 duration-200">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-xl font-bold text-gray-900">Scan Order QR</h3>

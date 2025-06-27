@@ -10,7 +10,7 @@ interface HeadingProps extends React.PropsWithChildren {
 export const Heading: React.FC<HeadingProps> = ({ title, description, icon, sticky, children }) => {
     return (
         <div
-            className={`mb-4 p-2 text-black rounded-2xl shadow-lg ${sticky ? 'sticky top-0 md:top-40 p-6 -m-4 z-[9999] backdrop-blur-sm bg-white/95' : 'z-50 bg-white'}`}>
+            className={`mb-4 p-2 text-black rounded-2xl shadow-lg ${sticky ? 'sticky top-0 md:top-40 p-6 -m-4 z-[100] backdrop-blur-sm bg-white/95' : 'z-50 bg-white'}`}>
             <div className={`flex flex-col md:flex-row justify-between`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 m-1">
