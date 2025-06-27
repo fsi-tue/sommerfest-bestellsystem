@@ -74,6 +74,10 @@ translation:
       name_not_set: Name missing
       timeslot_not_selected: Timeslot missing
       disclaimer: 'If you click on "Order now", you complete the order directly.'
+    Info:
+      Name: "By specifying your name, we can assign the order more easily."
+      Timeslot: "If you tap on the graph, you can select a time slot."
+      Order: 'If you click on "Order now", you complete the order directly. Payment is made in cash.
     Timeslot:
       title: Timeslot
       subtitle: Select pick-up time.
